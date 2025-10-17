@@ -1,5 +1,5 @@
 # type: ignore
-from .config import NumericConfig, UpscaleMethods
+from .config import AlwaysEqual, NumericConfig, UpscaleMethods
 import comfy.utils
 
 class ImageUpscaleSwitch_Toggle:
