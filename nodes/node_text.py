@@ -1,4 +1,4 @@
-﻿# type: ignore
+# type: ignore
 import time
 import random
 import re

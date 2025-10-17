@@ -1,4 +1,4 @@
-﻿import importlib
+import importlib
 import traceback
 
 NODE_CLASS_MAPPINGS = {}

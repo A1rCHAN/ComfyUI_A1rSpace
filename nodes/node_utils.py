@@ -1,4 +1,4 @@
-﻿# type: ignore
+# type: ignore
 import os
 import random
 import folder_paths

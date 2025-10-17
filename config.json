@@ -1,9 +1,9 @@
 {
     "Baidu": {
-        "AppId": "20250419002337684",
-        "Secret": "_hFj1rdkAUey5H99_ilQ"
+        "AppId": "",
+        "Secret": ""
     },
     "DeepSeek": {
-        "api_key": "sk-3a390d64d998469eb7bb658a17b0ab95"
+        "api_key": ""
     }
 }

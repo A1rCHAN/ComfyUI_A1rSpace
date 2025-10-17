@@ -1,4 +1,4 @@
-﻿# type: ignore
+# type: ignore
 from .config import NumericConfig
 import traceback
 try:
