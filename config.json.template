@@ -1,0 +1,9 @@
+{
+    "Baidu": {
+        "AppId": "",
+        "Secret": ""
+    },
+    "DeepSeek": {
+        "api_key": ""
+    }
+}
