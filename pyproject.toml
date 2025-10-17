@@ -1,7 +1,7 @@
 [project]
 name = "comfyui_a1rspace"
 description = "A comfyui custom node package used by myself."
-version = "1.0.0"
+version = "1.0.2"
 license = {file = "LICENSE"}
 dependencies = ["sefetensors", "transformers", "torch", "numpy", "einops", "Pillow", "kornia", "requests", "openai", "psutil", "huggingface-hub", "onnxruntime"]
 
@@ -12,4 +12,3 @@ Repository = "https://github.com/A1rCHAN/ComfyUI_A1rSpace"
 PublisherId = "a1rchan"
 DisplayName = "ComfyUI_A1rSpace"
 Icon = ""
-
