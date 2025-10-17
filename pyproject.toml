@@ -1,7 +1,7 @@
 [project]
 name = "comfyui_a1rspace"
 description = "A comfyui custom node package used by myself."
-version = "1.0.2"
+version = "1.0.3"
 license = {file = "LICENSE"}
 dependencies = ["sefetensors", "transformers", "torch", "numpy", "einops", "Pillow", "kornia", "requests", "openai", "psutil", "huggingface-hub", "onnxruntime"]
 

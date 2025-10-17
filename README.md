@@ -27,6 +27,8 @@ A comfyui custom node package used by myself.
   git pull
   ```
 ## Update history
+### version 1.0.3:
+- Optimize 'slider custom' & 'boolean to int' front-end experience, enhance 'size fixer', debug utils nodes.
 ### version 1.0.2:
 - Fixed collapse outputs function and other bugs, can work normally now.
 ### version 1.0.1:
