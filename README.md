@@ -27,6 +27,8 @@ A comfyui custom node package used by myself.
   git pull
   ```
 ## Update history
+### version 1.0.4:
+- Enhance 'seed control' node, fix other nodes bugs. complete all nodes almostly.
 ### version 1.0.3:
 - Optimize 'slider custom' & 'boolean to int' front-end experience, enhance 'size fixer', debug utils nodes.
 ### version 1.0.2:

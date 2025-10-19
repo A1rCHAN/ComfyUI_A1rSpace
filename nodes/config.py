@@ -1,5 +1,6 @@
 # type: ignore
 import os
+import re
 import json
 import folder_paths
 
@@ -246,7 +247,107 @@ class NumericConfig:
             "1728x576 (3.0)",
         ]
 
+# ====== Upscale methods ======
 class UpscaleMethods:
     IMAGE_METHODS = ["nearest-exact", "bilinear", "area", "bicubic", "lanczos"]
     LATENT_METHODS = ["nearest-exact", "bilinear", "area", "bicubic", "bislerp"]
     DEFAULT = "nearest-exact"
+
+# ====== Text merge ======
+class TextCleanerMixin:
+    def clean_text(self, text):
+        if not text:
+            return ""
+        
+        s = text.strip()
+        if not s:
+            return ""
+        
+        emoticon = self._detect_emoticon_at_end(s)
+        if emoticon:
+            prefix = s[:-len(emoticon)]
+            cleaned_prefix = self._remove_trailing_punctuation(prefix)
+            return cleaned_prefix + emoticon
+        
+        return self._remove_trailing_punctuation(s)
+    
+    def _detect_emoticon_at_end(self, text):
+        if not text:
+            return ""
+        
+        unicode_emoticon_pattern = re.compile(
+            r'([\U0001F600-\U0001F64F]|'
+            r'[\U0001F300-\U0001F5FF]|'
+            r'[\U0001F680-\U0001F6FF]|'
+            r'[\U0001F1E0-\U0001F1FF]|'
+            r'[\U00002702-\U000027B0]|'
+            r'[\U000024C2-\U0001F251])+'
+            r'$'
+        )
+
+        match = unicode_emoticon_pattern.search(text)
+        if match:
+            return match.group(0)
+        
+        i = len(text) - 1
+        while i >= 0:
+            char = text[i]
+            if char.isalnum() or char.isspace() or '\u4e00' <= char <= '\u9fff':
+                break
+            i -= 1
+
+        potential_emoticon = text[i+1:]
+
+        if len(potential_emoticon) >= 2:
+            unique_chars = set(potential_emoticon)
+            if len(unique_chars) >= 2:
+                emoticon_markers = {'_', '^', '<', '>', 'T', 't', 'O', 'o', '-', '~', '\'', '"', '|'}
+                if unique_chars & emoticon_markers:
+                    return potential_emoticon
+        return ""
+    
+    def _remove_trailing_punctuation(self, text):
+        if not text:
+            return ""
+        
+        s = text.strip()
+
+        removable_punctuation = {',', '，', '!', '！', '?', '？', ';', '；', ':', '：'}
+        period_marks = {'.', '。'}
+
+        changed = True
+        while changed and s:
+            changed = False
+
+            if not s:
+                break
+
+            last_char = s[-1]
+
+            if last_char in removable_punctuation:
+                while s and s[-1] == last_char:
+                    s = s[:-1]
+                s = s.rstrip()
+                changed = True
+                continue
+
+            if last_char in period_marks:
+                if len(s) >= 3 and s[-3:] in ['...', '。。。']:
+                    break
+
+                count = 0
+                for i in range(len(s)-1, -1, -1):
+                    if s[i] == period_marks:
+                        count += 1
+                    else:
+                        break
+
+                if count == 3:
+                    break
+
+                s = s[:-count].rstrip()
+                changed = True
+                continue
+            break
+
+        return s

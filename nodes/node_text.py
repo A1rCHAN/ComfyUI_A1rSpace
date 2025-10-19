@@ -6,7 +6,7 @@ import json
 import hashlib
 from inspect import stack
 from hashlib import md5
-from .config import load_config
+from .config import load_config, TextCleanerMixin
 import requests
 from openai import OpenAI
 
@@ -31,90 +31,8 @@ class Text_Box:
     def output_text(self, text):
         return (text,)
 
-class Text_Merge:
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "text1": ("STRING", {"default": "", "multiline": True}),
-                "text2": ("STRING", {"default": "", "multiline": True}),
-                "text3": ("STRING", {"default": "", "multiline": True}),
-                "text4": ("STRING", {"default": "", "multiline": True}),
-                "delimiter": ("STRING", {"default": ","}),
-            },
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text",)
-    FUNCTION = "merge_texts"
-    CATEGORY = "A1rSpace/Text"
-
-    def merge_texts(self, text1, text2, text3, text4, delimiter):
-        texts = [self.clean_text(text, delimiter) for text in [text1, text2, text3, text4]]
-        
-        non_empty_texts = [text for text in texts if text.strip()]
-        
-        merged = delimiter.join(non_empty_texts)
-        return (merged,)
-
-    def clean_text(self, text, delimiter):
-        pattern = re.escape(delimiter) + r'+\s*$'
-        return re.sub(pattern, '', text.strip())
-
-class TextMerge_WithClipEncode:
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "text1": ("STRING", {"multiline": True, "default": ""}),
-                "text2": ("STRING", {"multiline": True, "default": ""}),
-                "text3": ("STRING", {"multiline": True, "default": ""}),
-                "text4": ("STRING", {"multiline": True, "default": ""}),
-                "delimiter": ("STRING", {"default": ",", "multiline": False}),
-                "clip": ("CLIP",),
-            }
-        }
-    
-    RETURN_TYPES = ("STRING", "CONDITIONING")
-    RETURN_NAMES = ("text", "conditioning")
-    FUNCTION = "merge_and_encode"
-    CATEGORY = "A1rSpace/Text"
-    
-    def merge_and_encode(self, text1, text2, text3, text4, delimiter, clip):
-        texts = [
-            self.clean_text(text1, delimiter),
-            self.clean_text(text2, delimiter),
-            self.clean_text(text3, delimiter),
-            self.clean_text(text4, delimiter)
-        ]
-        
-        non_empty_texts = [t for t in texts if t.strip()]
-        
-        merged_text = delimiter.join(non_empty_texts)
-        
-        tokens = clip.tokenize(merged_text)
-        cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
-        conditioning = [[cond, {"pooled_output": pooled}]]
-        
-        return (merged_text, conditioning)
-    
-    def clean_text(self, text, delimiter):
-        if not text:
-            return ""
-        
-        escaped_delimiter = re.escape(delimiter)
-        
-        pattern = r'[\s' + escaped_delimiter + r']+$'
-        return re.sub(pattern, '', text)
-
 # text show
-# idea by pysssss Custom-Scripts show_text.py
+# Inspired by pysssss Custom-Scripts show_text.py
 # made some changes: just show, nothing returned, a button to copy text
 
 class Text_Show:
@@ -160,6 +78,76 @@ class Text_Show:
                 if node:
                     node["widgets_values"] = [text_content]
         return {"ui": {"text": [text_content]}, "result": ()}
+
+class Text_Merge(TextCleanerMixin):
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text1": ("STRING", {"default": "", "multiline": True}),
+                "text2": ("STRING", {"default": "", "multiline": True}),
+                "text3": ("STRING", {"default": "", "multiline": True}),
+                "text4": ("STRING", {"default": "", "multiline": True}),
+                "delimiter": ("STRING", {"default": ", "}),
+            },
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text",)
+    FUNCTION = "merge_texts"
+
+    CATEGORY = "A1rSpace/Text"
+
+    def merge_texts(self, text1, text2, text3, text4, delimiter):
+        texts = [self.clean_text(text) for text in [text1, text2, text3, text4]]
+
+        non_empty_texts = [text for text in texts if text.strip()]
+        
+        merged = delimiter.join(non_empty_texts)
+        return (merged,)
+
+class TextMerge_WithClipEncode(TextCleanerMixin):
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text1": ("STRING", {"multiline": True, "default": ""}),
+                "text2": ("STRING", {"multiline": True, "default": ""}),
+                "text3": ("STRING", {"multiline": True, "default": ""}),
+                "text4": ("STRING", {"multiline": True, "default": ""}),
+                "delimiter": ("STRING", {"default": ", ", "multiline": False}),
+                "clip": ("CLIP",),
+            }
+        }
+    
+    RETURN_TYPES = ("STRING", "CONDITIONING")
+    RETURN_NAMES = ("text", "conditioning")
+    FUNCTION = "merge_and_encode"
+
+    CATEGORY = "A1rSpace/Text"
+    
+    def merge_and_encode(self, text1, text2, text3, text4, delimiter, clip):
+        texts = [
+            self.clean_text(text1),
+            self.clean_text(text2),
+            self.clean_text(text3),
+            self.clean_text(text4)
+        ]
+        
+        non_empty_texts = [t for t in texts if t]
+        merged_text = delimiter.join(non_empty_texts)
+        
+        tokens = clip.tokenize(merged_text)
+        cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
+        conditioning = [[cond, {"pooled_output": pooled}]]
+        
+        return (merged_text, conditioning)
 
 # text translate
 # power by NYJY Translate.py utils.py
@@ -341,7 +329,7 @@ class Text_Translate:
             ),
         }
 
-class Translate_ClipEncode_Merge(Text_Translate):
+class Translate_ClipEncode_Merge(Text_Translate, TextCleanerMixin):
     def __init__(self):
         pass
 
@@ -363,7 +351,7 @@ class Translate_ClipEncode_Merge(Text_Translate):
                 "enable3": ("BOOLEAN", {"default": False}),
                 "text4": ("STRING", {"default": "", "multiline": True}),
                 "enable4": ("BOOLEAN", {"default": False}),
-                "delimiter": ("STRING", {"default": ",", "multiline": False}),
+                "delimiter": ("STRING", {"default": ", ", "multiline": False}),
                 "clip": ("CLIP",),
             }
         }
@@ -384,17 +372,20 @@ class Translate_ClipEncode_Merge(Text_Translate):
         for text, enable in [
             (text1, enable1), (text2, enable2), (text3, enable3), (text4, enable4)
         ]:
-            if text.strip():
-                if enable:
-                    # 调用父类translate方法，clip=None只做翻译
-                    translated, _ = self.translate(
-                        from_lang, to_lang, text, platform, True, None
-                    )["result"]
-                    texts.append(translated)
-                else:
-                    texts.append(text)
+            if not text.strip():
+                continue
 
-        merged_text = delimiter.join([t for t in texts if t.strip()])
+            if enable:
+                # 调用父类translate方法，clip=None只做翻译
+                translated, _ = self.translate(
+                    from_lang, to_lang, text, platform, True, None
+                )["result"]
+                texts.append(self.clean_text(translated))
+            else:
+                texts.append(self.clean_text(text))
+
+        non_empty_texts = [t for t in texts if t]
+        merged_text = delimiter.join(non_empty_texts)
 
         # clip encode
         tokens = clip.tokenize(merged_text)
@@ -405,18 +396,18 @@ class Translate_ClipEncode_Merge(Text_Translate):
 
 TEXT_CLASS_MAPPINGS = {
     "A1r Text Box": Text_Box,
+    "A1r Text Show": Text_Show,
     "A1r Merge Text": Text_Merge,
     "A1r MergeText WithClipEncode": TextMerge_WithClipEncode,
-    "A1r Text Show": Text_Show,
     "A1r Text Translate": Text_Translate,
     "A1r Translate ClipEncode Merge": Translate_ClipEncode_Merge,
 }
 
 TEXT_DISPLAY_NAME_MAPPINGS = {
     "A1r Text Box": "Text Box",
+    "A1r Text Show": "Text Show",
     "A1r Merge Text": "Text Merge",
     "A1r MergeText WithClipEncode": "TextMerge withClipEncode",
-    "A1r Text Show": "Text Show",
     "A1r Text Translate": "Text Translate",
     "A1r Translate ClipEncode Merge": "Translate ClipEncode Merge",
 }

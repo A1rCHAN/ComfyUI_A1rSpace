@@ -32,6 +32,9 @@ const DEFAULT_SIZE = {
 
 // 最小尺寸限制（节点不能缩小到这个尺寸以下）
 const MIN_SIZE = {
+    // control nodes
+    "A1r Seed Control": [210, 110],
+    
     // Utils nodes
     "A1r Slider Custom": [210, 30],
     "A1r Boolean to Int": [210, 30],

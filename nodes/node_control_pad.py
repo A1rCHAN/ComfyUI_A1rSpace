@@ -106,19 +106,18 @@ class Seed_Control:
             }
         }
 
-    RETURN_TYPES = ("INT", "STRING",)
-    RETURN_NAMES = ("seed", "string")
+    RETURN_TYPES = ("INT",)
+    RETURN_NAMES = ("seed",)
     FUNCTION = "put_seed"
 
     CATEGORY = "A1rSpace/Utils"
 
     def put_seed(self, seed):
-        string_value = str(seed)
         return {
             "ui": {
-                "seed": [string_value],
+                "seed": [str(seed)],
             },
-            "result": (seed, string_value),
+            "result": (seed,),
         }
 
 CONTROL_CLASS_MAPPINGS = {
