@@ -26,7 +26,7 @@ Combine the Offical Image Upscale node. Switch, Control.
 ![Example Image](template/upscale_image_by.png)  
 ![Example Image](template/upscale_image_size.png)
 
-* Latex UpscaleBy (Toggled)  
+* Latent UpscaleBy (Toggled)  
 Add a control button.  
 ![Example Image](template/upscale_latent.png)  
 ![Example Image](template/upscale_latent_off.png)
