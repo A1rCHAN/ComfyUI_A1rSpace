@@ -1,7 +1,7 @@
 # type: ignore
 import time
 import random
-import re
+import sys
 import json
 import hashlib
 from inspect import stack
@@ -81,6 +81,7 @@ class Text_Show:
 
 class Text_Merge(TextCleanerMixin):
     def __init__(self):
+        print("[Text_Merge] Initialized with TextCleanerMixin", file=sys.stderr)
         pass
 
     @classmethod
@@ -102,11 +103,25 @@ class Text_Merge(TextCleanerMixin):
     CATEGORY = "A1rSpace/Text"
 
     def merge_texts(self, text1, text2, text3, text4, delimiter):
+        # Debug prints
+        print(f"[merge_texts] Called with inputs:", file=sys.stderr)
+        print(f"  text1: {repr(text1)}", file=sys.stderr)
+        print(f"  text2: {repr(text2)}", file=sys.stderr)
+        print(f"  text3: {repr(text3)}", file=sys.stderr)
+        print(f"  text4: {repr(text4)}", file=sys.stderr)
+
         texts = [self.clean_text(text) for text in [text1, text2, text3, text4]]
+
+        # Debug print
+        print(f"[merge_texts] Cleaned texts: {texts}", file=sys.stderr)
 
         non_empty_texts = [text for text in texts if text.strip()]
         
         merged = delimiter.join(non_empty_texts)
+
+        # Debug print
+        print(f"[merge_texts] Final result: {repr(merged)}", file=sys.stderr)
+
         return (merged,)
 
 class TextMerge_WithClipEncode(TextCleanerMixin):

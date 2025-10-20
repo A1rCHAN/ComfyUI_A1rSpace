@@ -1,6 +1,7 @@
 # type: ignore
 import os
 import re
+import sys
 import json
 import folder_paths
 
@@ -131,7 +132,7 @@ class NumericConfig:
     # step
     @staticmethod
     def ks_step():
-        return NumericConfig.default_int(default=15, max_val=60, step=5)
+        return NumericConfig.default_int(default=20, max_val=60, step=5)
     
     """latent upscale"""
     # batch size
@@ -159,13 +160,13 @@ class NumericConfig:
     # denoise
     @staticmethod
     def ks_denoise():
-        return NumericConfig.default_float(default=0.5, max_val=1.0, step=0.05)
+        return NumericConfig.default_float(default=1.0, max_val=1.0, step=0.05)
     
     """upscale"""
     # scale by
     @staticmethod
     def upscale_scaleby():
-        return NumericConfig.default_float(default=1.0, min_val=0.1, max_val=2.0, step=0.1)
+        return NumericConfig.default_float(default=1.5, min_val=0.1, max_val=2.0, step=0.1)
     
     """lora"""
     # strength
@@ -255,99 +256,217 @@ class UpscaleMethods:
 
 # ====== Text merge ======
 class TextCleanerMixin:
+    """
+    Text cleaning utility mixin class.
+    Provides reusable methods for cleaning text with intelligent punctuation handling
+    and emoticon protection.
+    """
+    
     def clean_text(self, text):
+        """
+        Clean trailing punctuation and whitespace from text while protecting emoticons.
+        
+        Args:
+            text (str): Input text to clean
+            
+        Returns:
+            str: Cleaned text with trailing punctuation removed but emoticons preserved
+        """
         if not text:
             return ""
         
-        s = text.strip()
+        # Remove leading/trailing whitespace (including full-width spaces)
+        s = text.strip().rstrip('\u3000')
         if not s:
             return ""
         
+        # Detect and protect emoticons at the end of text
         emoticon = self._detect_emoticon_at_end(s)
         if emoticon:
             prefix = s[:-len(emoticon)]
             cleaned_prefix = self._remove_trailing_punctuation(prefix)
-            return cleaned_prefix + emoticon
+            result = cleaned_prefix + emoticon
+        else:
+            result = self._remove_trailing_punctuation(s)
         
-        return self._remove_trailing_punctuation(s)
+        return result
     
     def _detect_emoticon_at_end(self, text):
-        if not text:
+        """
+        Detect emoticons at the end of text.
+        Distinguishes between true emoticons and pure punctuation marks.
+        
+        Args:
+            text (str): Text to check for emoticons
+            
+        Returns:
+            str: The emoticon string if found, empty string otherwise
+        """
+        if not text or len(text) < 2:
             return ""
         
+        # Unicode emoji detection (precise ranges to exclude CJK punctuation)
         unicode_emoticon_pattern = re.compile(
-            r'([\U0001F600-\U0001F64F]|'
-            r'[\U0001F300-\U0001F5FF]|'
-            r'[\U0001F680-\U0001F6FF]|'
-            r'[\U0001F1E0-\U0001F1FF]|'
-            r'[\U00002702-\U000027B0]|'
-            r'[\U000024C2-\U0001F251])+'
-            r'$'
+            r'([\U0001F600-\U0001F64F]|'  # Emoticons
+            r'[\U0001F300-\U0001F5FF]|'   # Miscellaneous Symbols and Pictographs
+            r'[\U0001F680-\U0001F6FF]|'   # Transport and Map Symbols
+            r'[\U0001F700-\U0001F77F]|'   # Alchemical Symbols
+            r'[\U0001F780-\U0001F7FF]|'   # Geometric Shapes Extended
+            r'[\U0001F800-\U0001F8FF]|'   # Supplemental Arrows-C
+            r'[\U0001F900-\U0001F9FF]|'   # Supplemental Symbols and Pictographs
+            r'[\U0001FA00-\U0001FA6F]|'   # Chess Symbols
+            r'[\U0001FA70-\U0001FAFF]|'   # Symbols and Pictographs Extended-A
+            r'[\U00002702-\U000027B0]|'   # Dingbats
+            r'[\U0001F1E0-\U0001F1FF])'   # Regional Indicator Symbols (flags)
+            r'+$'
         )
-
+        
         match = unicode_emoticon_pattern.search(text)
         if match:
             return match.group(0)
         
+        # ASCII emoticon detection (e.g., ^_^, T_T, >_<)
+        # Find the start of potential emoticon by scanning backwards
         i = len(text) - 1
         while i >= 0:
             char = text[i]
+            # Stop at alphanumeric, whitespace, or CJK characters
             if char.isalnum() or char.isspace() or '\u4e00' <= char <= '\u9fff':
                 break
             i -= 1
-
-        potential_emoticon = text[i+1:]
-
-        if len(potential_emoticon) >= 2:
-            unique_chars = set(potential_emoticon)
-            if len(unique_chars) >= 2:
-                emoticon_markers = {'_', '^', '<', '>', 'T', 't', 'O', 'o', '-', '~', '\'', '"', '|'}
-                if unique_chars & emoticon_markers:
-                    return potential_emoticon
+        
+        potential_emoticon = text[i + 1:]
+        
+        # Must be at least 2 characters
+        if len(potential_emoticon) < 2:
+            return ""
+        
+        unique_chars = set(potential_emoticon)
+        
+        # Define pure punctuation marks (should NOT be treated as emoticons)
+        pure_punctuation = {
+            ',', '\uff0c', '\u3001',  # Commas (English, CJK full-width, ideographic)
+            '.', '\u3002', '\uff0e',  # Periods (English, CJK, full-width)
+            '!', '\uff01',             # Exclamation marks
+            '?', '\uff1f',             # Question marks
+            ';', '\uff1b',             # Semicolons
+            ':', '\uff1a',             # Colons
+        }
+        
+        # If all characters are pure punctuation, it's NOT an emoticon
+        if unique_chars <= pure_punctuation:
+            return ""
+        
+        # Define emoticon marker characters (must contain these to be an emoticon)
+        emoticon_markers = {
+            '_', '^', '<', '>', 
+            'T', 't', 'O', 'o', 
+            '-', '~', '\'', '"', 
+            '|', '\\', '/', 
+            'v', 'V', 'w', 'W', 
+            'x', 'X', 'u', 'U'
+        }
+        
+        # Must contain emoticon markers AND have at least 2 different characters
+        if (unique_chars & emoticon_markers) and len(unique_chars) >= 2:
+            return potential_emoticon
+        
         return ""
     
     def _remove_trailing_punctuation(self, text):
+        """
+        Remove trailing punctuation marks from text.
+        
+        Rules:
+        1. Preserve ellipsis (exactly 3 consecutive periods: ... or 。。。)
+        2. Remove all other consecutive identical punctuation marks
+        3. For mixed punctuation (e.g., ...,), remove only the trailing comma
+        
+        Args:
+            text (str): Text to clean
+            
+        Returns:
+            str: Text with trailing punctuation removed
+        """
         if not text:
             return ""
         
-        s = text.strip()
-
-        removable_punctuation = {',', '，', '!', '！', '?', '？', ';', '；', ':', '：'}
-        period_marks = {'.', '。'}
-
-        changed = True
-        while changed and s:
-            changed = False
-
+        s = text.rstrip()
+        if not s:
+            return ""
+        
+        # Define removable punctuation (commas, exclamations, questions, etc.)
+        removable_punctuation = {
+            ',', '\uff0c', '\u3001',  # Commas
+            '!', '\uff01',             # Exclamation marks
+            '?', '\uff1f',             # Question marks
+            ';', '\uff1b',             # Semicolons
+            ':', '\uff1a',             # Colons
+        }
+        
+        # Periods need special handling (might be ellipsis)
+        period_marks = {
+            '.', '\u3002', '\uff0e',  # Periods (English, CJK, full-width)
+        }
+        
+        max_iterations = 100  # Prevent infinite loops
+        iteration = 0
+        
+        while iteration < max_iterations and s:
+            iteration += 1
+            original_s = s
+            
             if not s:
                 break
-
+            
             last_char = s[-1]
-
+            
+            # Handle directly removable punctuation (remove all consecutive)
             if last_char in removable_punctuation:
-                while s and s[-1] == last_char:
-                    s = s[:-1]
-                s = s.rstrip()
-                changed = True
-                continue
-
-            if last_char in period_marks:
-                if len(s) >= 3 and s[-3:] in ['...', '。。。']:
-                    break
-
                 count = 0
-                for i in range(len(s)-1, -1, -1):
-                    if s[i] == period_marks:
+                for i in range(len(s) - 1, -1, -1):
+                    if s[i] == last_char:
                         count += 1
                     else:
                         break
-
-                if count == 3:
-                    break
-
-                s = s[:-count].rstrip()
-                changed = True
+                
+                if count > 0:
+                    s = s[:-count].rstrip()
                 continue
-            break
-
+            
+            # Handle periods (check if it's an ellipsis)
+            if last_char in period_marks:
+                count = 0
+                for i in range(len(s) - 1, -1, -1):
+                    if s[i] in period_marks:
+                        count += 1
+                    else:
+                        break
+                
+                # Check if it's exactly 3 periods (ellipsis)
+                if count == 3:
+                    # Check if there are more periods before the ellipsis
+                    if len(s) > 3 and s[-4] in period_marks:
+                        # More than 3 periods, remove all
+                        total_count = 0
+                        for i in range(len(s) - 1, -1, -1):
+                            if s[i] in period_marks:
+                                total_count += 1
+                            else:
+                                break
+                        s = s[:-total_count].rstrip()
+                        continue
+                    else:
+                        # Exactly 3 periods (ellipsis), preserve and stop
+                        break
+                
+                # Not an ellipsis, remove all periods
+                if count > 0:
+                    s = s[:-count].rstrip()
+                    continue
+            
+            # No change made, stop iteration
+            if s == original_s:
+                break
+        
         return s
