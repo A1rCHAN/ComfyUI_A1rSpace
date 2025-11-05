@@ -1,4 +1,4 @@
-import { app } from "../../../scripts/app.js";
+import { app } from "/scripts/app.js";
 
 app.registerExtension({
     name: "A1rSpace.SeedControlRewrite",
@@ -17,11 +17,11 @@ app.registerExtension({
                     this.seedHistory.pop();
                 }
 
-                console.log('[Seed History Updated]', this.seedHistory);
+                
 
                 if (this.seedHistory.length >= 2) {
                     this.buttonStates.right.isAtEnd = false;
-                    console.log('[Pull last seed] Button enabled');
+                    
                 }
             }
         };
@@ -35,7 +35,7 @@ app.registerExtension({
                 this.seedHistory[0] = this.seedHistory[1];
                 this.seedHistory[1] = temp;
                 
-                console.log('[Seed History Swapped]', this.seedHistory);
+                
             }
         };
 
@@ -47,7 +47,7 @@ app.registerExtension({
             if (seedWidget) {
                 const randomSeed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
                 
-                console.log('[Random Seed Generated]', randomSeed);
+                
                 
                 // 关键：在设置值之前先锁定
                 this.lockedSeed = randomSeed;
@@ -80,7 +80,7 @@ app.registerExtension({
             const operationId = Date.now() + Math.random();
             this.currentOperationId = operationId;
             
-            console.log('[Queue With Seed] Target:', targetSeed, 'OperationID:', operationId);
+            
             
             // 设置强制seed值
             this.forcedSeed = targetSeed;
@@ -88,7 +88,7 @@ app.registerExtension({
             
             try {
                 await app.queuePrompt(0, 1);
-                console.log('[Queue With Seed] Queued successfully, OperationID:', operationId);
+                
                 
                 // 延迟清除标志 - 只有当前操作是最新操作时才清除
                 setTimeout(() => {
@@ -97,14 +97,14 @@ app.registerExtension({
                         this.forcedSeed = null;
                         this.isExecuting = false;
                         this.lockedSeed = null; // 只有最新操作才能解锁
-                        console.log('[Queue With Seed] Flags cleared for OperationID:', operationId);
+                        
                     } else {
-                        console.log('[Queue With Seed] Skipped clearing flags for old OperationID:', operationId, 'Current:', this.currentOperationId);
+                        
                     }
                 }, 2000);
                 
             } catch(err) {
-                console.error('[Queue With Seed] Error:', err);
+                
                 // 发生错误时，只有当前操作才清除标志
                 if (this.currentOperationId === operationId) {
                     this.forcedSeed = null;
@@ -112,6 +112,39 @@ app.registerExtension({
                     this.lockedSeed = null;
                 }
             }
+        };
+
+        /**
+         * 检查节点是否应该显示按钮
+         */
+        nodeType.prototype.shouldShowButtons = function() {
+            // 检查节点是否被折叠
+            if (this.flags && this.flags.collapsed) {
+                return false;
+            }
+            
+            // 检查节点高度是否足够
+            if (!this.size || this.size[1] < 100) {
+                return false;
+            }
+            
+            return true;
+        };
+
+        /**
+         * 获取当前的控制模式
+         */
+        nodeType.prototype.getControlMode = function() {
+            const controlWidget = this.widgets.find((w) => w.name === "control_after_generate");
+            return controlWidget ? controlWidget.value : "fixed";
+        };
+
+        /**
+         * 获取当前的种子值
+         */
+        nodeType.prototype.getCurrentSeed = function() {
+            const seedWidget = this.widgets.find((w) => w.name === "seed");
+            return seedWidget ? seedWidget.value : 0;
         };
 
         /**
@@ -164,7 +197,6 @@ app.registerExtension({
                 const originalCallback = seedWidget.callback;
                 
                 // 重写seed widget的value属性，添加setter拦截
-                const originalDescriptor = Object.getOwnPropertyDescriptor(seedWidget, 'value');
                 let internalValue = seedWidget.value;
                 
                 Object.defineProperty(seedWidget, 'value', {
@@ -174,11 +206,21 @@ app.registerExtension({
                     set: function(v) {
                         // 如果有lockedSeed，只允许设置为lockedSeed
                         if (this.node.lockedSeed !== null && v !== this.node.lockedSeed) {
-                            console.log('[Seed Setter] Blocked change from', internalValue, 'to', v, '(locked to', this.node.lockedSeed, ')');
+                        
                             return; // 完全阻止设置，避免闪烁
                         }
                         
-                        console.log('[Seed Setter] Setting value to', v);
+                        // 在 fixed 模式下，如果正在执行队列，阻止种子变化
+                        const controlWidget = this.node.widgets.find((w) => w.name === "control_after_generate");
+                        if (controlWidget && controlWidget.value === "fixed" && !this.node.isRestoring) {
+                            // 只有在手动操作时才允许改变
+                            if (!this.node.isExecuting && this.node.forcedSeed === null && v !== internalValue) {
+                                
+                                return;
+                            }
+                        }
+
+                        
                         internalValue = v;
                         
                         // 触发UI更新
@@ -193,17 +235,17 @@ app.registerExtension({
                  * 重写seed widget的callback
                  */
                 seedWidget.callback = (value) => {
-                    console.log('[Seed Callback]', value, 'isRestoring:', this.isRestoring, 'isExecuting:', this.isExecuting, 'lockedSeed:', this.lockedSeed);
+                    
                     
                     // 如果有lockedSeed且值不匹配，忽略callback
                     if (this.lockedSeed !== null && value !== this.lockedSeed) {
-                        console.log('[Seed Callback] Blocked (locked)');
+                        
                         return;
                     }
                     
                     // 执行期间忽略所有callback
                     if (this.isExecuting) {
-                        console.log('[Seed Callback] Ignored during execution');
+                        
                         if (originalCallback) {
                             originalCallback.call(seedWidget, value);
                         }
@@ -228,7 +270,7 @@ app.registerExtension({
                 const originalControlCallback = controlWidget.callback;
                 
                 controlWidget.callback = (value) => {
-                    console.log('[Control After Generate Changed]', value);
+                    
                     
                     if (this.isHandlingControlChange) {
                         if (originalControlCallback) {
@@ -240,7 +282,7 @@ app.registerExtension({
                     this.isHandlingControlChange = true;
 
                     if (value === "randomize") {
-                        console.log('[Switching to Randomize Mode] Generating new seed...');
+                        
                         
                         // 重置所有状态
                         this.isRestoring = false;
@@ -253,7 +295,20 @@ app.registerExtension({
                         
                         if (this.seedHistory.length >= 2) {
                             this.buttonStates.right.isAtEnd = false;
-                            console.log('[Pull last seed] Button re-enabled after randomize');
+                            
+                        }
+                    } else if (value === "fixed") {
+                        
+                        
+                        // 在切换到 fixed 模式时，锁定当前种子
+                        const seedWidget = this.widgets.find((w) => w.name === "seed");
+                        if (seedWidget) {
+                            const currentSeed = seedWidget.value;
+                            
+                            // 更新历史记录
+                            if (!this.isRestoring) {
+                                this.updateSeedHistory(currentSeed);
+                            }
                         }
                     }
 
@@ -283,34 +338,125 @@ app.registerExtension({
          * 计算按钮的位置和尺寸
          */
         const btnH = 20;
+        const btnSpacing = 10; // 按钮间距
+        const btnPadding = 15; // 按钮边距
+        
         function getButtonPos(node) {
-            let nodeW = node.size ? node.size[0] : 300;
-            let btnW = Math.max(80, (nodeW - 40) / 2);
-            let y = 60;
-            let xLeft = 15;
-            let xRight = nodeW - btnW - 15;
+            const nodeW = node.size ? node.size[0] : 300;
+            const nodeH = node.size ? node.size[1] : 100;
             
+            // 计算按钮宽度（两个按钮平分空间，留出间距）
+            const btnW = Math.max(80, (nodeW - btnPadding * 2 - btnSpacing) / 2);
+            
+            // 默认Y位置
+            let y = 60;
+            
+            // 根据最后一个widget的位置计算Y坐标
             if (node?.widgets?.length > 0) {
                 const lastWidget = node.widgets[node.widgets.length - 1];
-                y = lastWidget.y + (lastWidget.size ?? 30);
+                if (lastWidget.last_y !== undefined) {
+                    // 使用 last_y（实际渲染位置）
+                    y = lastWidget.last_y + (lastWidget.computeSize?.(nodeW)[1] || 30) + 5;
+                } else {
+                    // 降级使用 y 属性
+                    y = (lastWidget.y || 60) + (lastWidget.computeSize?.(nodeW)[1] || 30) + 5;
+                }
             }
+            
+            // 确保按钮不会超出节点底部（留出底部边距）
+            const maxY = nodeH - btnH - 10;
+            y = Math.min(y, maxY);
+            
+            const xLeft = btnPadding;
+            const xRight = btnPadding + btnW + btnSpacing;
             
             return {
                 xLeft,
                 xRight,
                 y,
                 w: btnW,
+                h: btnH,
             };
+        }
+
+        /**
+         * 绘制单个按钮
+         */
+        function drawButton(ctx, x, y, w, h, text, isPressed, isDisabled, isCooldown) {
+            ctx.save();
+
+            // 阴影效果
+            if (isCooldown || isDisabled) {
+                ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                ctx.shadowBlur = 2;
+                ctx.shadowOffsetY = 1;
+            } else if (isPressed) {
+                ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetY = 1;
+            } else {
+                ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetY = 3;
+            }
+
+            ctx.globalAlpha = 0.95;
+            
+            // 按钮背景色
+            if (isDisabled || isCooldown) {
+                ctx.fillStyle = isDisabled ? "#666666" : "#555555";
+            } else {
+                ctx.fillStyle = isPressed ? "#444444" : "#222222";
+            }
+            
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, 8);
+            ctx.fill();
+
+            // 高光效果（仅在正常状态下）
+            if (!isPressed && !isDisabled && !isCooldown) {
+                ctx.shadowColor = "transparent";
+                ctx.shadowBlur = 0;
+
+                const gradient = ctx.createLinearGradient(x, y, x, y + h / 2);
+                gradient.addColorStop(0, "rgba(255, 255, 255, 0.05)");
+                gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.roundRect(x, y, w, h / 2, [8, 8, 0, 0]);
+                ctx.fill();
+            }
+
+            ctx.restore();
+
+            // 绘制文字
+            ctx.save();
+            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+            ctx.shadowBlur = 3;
+            ctx.shadowOffsetY = 1;
+            ctx.font = "11px Inter, Arial, sans-serif";
+            ctx.fillStyle = (isDisabled || isCooldown) ? "#999999" : "#ffffff";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            const textOffsetY = isPressed ? 1 : 0;
+            ctx.fillText(text, x + w / 2, y + h / 2 + textOffsetY);
+            ctx.restore();
         }
 
         /**
          * 绘制按钮
          */
         nodeType.prototype.onDrawForeground = function (ctx) {
+            // 检查是否应该显示按钮
+            if (!this.shouldShowButtons()) {
+                return;
+            }
+            
             const pos = getButtonPos(this);
-            const btnW = pos.w;
             const currentTime = Date.now();
 
+            // 重置按钮按下状态（超时后）
             const resetButtonState = (button) => {
                 if (button.pressed && currentTime - button.pressTime > 150) {
                     button.pressed = false;
@@ -320,164 +466,61 @@ app.registerExtension({
             resetButtonState(this.buttonStates.right);
 
             // 绘制 "Manual random" 按钮
-            ctx.save();
+            drawButton(
+                ctx,
+                pos.xLeft,
+                pos.y,
+                pos.w,
+                pos.h,
+                "Manual random",
+                this.buttonStates.left.pressed,
+                false,
+                this.buttonCooldown.left
+            );
 
-            // enhance shadow effect
-            if (this.buttonCooldown.left) {
-                ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
-                ctx.shadowBlur = 2;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 1;
-            } else if (this.buttonStates.left.pressed) {
-                ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 1;
-            } else {
-                ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-                ctx.shadowBlur = 8;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 3;
-            }
-
-            ctx.globalAlpha = 0.95;
-            
-            // 如果在冷却期，显示为禁用状态
-            if (this.buttonCooldown.left) {
-                ctx.fillStyle = "#555555ff"; // 冷却期颜色
-            } else {
-                ctx.fillStyle = this.buttonStates.left.pressed ? "#444444ff" : "#222222ff";
-            }
-            
-            ctx.beginPath();
-            ctx.roundRect(pos.xLeft, pos.y, btnW, btnH, 8);
-            ctx.fill();
-
-            // enhance highlight effect
-            if (!this.buttonCooldown.left.pressed && !this.buttonCooldown.left) {
-                ctx.shadowColor = "transparent";
-                ctx.shadowBlur = 0;
-
-                const gradient = ctx.createLinearGradient(pos.xLeft, pos.y, pos.xLeft, pos.y + btnH / 2);
-                gradient.addColorStop(0, "rgba(255, 255, 255, 0.05)");
-                gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.roundRect(pos.xLeft, pos.y, btnW, btnH / 2, [8, 8, 0, 0]);
-                ctx.fill();
-            }
-
-            ctx.restore();
-
-            // text
-            ctx.save();
-            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-            ctx.shadowBlur = 3;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 1;
-            ctx.font = "11px Inter, Arial, sans-serif";
-            ctx.fillStyle = this.buttonCooldown.left ? "#999999ff" : "#fff"; // 冷却期文字颜色稍暗
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-
-            // track button state
-            const textOffsetY = this.buttonStates.left.pressed ? 1 : 0;
-            ctx.fillText("Manual random", pos.xLeft + btnW/2, pos.y + btnH/2 + textOffsetY);
-            ctx.restore();
-
-            /*
-             *绘制 "Pull last seed" 按钮
-             */
-            ctx.save();
-
-            // enhance shadow effect
-            if (this.buttonCooldown.right) {
-                ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
-                ctx.shadowBlur = 2;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 1;
-            } else if (this.buttonStates.right.pressed) {
-                ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 1;
-            } else {
-                ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-                ctx.shadowBlur = 8;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 3;
-            }
-
-            ctx.globalAlpha = 0.95;
-            
-            // 检查是否应该禁用
-            const pullDisabled = this.seedHistory.length < 2 || this.buttonStates.right.isAtEnd || this.buttonCooldown.right;
-            
-            if (pullDisabled) {
-                ctx.fillStyle = "#666666ff";
-            } else {
-                ctx.fillStyle = this.buttonStates.right.pressed ? "#444444ff" : "#222222ff";
-            }
-            
-            ctx.beginPath();
-            ctx.roundRect(pos.xRight, pos.y, btnW, btnH, 8);
-            ctx.fill();
-
-            // enhance highlight effect
-            if (!this.buttonStates.right.pressed && !pullDisabled) {
-                ctx.shadowColor = "transparent";
-                ctx.shadowBlur = 0;
-
-                const gradient = ctx.createLinearGradient(pos.xRight, pos.y, pos.xRight, pos.y + btnH / 2);
-                gradient.addColorStop(0, "rgba(255, 255, 255, 0.05)");
-                gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.roundRect(pos.xRight, pos.y, btnW, btnH / 2, [8, 8, 0, 0]);
-                ctx.fill();
-            }
-
-            ctx.restore();
-
-            // text
-            ctx.save();
-            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-            ctx.shadowBlur = 3;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 1;
-            ctx.font = "11px Inter, Arial, sans-serif";
-            ctx.fillStyle = pullDisabled ? "#999999ff" : "#fff";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-
-            // track button state
-            const textOffsetYRight = this.buttonStates.right.pressed ? 1 : 0;
-            ctx.fillText("Pull last seed", pos.xRight + btnW/2, pos.y + btnH/2 + textOffsetYRight);
-            ctx.restore();
+            // 绘制 "Pull last seed" 按钮
+            const pullDisabled = this.seedHistory.length < 2 || this.buttonStates.right.isAtEnd;
+            drawButton(
+                ctx,
+                pos.xRight,
+                pos.y,
+                pos.w,
+                pos.h,
+                "Pull last seed",
+                this.buttonStates.right.pressed,
+                pullDisabled,
+                this.buttonCooldown.right
+            );
         };
 
         /**
          * 处理鼠标点击事件
          */
         nodeType.prototype.onMouseDown = function(e, mousePos, graphcanvas) {
+            // 检查是否应该响应按钮点击
+            if (!this.shouldShowButtons()) {
+                return false;
+            }
+            
             const btnPos = getButtonPos(this);
             const btnW = btnPos.w;
+            const btnH = btnPos.h;
 
             // "Manual random" 按钮
-            if (mousePos[0] >= btnPos.xLeft && mousePos[0] <= btnPos.xLeft+btnW &&
-                mousePos[1] >= btnPos.y && mousePos[1] <= btnPos.y+btnH) {
+            if (mousePos[0] >= btnPos.xLeft && mousePos[0] <= btnPos.xLeft + btnW &&
+                mousePos[1] >= btnPos.y && mousePos[1] <= btnPos.y + btnH) {
                 
                 // 检查冷却状态
                 if (this.buttonCooldown.left) {
-                    console.log('[Manual Random] Button is in cooldown, ignoring click');
+                
                     return true;
                 }
                 
-                console.log('[Manual Random] Button clicked');
+                
                 
                 // 立即进入冷却期
                 this.buttonCooldown.left = true;
-                console.log('[Manual Random] Button cooldown activated');
+                
                 
                 this.buttonStates.left.pressed = true;
                 this.buttonStates.left.pressTime = Date.now();
@@ -500,7 +543,7 @@ app.registerExtension({
                             // 操作完成后延迟解除冷却
                             setTimeout(() => {
                                 this.buttonCooldown.left = false;
-                                console.log('[Manual Random] Button cooldown released');
+                                    
                             }, 500);
                         });
                     }, 50);
@@ -513,22 +556,22 @@ app.registerExtension({
             }
 
             // "Pull last seed" 按钮
-            if (mousePos[0] >= btnPos.xRight && mousePos[0] <= btnPos.xRight+btnW &&
-                mousePos[1] >= btnPos.y && mousePos[1] <= btnPos.y+btnH) {
+            if (mousePos[0] >= btnPos.xRight && mousePos[0] <= btnPos.xRight + btnW &&
+                mousePos[1] >= btnPos.y && mousePos[1] <= btnPos.y + btnH) {
                 
                 // 检查冷却状态
                 if (this.buttonCooldown.right) {
-                    console.log('[Pull Last Seed] Button is in cooldown, ignoring click');
+                    
                     return true;
                 }
                 
                 if (this.seedHistory.length >= 2 && !this.buttonStates.right.isAtEnd) {
                     
-                    console.log('[Pull Last Seed] Button clicked, history:', this.seedHistory);
+                    
                     
                     // 立即进入冷却期
                     this.buttonCooldown.right = true;
-                    console.log('[Pull Last Seed] Button cooldown activated');
+                    
                     
                     // 设置control_after_generate为fixed
                     const controlWidget = this.widgets.find((w) => w.name === "control_after_generate");
@@ -540,7 +583,7 @@ app.registerExtension({
                     if (seedWidget) {
                         const lastSeed = this.seedHistory[1];
                         
-                        console.log('[Pull Last Seed] Restoring to:', lastSeed);
+                        
 
                         this.isRestoring = true;
                         
@@ -569,7 +612,7 @@ app.registerExtension({
                                 // 操作完成后延迟解除冷却
                                 setTimeout(() => {
                                     this.buttonCooldown.right = false;
-                                    console.log('[Pull Last Seed] Button cooldown released');
+                                    
                                 }, 500);
                             });
                         }, 50);
@@ -581,6 +624,8 @@ app.registerExtension({
 
                 return true;
             }
+
+            return false;
         };
 
         /**
@@ -625,11 +670,20 @@ app.registerExtension({
             
             // 遍历所有节点，找到需要注入seed的节点
             for (const node of app.graph._nodes) {
-                if (node.type === "A1r Seed Control" && node.forcedSeed !== null) {
+                if (node.type === "A1r Seed Control") {
                     const nodeId = node.id;
                     if (prompt.output && prompt.output[nodeId]) {
-                        prompt.output[nodeId].inputs.seed = node.forcedSeed;
-                        console.log('[GraphToPrompt] Injected seed', node.forcedSeed, 'for node', nodeId);
+                        // 优先使用 forcedSeed（来自按钮操作）
+                        if (node.forcedSeed !== null) {
+                            prompt.output[nodeId].inputs.seed = node.forcedSeed;
+                            
+                        } 
+                        // 如果是 fixed 模式，强制使用当前种子值
+                        else if (node.getControlMode() === "fixed") {
+                            const currentSeed = node.getCurrentSeed();
+                            prompt.output[nodeId].inputs.seed = currentSeed;
+                            
+                        }
                     }
                 }
             }

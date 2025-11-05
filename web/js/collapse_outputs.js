@@ -1,4 +1,4 @@
-import { app } from "../../../scripts/app.js";
+import { app } from "/scripts/app.js";
 
 /* 
  * Add the "Folded Output" attribute to the nodes under A1rSpace:

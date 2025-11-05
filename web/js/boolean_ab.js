@@ -1,5 +1,5 @@
 // TODO: Implement the custom logic for the BOOLEAN_AB node. update boolean buttom.
-import { app } from "../../../scripts/app.js";
+import { app } from "/scripts/app.js";
 
 app.registerExtension({
     name: "A1rSpace.Boolean_AB",

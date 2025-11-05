@@ -1,4 +1,10 @@
 # type: ignore
+"""
+Configuration module for ComfyUI A1rSpace extension.
+
+This module provides configuration loading, model lists, numeric widget configs,
+and text cleaning utilities for the A1rSpace nodes.
+"""
 import os
 import re
 import sys
@@ -11,6 +17,15 @@ _config_path = None
 _template_path = None
 
 def load_config():
+    """
+    Load configuration from config.json or fall back to config.json.template.
+    
+    Returns:
+        dict: Configuration data with base_path added
+        
+    Raises:
+        Exception: If configuration file not found or invalid JSON
+    """
     global config_data, _base_path, _config_path, _template_path
 
     if config_data is not None:
@@ -43,13 +58,23 @@ def load_config():
         raise Exception(f"Error loading configuration: {e}")
 
 class AlwaysEqual(str):
+    """
+    Special string class that always returns True for equality comparisons.
+    Used for wildcard type matching in ComfyUI node connections.
+    """
+    
     def __eq__(self, other):
         return True
+    
     def __ne__(self, other):
         return False
 
 # ====== Model config ======
 class ModelList:
+    """
+    Static utility class for retrieving available model lists from ComfyUI folders.
+    """
+    
     @staticmethod
     def ckpt_list():
         if folder_paths is None:
@@ -57,6 +82,47 @@ class ModelList:
         else:
             ckpt_model_list = ["None"] + folder_paths.get_filename_list("checkpoints")
         return ckpt_model_list
+    
+    @staticmethod
+    def vae_list():
+        vaes = folder_paths.get_filename_list("vae")
+        approx_vaes = folder_paths.get_filename_list("vae_approx")
+        sdxl_taesd_enc = False
+        sdxl_taesd_dec = False
+        sd1_taesd_enc = False
+        sd1_taesd_dec = False
+        sd3_taesd_enc = False
+        sd3_taesd_dec = False
+        f1_taesd_enc = False
+        f1_taesd_dec = False
+
+        for v in approx_vaes:
+            if v.startswith("taesd_decoder."):
+                sd1_taesd_dec = True
+            elif v.startswith("taesd_encoder."):
+                sd1_taesd_enc = True
+            elif v.startswith("taesdxl_decoder."):
+                sdxl_taesd_dec = True
+            elif v.startswith("taesdxl_encoder."):
+                sdxl_taesd_enc = True
+            elif v.startswith("taesd3_decoder."):
+                sd3_taesd_dec = True
+            elif v.startswith("taesd3_encoder."):
+                sd3_taesd_enc = True
+            elif v.startswith("taef1_encoder."):
+                f1_taesd_dec = True
+            elif v.startswith("taef1_decoder."):
+                f1_taesd_enc = True
+        if sd1_taesd_dec and sd1_taesd_enc:
+            vaes.append("taesd")
+        if sdxl_taesd_dec and sdxl_taesd_enc:
+            vaes.append("taesdxl")
+        if sd3_taesd_dec and sd3_taesd_enc:
+            vaes.append("taesd3")
+        if f1_taesd_dec and f1_taesd_enc:
+            vaes.append("taef1")
+        vaes.append("pixel_space")
+        return vaes
     
     @staticmethod
     def lora_list():
@@ -117,6 +183,11 @@ def _num_cfg(default, min_val, max_val, step, display=None):
     return cfg
 
 class NumericConfig:
+    """
+    Static utility class providing numeric widget configurations for various node parameters.
+    Includes integer and float configs for KSampler, LoRA, ControlNet, and canvas settings.
+    """
+    
     # ====== Int config ======
 
     # default
@@ -140,6 +211,10 @@ class NumericConfig:
     def batch_size():
         return NumericConfig.default_int(default=1, min_val=1, max_val=16)
 
+    """canvas size"""
+    @staticmethod
+    def canvas_size():
+        return NumericConfig.default_int(default=512, min_val=0, max_val=16384, step=1)
     # ====== Float config ======
 
     # default
@@ -166,7 +241,7 @@ class NumericConfig:
     # scale by
     @staticmethod
     def upscale_scaleby():
-        return NumericConfig.default_float(default=1.5, min_val=0.1, max_val=2.0, step=0.1)
+        return NumericConfig.default_float(default=1.5, min_val=0.1, max_val=8.0, step=0.1)
     
     """lora"""
     # strength
@@ -198,7 +273,7 @@ class NumericConfig:
     # strength
     @staticmethod
     def cn_strength():
-        return NumericConfig.default_float(max_val=1.0, step=0.1)
+        return NumericConfig.default_float(default=1.0, max_val=10.0, step=0.05)
     
     # percent
     @staticmethod
@@ -219,37 +294,41 @@ class NumericConfig:
 
     @staticmethod
     def size_list():
-        return [
-            "704x1408 (0.5)",
-            "704x1344 (0.52)",
-            "768x1344 (0.57)",
-            "768x1280 (0.6)",
-            "832x1216 (0.68)",
-            "832x1152 (0.72)",
-            "896x1152 (0.78)",
-            "896x1088 (0.82)",
-            "960x1088 (0.88)",
-            "960x1024 (0.94)",
-            "1024x1024 (1.0)",
-            "1024x960 (1.07)",
-            "1088x960 (1.13)",
-            "1088x896 (1.21)",
-            "1152x896 (1.29)",
-            "1152x832 (1.38)",
-            "1216x832 (1.46)",
-            "1280x768 (1.67)",
-            "1344x768 (1.75)",
-            "1344x704 (1.91)",
-            "1408x704 (2.0)",
-            "1472x704 (2.09)",
-            "1536x640 (2.4)",
-            "1600x640 (2.5)",
-            "1664x576 (2.89)",
-            "1728x576 (3.0)",
-        ]
+        sizeList = {
+            "Square 512": (512, 512),
+            "Square 768": (768, 768),
+            "Square 1024": (1024, 1024),
+            "Portrait 512x768": (512, 768),
+            "Portrait 768x1024": (768, 1024),
+            "Portrait 1024x1536": (1024, 1536),
+            "Landscape 768x512": (768, 512),
+            "Landscape 1024x768": (1024, 768),
+            "Landscape 1536x1024": (1536, 1024),
+            "16:9 1920x1080": (1920, 1080),
+            "16:9 1280x720": (1280, 720),
+            "9:16 1080x1920": (1080, 1920),
+            "4:3 1024x768": (1024, 768),
+            "3:4 768x1024": (768, 1024),
+        }
+        return sizeList
+    
+    @staticmethod
+    def default_config():
+        defConfig = {
+            "canvas_max": 2048,
+            "canvas_min": 512,
+            "canvas_step": 128,
+            "default_width": 1024,
+            "default_height": 1024,
+        }
+        return defConfig
 
 # ====== Upscale methods ======
 class UpscaleMethods:
+    """
+    Available upscale methods for image and latent upscaling operations.
+    """
+    
     IMAGE_METHODS = ["nearest-exact", "bilinear", "area", "bicubic", "lanczos"]
     LATENT_METHODS = ["nearest-exact", "bilinear", "area", "bicubic", "bislerp"]
     DEFAULT = "nearest-exact"

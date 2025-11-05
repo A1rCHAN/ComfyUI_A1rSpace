@@ -1,11 +1,11 @@
-import { app } from "../../../scripts/app.js";
-import { ComfyWidgets } from "../../../scripts/widgets.js";
+import { app } from "/scripts/app.js";
+import { ComfyWidgets } from "/scripts/widgets.js";
 
 /*
  * Display entered text with Read-Only type, have a clipboard copy button.
  */
 app.registerExtension({
-    name: "A1rSpace.Text_Show",
+    name: "A1rSpace.TextShow",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         if (nodeData.name !== "A1r Text Show") return;
 

@@ -1,32 +1,30 @@
-import { app } from "../../scripts/app.js";
-
 // Tools for the UI
 import "./js/collapse_outputs.js";
-import "./js/slider_widget_style.js";
 import "./js/size_fixer.js";
+import "./js/slider_widget_style.js";
+import "./js/bypass_disabled.js";
 
 // Nodes extensions
-import "./js/ab_checkpoint.js";
-import "./js/ksampler_controlpad_advanced.js";
-import "./js/lora_controlpad.js";
-import "./js/lora_config.js";
-import "./js/seed_control.js";
-import "./js/save_previewimage.js";
-import "./js/text_show.js";
-import "./js/slider_custom.js";
 import "./js/boolean_a_b.js";
 import "./js/boolean_ab.js";
-import "./js/boolean_to_int.js";
+import "./js/collector_nodemode.js";
+import "./js/collector_widget.js";
+import "./js/custom_boolean.js";
+import "./js/custom_slider.js";
+import "./js/image_filter.js";
+import "./js/image_save_preview.js";
+import "./js/ksampler_unity.js";
+import "./js/lora_config_ad.js";
+import "./js/lora_config.js";
+import "./js/lorastack_readonly.js";
+import "./js/seed_control.js";
+import "./js/size_canvas.js";
+import "./js/text_show.js";
+import "./js/transform_latentencode.js";
+import "./js/transform_upscale.js";
+import "./js/transform_vaedecode.js";
+
+// testing nodes
+import "./js/draggable_list.js";
 
 console.log("[A1rSpace] Extensions Loaded.");
-
-/*
-app.registerExtension({
-    name: "A1rSpace.Core",
-
-    async setup() {
-        // Any global setup
-        // On plan
-    }
-});
-*/

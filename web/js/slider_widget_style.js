@@ -1,5 +1,45 @@
-import { app } from "../../../scripts/app.js";
-import { $el } from "../../../scripts/ui.js";
+import { app } from "/scripts/app.js";
+
+/*
+ * Helper function to create DOM elements (replaces deprecated $el import)
+ */
+function $el(tag, attrs = {}, children = []) {
+    const element = document.createElement(tag);
+    
+    // Apply attributes
+    if (attrs.style) {
+        Object.assign(element.style, attrs.style);
+        delete attrs.style;
+    }
+    
+    if (attrs.textContent !== undefined) {
+        element.textContent = attrs.textContent;
+        delete attrs.textContent;
+    }
+    
+    // Apply other attributes
+    for (const key in attrs) {
+        if (key.startsWith('on')) {
+            // Event listeners
+            const eventName = key.substring(2).toLowerCase();
+            element.addEventListener(eventName, attrs[key]);
+        } else {
+            element.setAttribute(key, attrs[key]);
+        }
+    }
+    
+    // Append children
+    if (!Array.isArray(children)) {
+        children = [children];
+    }
+    for (const child of children) {
+        if (child) {
+            element.appendChild(child);
+        }
+    }
+    
+    return element;
+}
 
 /*
  * Global slider widget style adjustments for whitelisted nodes.
@@ -13,17 +53,15 @@ app.registerExtension({
             "A1r KSampler Config",
             "A1r KSampler Config Values",
             "A1r KSampler Config Values Lite",
-
             "A1r LoRA Config",
-
             "A1r ControlNet Config",
         ];
 
         if (!NODE_WHITELIST.includes(nodeData.name)) return;
 
-        const onA1rNodeCreated = nodeType.prototype.onNodeCreated;
+        const originalOnNodeCreated = nodeType.prototype.onNodeCreated;
         nodeType.prototype.onNodeCreated = function () {
-            const result = onA1rNodeCreated ? onA1rNodeCreated.apply(this, arguments) : undefined;
+            const result = originalOnNodeCreated ? originalOnNodeCreated.apply(this, arguments) : undefined;
 
             // Collection to store all slider states and cleanup handlers
             const sliderStates = [];
@@ -39,20 +77,35 @@ app.registerExtension({
 
             // Hide original numeric widgets completely
             numericWidgets.forEach(widget => {
-                // Mark as converted widget to prevent ComfyUI from rendering it
-                Object.defineProperty(widget, "type", {
-                    get: () => "converted-widget",
-                    set: () => {},
-                });
-                
-                // Set size to zero to remove from layout
-                widget.computeSize = () => [0, -4];
-                
-                // Hide the widget element if it exists
-                widget.hidden = true;
-            });
-            
+                if (!widget) return;
 
+                widget.type = "hidden";
+                widget.computeSize = () => [0, -4];
+                widget.hidden = true;
+
+                if (typeof widget.serialize !== "function") {
+                    widget.serializeValue = () => widget.value;
+                }
+            });
+
+            const namesToRemove = numericWidgets.map(w => w.name);
+            const removeInputByNames = (names) => {
+                if (!Array.isArray(this.inputs)) return;
+                for (let i = this.inputs.length - 1; i >= 0; i--) {
+                    const inp = this.inputs[i];
+                    if (names.includes(inp.name)) {
+                        this.removeInput?.(i);
+                    }
+                }
+            };
+            removeInputByNames(namesToRemove);
+
+            const originalOnConfigure = this.onConfigure;
+            this.onConfigure = function() {
+                const r = originalOnConfigure?.apply(this, arguments);
+                removeInputByNames(namesToRemove);
+                return r;
+            };
 
             // Create a slider for each numeric widget
             numericWidgets.forEach((widget, index) => {
