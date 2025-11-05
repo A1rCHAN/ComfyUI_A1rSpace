@@ -1,0 +1,1823 @@
+{
+  "A1r KSampler Config": {
+    "display_name": "KSampler Config Pad",
+    "description": "Configuration pad for KSampler parameters including sampler, scheduler, steps, CFG, and denoise strength.",
+    "inputs": {
+      "sampler_name": {
+        "name": "Sampler",
+        "tooltip": "The sampling algorithm to use"
+      },
+      "scheduler": {
+        "name": "Scheduler",
+        "tooltip": "The noise scheduler to use"
+      },
+      "steps": {
+        "name": "Steps",
+        "tooltip": "Number of sampling steps"
+      },
+      "cfg": {
+        "name": "CFG",
+        "tooltip": "Classifier-free guidance scale"
+      },
+      "denoise": {
+        "name": "Denoise",
+        "tooltip": "Denoising strength (0.0-1.0)"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Sampler",
+        "tooltip": "Selected sampler algorithm"
+      },
+      "1": {
+        "name": "Scheduler",
+        "tooltip": "Selected scheduler"
+      },
+      "2": {
+        "name": "Steps",
+        "tooltip": "Number of steps"
+      },
+      "3": {
+        "name": "CFG",
+        "tooltip": "CFG value"
+      },
+      "4": {
+        "name": "Denoise",
+        "tooltip": "Denoise strength"
+      }
+    }
+  },
+  "A1r ControlNet Config": {
+    "display_name": "ControlNet Config Pad",
+    "description": "Configuration pad for ControlNet parameters including model name, strength, and start/end percentages.",
+    "inputs": {
+      "control_net_name": {
+        "name": "ControlNet Name",
+        "tooltip": "Select ControlNet model"
+      },
+      "strength": {
+        "name": "Strength",
+        "tooltip": "ControlNet effect strength"
+      },
+      "start_percent": {
+        "name": "Start Percent",
+        "tooltip": "Starting percentage of effect"
+      },
+      "end_percent": {
+        "name": "End Percent",
+        "tooltip": "Ending percentage of effect"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "CN Name",
+        "tooltip": "ControlNet name"
+      },
+      "1": {
+        "name": "Strength",
+        "tooltip": "ControlNet strength"
+      },
+      "2": {
+        "name": "Start",
+        "tooltip": "Start percentage"
+      },
+      "3": {
+        "name": "End",
+        "tooltip": "End percentage"
+      }
+    }
+  },
+  "A1r Seed Control": {
+    "display_name": "Seed Control",
+    "description": "Seed control node with UI display for tracking and managing seed values in workflows.",
+    "inputs": {
+      "seed": {
+        "name": "Seed",
+        "tooltip": "Random seed value for reproducibility"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Seed",
+        "tooltip": "Output seed value"
+      }
+    }
+  },
+  "A1r Widget Collector": {
+    "display_name": "Widget Collector",
+    "description": "Utility node for collecting and storing widget values in workflow metadata."
+  },
+  "A1r Node Mode Collector": {
+    "display_name": "Node Mode Collector",
+    "description": "Collector node for mode trigger signals in workflow control systems.",
+    "inputs": {
+      "trigger": {
+        "name": "Trigger",
+        "tooltip": "Trigger signal input"
+      }
+    }
+  },
+  "A1r Node Mode Console": {
+    "display_name": "Node Mode Console",
+    "description": "Console node that generates trigger signals for mode control workflows.",
+    "outputs": {
+      "0": {
+        "name": "Trigger",
+        "tooltip": "Trigger signal output"
+      }
+    }
+  },
+  "A1r Mode Relay": {
+    "display_name": "Mode Relay",
+    "description": "Relay node for passing trigger signals through workflow.",
+    "inputs": {
+      "trigger": {
+        "name": "Trigger",
+        "tooltip": "Input trigger signal"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Trigger",
+        "tooltip": "Output trigger signal"
+      }
+    }
+  },
+  "A1r Mode Inverter": {
+    "display_name": "Mode Inverter",
+    "description": "Inverter node that inverts boolean trigger signals.",
+    "inputs": {
+      "trigger": {
+        "name": "Trigger",
+        "tooltip": "Input trigger to invert"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Trigger",
+        "tooltip": "Inverted trigger signal"
+      }
+    }
+  },
+  "A1r Checkpoint Picker": {
+    "display_name": "Checkpoint Picker",
+    "description": "Pick a checkpoint from the available checkpoint list.",
+    "inputs": {
+      "ckpt_name": {
+        "name": "Checkpoint",
+        "tooltip": "Select checkpoint model"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Checkpoint Name",
+        "tooltip": "Selected checkpoint name"
+      }
+    }
+  },
+  "A1r Upscale Method Picker": {
+    "display_name": "Upscale Method Picker",
+    "description": "Pick an upscale method from the available methods list.",
+    "inputs": {
+      "upscale_method": {
+        "name": "Upscale Method",
+        "tooltip": "Select upscale interpolation method"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Method",
+        "tooltip": "Selected upscale method"
+      }
+    }
+  },
+  "A1r Size Picker": {
+    "display_name": "Size Picker",
+    "description": "Pick image dimensions from predefined size presets.",
+    "inputs": {
+      "size_preset": {
+        "name": "Size Preset",
+        "tooltip": "Select size preset"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Width",
+        "tooltip": "Image width"
+      },
+      "1": {
+        "name": "Height",
+        "tooltip": "Image height"
+      }
+    }
+  },
+  "A1r Size Canvas": {
+    "display_name": "Size Canvas",
+    "description": "Define custom canvas size with width and height.",
+    "inputs": {
+      "width": {
+        "name": "Width",
+        "tooltip": "Canvas width in pixels"
+      },
+      "height": {
+        "name": "Height",
+        "tooltip": "Canvas height in pixels"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Width",
+        "tooltip": "Output width"
+      },
+      "1": {
+        "name": "Height",
+        "tooltip": "Output height"
+      }
+    }
+  },
+  "A1r KSampler Config Values": {
+    "display_name": "KSampler Config Pad (Lite)",
+    "description": "Lightweight configuration pad for KSampler numerical values (steps, CFG, denoise).",
+    "inputs": {
+      "steps": {
+        "name": "Steps",
+        "tooltip": "Number of sampling steps"
+      },
+      "cfg": {
+        "name": "CFG",
+        "tooltip": "Classifier-free guidance scale"
+      },
+      "denoise": {
+        "name": "Denoise",
+        "tooltip": "Denoising strength (0.0-1.0)"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Steps",
+        "tooltip": "Number of steps"
+      },
+      "1": {
+        "name": "CFG",
+        "tooltip": "CFG value"
+      },
+      "2": {
+        "name": "Denoise",
+        "tooltip": "Denoise strength"
+      }
+    }
+  },
+  "A1r LoRA Config": {
+    "display_name": "LoRA Config Pad",
+    "description": "Configuration pad for single LoRA with dynamic strength range and stackable output.",
+    "inputs": {
+      "lora_name": {
+        "name": "LoRA Name",
+        "tooltip": "Select LoRA model to apply"
+      },
+      "model_strength": {
+        "name": "Model Strength",
+        "tooltip": "Strength of LoRA effect on the model"
+      },
+      "clip_strength": {
+        "name": "CLIP Strength",
+        "tooltip": "Strength of LoRA effect on CLIP"
+      },
+      "range": {
+        "name": "Range",
+        "tooltip": "Strength adjustment range",
+        "options": {
+          "mini": "Mini (-0.5 to 0.5)",
+          "standard": "Standard (-1.0 to 1.0)",
+          "extended": "Extended (-1.5 to 1.5)",
+          "wide": "Wide (-2.0 to 2.0)",
+          "large": "Large (-5.0 to 5.0)"
+        }
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "Input LoRA stack to append to"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "LoRA Stack",
+        "tooltip": "Output LoRA stack"
+      },
+      "1": {
+        "name": "Name",
+        "tooltip": "LoRA name"
+      },
+      "2": {
+        "name": "Model",
+        "tooltip": "Model strength"
+      },
+      "3": {
+        "name": "CLIP",
+        "tooltip": "CLIP strength"
+      }
+    }
+  },
+  "A1r LoRA Config Advance": {
+    "display_name": "LoRA Config Pad AD",
+    "description": "Advanced configuration pad for up to 6 LoRAs with individual enable/disable switches.",
+    "inputs": {
+      "enable_1": {
+        "name": "Enable LoRA 1",
+        "tooltip": "Enable/disable first LoRA"
+      },
+      "lora_name_1": {
+        "name": "LoRA Name 1",
+        "tooltip": "First LoRA model"
+      },
+      "strength_1": {
+        "name": "Strength 1",
+        "tooltip": "Strength for first LoRA"
+      },
+      "enable_2": {
+        "name": "Enable LoRA 2",
+        "tooltip": "Enable/disable second LoRA"
+      },
+      "lora_name_2": {
+        "name": "LoRA Name 2",
+        "tooltip": "Second LoRA model"
+      },
+      "strength_2": {
+        "name": "Strength 2",
+        "tooltip": "Strength for second LoRA"
+      },
+      "enable_3": {
+        "name": "Enable LoRA 3",
+        "tooltip": "Enable/disable third LoRA"
+      },
+      "lora_name_3": {
+        "name": "LoRA Name 3",
+        "tooltip": "Third LoRA model"
+      },
+      "strength_3": {
+        "name": "Strength 3",
+        "tooltip": "Strength for third LoRA"
+      },
+      "enable_4": {
+        "name": "Enable LoRA 4",
+        "tooltip": "Enable/disable fourth LoRA"
+      },
+      "lora_name_4": {
+        "name": "LoRA Name 4",
+        "tooltip": "Fourth LoRA model"
+      },
+      "strength_4": {
+        "name": "Strength 4",
+        "tooltip": "Strength for fourth LoRA"
+      },
+      "enable_5": {
+        "name": "Enable LoRA 5",
+        "tooltip": "Enable/disable fifth LoRA"
+      },
+      "lora_name_5": {
+        "name": "LoRA Name 5",
+        "tooltip": "Fifth LoRA model"
+      },
+      "strength_5": {
+        "name": "Strength 5",
+        "tooltip": "Strength for fifth LoRA"
+      },
+      "enable_6": {
+        "name": "Enable LoRA 6",
+        "tooltip": "Enable/disable sixth LoRA"
+      },
+      "lora_name_6": {
+        "name": "LoRA Name 6",
+        "tooltip": "Sixth LoRA model"
+      },
+      "strength_6": {
+        "name": "Strength 6",
+        "tooltip": "Strength for sixth LoRA"
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "Input LoRA stack to append to"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "LoRA Stack",
+        "tooltip": "Combined LoRA stack output"
+      }
+    }
+  },
+  "A1r Unity KSampler": {
+    "display_name": "Unity KSampler",
+    "description": "Unified sampling node with three modes: Text to Image, Image to Image, and Latent Upscale",
+    "inputs": {
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Select operation mode",
+        "options": {
+          "text to image": "Text to Image",
+          "image to image": "Image to Image",
+          "latent upscale": "Latent Upscale"
+        }
+      },
+      "model": {
+        "name": "Model",
+        "tooltip": "The model to use for sampling"
+      },
+      "positive": {
+        "name": "Positive",
+        "tooltip": "Positive conditioning prompt"
+      },
+      "negative": {
+        "name": "Negative",
+        "tooltip": "Negative conditioning prompt"
+      },
+      "sampler": {
+        "name": "Sampler",
+        "tooltip": "Sampling algorithm"
+      },
+      "scheduler": {
+        "name": "Scheduler",
+        "tooltip": "Noise scheduler"
+      },
+      "seed": {
+        "name": "Seed",
+        "tooltip": "Random seed for reproducibility"
+      },
+      "steps": {
+        "name": "Steps",
+        "tooltip": "Number of sampling steps"
+      },
+      "cfg": {
+        "name": "CFG",
+        "tooltip": "Classifier-free guidance scale"
+      },
+      "denoise": {
+        "name": "Denoise",
+        "tooltip": "Denoising strength (used in image to image mode)"
+      },
+      "width": {
+        "name": "Width",
+        "tooltip": "Width of generated image (text to image mode)"
+      },
+      "height": {
+        "name": "Height",
+        "tooltip": "Height of generated image (text to image mode)"
+      },
+      "batch_size": {
+        "name": "Batch Size",
+        "tooltip": "Number of images to generate (text to image mode)"
+      },
+      "pixels": {
+        "name": "Pixels",
+        "tooltip": "Input image (image to image mode)"
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "VAE for encoding (image to image mode)"
+      },
+      "latent": {
+        "name": "Latent",
+        "tooltip": "Input latent (latent upscale mode)"
+      },
+      "upscale_method": {
+        "name": "Upscale Method",
+        "tooltip": "Upscaling interpolation method"
+      },
+      "upscale_by": {
+        "name": "Upscale By",
+        "tooltip": "Upscale factor multiplier"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Latent",
+        "tooltip": "Generated latent image"
+      }
+    }
+  },
+  "A1r Sampler Picker": {
+    "display_name": "Sampler Picker",
+    "description": "Select sampler algorithm and noise scheduler separately",
+    "inputs": {
+      "sampler_name": {
+        "name": "Sampler",
+        "tooltip": "The sampling algorithm to use"
+      },
+      "scheduler": {
+        "name": "Scheduler",
+        "tooltip": "The noise scheduler to use"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Sampler",
+        "tooltip": "Selected sampler"
+      },
+      "1": {
+        "name": "Scheduler",
+        "tooltip": "Selected scheduler"
+      }
+    }
+  },
+  "A1r Text Box": {
+    "display_name": "Text Box",
+    "description": "Basic text input node for entering multiline text strings",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Enter your text here"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Text",
+        "tooltip": "Output text string"
+      }
+    }
+  },
+  "A1r Text Show": {
+    "display_name": "Text Show",
+    "description": "Display the input text with copy button",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Text to display"
+      }
+    }
+  },
+  "A1r Text Merge": {
+    "display_name": "Text Merge",
+    "description": "Merge up to four text inputs with a custom delimiter, filtering empty strings",
+    "inputs": {
+      "separator": {
+        "name": "Separator",
+        "tooltip": "Delimiter to use between text segments"
+      },
+      "text1": {
+        "name": "Text 1",
+        "tooltip": "First text input"
+      },
+      "text2": {
+        "name": "Text 2",
+        "tooltip": "Second text input"
+      },
+      "text3": {
+        "name": "Text 3",
+        "tooltip": "Third text input"
+      },
+      "text4": {
+        "name": "Text 4",
+        "tooltip": "Fourth text input"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Merged Text",
+        "tooltip": "Combined text output"
+      }
+    }
+  },
+  "A1r Save Preview Image": {
+    "display_name": "Save/Preview Image",
+    "description": "Save and preview images with optional saving control",
+    "inputs": {
+      "images": {
+        "name": "Images",
+        "tooltip": "Images to save/preview"
+      },
+      "enable_save": {
+        "name": "Enable Save",
+        "tooltip": "Toggle saving to disk"
+      },
+      "filename_prefix": {
+        "name": "Filename Prefix",
+        "tooltip": "Prefix for saved files"
+      }
+    }
+  },
+  "A1r Image Filter": {
+    "display_name": "Image Filter",
+    "description": "Filter images with a popup dialog for manual selection",
+    "inputs": {
+      "images": {
+        "name": "Images",
+        "tooltip": "Images to filter"
+      },
+      "timeout": {
+        "name": "Timeout",
+        "tooltip": "Time to wait for user selection (seconds)"
+      },
+      "on_timeout": {
+        "name": "On Timeout",
+        "tooltip": "Action when timeout occurs",
+        "options": {
+          "pass": "Pass All",
+          "block": "Block All",
+          "random": "Random Selection"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image",
+        "tooltip": "Filtered images"
+      },
+      "1": {
+        "name": "Latent",
+        "tooltip": "Latent representation"
+      }
+    }
+  },
+  "A1r Checkpoint Loader": {
+    "display_name": "Checkpoint Loader",
+    "description": "Load checkpoint with optional custom VAE override.",
+    "inputs": {
+      "ckpt_name": {
+        "name": "Checkpoint",
+        "tooltip": "Select checkpoint model"
+      },
+      "vae_name": {
+        "name": "VAE",
+        "tooltip": "Select VAE model (None = use embedded VAE)"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Loaded model"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "CLIP model"
+      },
+      "2": {
+        "name": "VAE",
+        "tooltip": "VAE model"
+      }
+    }
+  },
+  "A1r Double CheckpointLoader": {
+    "display_name": "Double Checkpoint Loader",
+    "description": "Load two checkpoints simultaneously with optional second checkpoint enable/disable.",
+    "inputs": {
+      "ckpt_name_a": {
+        "name": "Checkpoint A",
+        "tooltip": "First checkpoint model"
+      },
+      "ckpt_name_b": {
+        "name": "Checkpoint B",
+        "tooltip": "Second checkpoint model"
+      },
+      "vae_name": {
+        "name": "VAE",
+        "tooltip": "Shared VAE model (None = use embedded VAE)"
+      },
+      "enable_second": {
+        "name": "Enable Second",
+        "tooltip": "Enable/disable second checkpoint"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model A",
+        "tooltip": "First model"
+      },
+      "1": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP"
+      },
+      "2": {
+        "name": "VAE A",
+        "tooltip": "First VAE"
+      },
+      "3": {
+        "name": "Model B",
+        "tooltip": "Second model"
+      },
+      "4": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP"
+      },
+      "5": {
+        "name": "VAE B",
+        "tooltip": "Second VAE"
+      }
+    }
+  },
+  "A1r Separate CheckpointLoader": {
+    "display_name": "Separate Checkpoint Loader",
+    "description": "Switch between two checkpoints based on separate_mode boolean.",
+    "inputs": {
+      "ckpt_name_a": {
+        "name": "Checkpoint A",
+        "tooltip": "First checkpoint option"
+      },
+      "ckpt_name_b": {
+        "name": "Checkpoint B",
+        "tooltip": "Second checkpoint option"
+      },
+      "vae_name": {
+        "name": "VAE",
+        "tooltip": "VAE model (None = use embedded)"
+      },
+      "separate_mode": {
+        "name": "Mode",
+        "tooltip": "Switch between Model A and Model B"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Selected model"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "CLIP model"
+      },
+      "2": {
+        "name": "VAE",
+        "tooltip": "VAE model"
+      }
+    }
+  },
+  "A1r Six LoRA Loader": {
+    "display_name": "Six LoRA Loader",
+    "description": "Load up to six LoRAs with individual enable/disable switches and strength controls.",
+    "inputs": {
+      "model": {
+        "name": "Model",
+        "tooltip": "Input model"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "Input CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "Optional LoRA stack input"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Model with LoRAs applied"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "CLIP with LoRAs applied"
+      }
+    }
+  },
+  "A1r Six LoRA Loader 2P": {
+    "display_name": "Six LoRA Loader (2P)",
+    "description": "Load up to six LoRAs for two model/CLIP pairs with enable/disable switches.",
+    "inputs": {
+      "model": {
+        "name": "Model",
+        "tooltip": "First model input"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "First CLIP input"
+      },
+      "model_b": {
+        "name": "Model B",
+        "tooltip": "Second model input"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP input"
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "Optional LoRA stack input"
+      },
+      "enable_second": {
+        "name": "Enable Second",
+        "tooltip": "Enable/disable second model processing"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model A",
+        "tooltip": "First model with LoRAs"
+      },
+      "1": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP with LoRAs"
+      },
+      "2": {
+        "name": "Model B",
+        "tooltip": "Second model with LoRAs"
+      },
+      "3": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP with LoRAs"
+      }
+    }
+  },
+  "A1r Six LoRA Loader Separate": {
+    "display_name": "Six LoRA Loader (Separate)",
+    "description": "Load up to six LoRAs with mode switching between two model/CLIP pairs.",
+    "inputs": {
+      "model": {
+        "name": "Model A",
+        "tooltip": "First model input"
+      },
+      "clip": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP input"
+      },
+      "model_b": {
+        "name": "Model B",
+        "tooltip": "Second model input"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP input"
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "Optional LoRA stack input"
+      },
+      "separate_mode": {
+        "name": "Mode",
+        "tooltip": "Switch between Model A and Model B"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Selected model with LoRAs"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "Selected CLIP with LoRAs"
+      }
+    }
+  },
+  "A1r Stack LoRA Loader": {
+    "display_name": "Stack LoRA Loader",
+    "description": "Apply LoRA stack to model and CLIP without individual widget controls.",
+    "inputs": {
+      "model": {
+        "name": "Model",
+        "tooltip": "Input model"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "Input CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "LoRA stack to apply"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Model with LoRAs applied"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "CLIP with LoRAs applied"
+      }
+    }
+  },
+  "A1r Stack LoRA Loader 2P": {
+    "display_name": "Stack LoRA Loader (2P)",
+    "description": "Apply LoRA stack to two model/CLIP pairs with enable/disable for second pair.",
+    "inputs": {
+      "model": {
+        "name": "Model A",
+        "tooltip": "First model"
+      },
+      "clip": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP"
+      },
+      "model_b": {
+        "name": "Model B",
+        "tooltip": "Second model"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "LoRA stack to apply"
+      },
+      "enable_second": {
+        "name": "Enable Second",
+        "tooltip": "Enable/disable second pair"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model A",
+        "tooltip": "First model with LoRAs"
+      },
+      "1": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP with LoRAs"
+      },
+      "2": {
+        "name": "Model B",
+        "tooltip": "Second model with LoRAs"
+      },
+      "3": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP with LoRAs"
+      }
+    }
+  },
+  "A1r Stack LoRA Loader Separate": {
+    "display_name": "Stack LoRA Loader (Separate)",
+    "description": "Apply LoRA stack with mode switching between two model/CLIP pairs.",
+    "inputs": {
+      "model": {
+        "name": "Model A",
+        "tooltip": "First model"
+      },
+      "clip": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP"
+      },
+      "model_b": {
+        "name": "Model B",
+        "tooltip": "Second model"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA Stack",
+        "tooltip": "LoRA stack to apply"
+      },
+      "separate_mode": {
+        "name": "Mode",
+        "tooltip": "Switch between pairs"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Selected model with LoRAs"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "Selected CLIP with LoRAs"
+      }
+    }
+  },
+  "A1r ControlNet Loader": {
+    "display_name": "ControlNet Loader",
+    "description": "Load and apply ControlNet model to conditioning with strength and timing controls.",
+    "inputs": {
+      "control_net_name": {
+        "name": "ControlNet",
+        "tooltip": "Select ControlNet model"
+      },
+      "conditioning": {
+        "name": "Conditioning",
+        "tooltip": "Input conditioning"
+      },
+      "image": {
+        "name": "Image",
+        "tooltip": "Control image"
+      },
+      "strength": {
+        "name": "Strength",
+        "tooltip": "ControlNet strength"
+      },
+      "start_percent": {
+        "name": "Start %",
+        "tooltip": "Start percentage"
+      },
+      "end_percent": {
+        "name": "End %",
+        "tooltip": "End percentage"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Conditioning",
+        "tooltip": "Output conditioning with ControlNet"
+      }
+    }
+  },
+  "A1r Text Merge with Clip Encode": {
+    "display_name": "Text Merge with Clip Encode",
+    "description": "Merge multiple text inputs and encode them with CLIP in one step.",
+    "inputs": {
+      "text_a": {
+        "name": "Text A",
+        "tooltip": "First text input"
+      },
+      "text_b": {
+        "name": "Text B",
+        "tooltip": "Second text input"
+      },
+      "text_c": {
+        "name": "Text C",
+        "tooltip": "Third text input"
+      },
+      "text_d": {
+        "name": "Text D",
+        "tooltip": "Fourth text input"
+      },
+      "delimiter": {
+        "name": "Delimiter",
+        "tooltip": "Text separator"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "CLIP encoder"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Text",
+        "tooltip": "Merged text"
+      },
+      "1": {
+        "name": "Conditioning",
+        "tooltip": "CLIP conditioning"
+      }
+    }
+  },
+  "A1r Text Translate": {
+    "display_name": "Text Translate",
+    "description": "Translate text between Chinese and English using Baidu or DeepSeek APIs.",
+    "inputs": {
+      "platform": {
+        "name": "Platform",
+        "tooltip": "Translation service",
+        "options": {
+          "Baidu": "Baidu Translate",
+          "DeepSeek": "DeepSeek API"
+        }
+      },
+      "from_lang": {
+        "name": "From Language",
+        "tooltip": "Source language"
+      },
+      "to_lang": {
+        "name": "To Language",
+        "tooltip": "Target language"
+      },
+      "text": {
+        "name": "Text",
+        "tooltip": "Text to translate"
+      },
+      "enable_translate": {
+        "name": "Enable Translate",
+        "tooltip": "Toggle translation on/off"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "Optional CLIP encoder"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Text",
+        "tooltip": "Translated text"
+      },
+      "1": {
+        "name": "Conditioning",
+        "tooltip": "CLIP conditioning"
+      }
+    }
+  },
+  "A1r Text Translate Merge with Clip Encode": {
+    "display_name": "Text Translate Merge with Clip Encode",
+    "description": "Merge 4 texts with independent translation switches and encode with CLIP.",
+    "inputs": {
+      "platform": {
+        "name": "Platform",
+        "tooltip": "Translation service"
+      },
+      "to_lang": {
+        "name": "To Language",
+        "tooltip": "Target language"
+      },
+      "text_a": {
+        "name": "Text A",
+        "tooltip": "First text"
+      },
+      "translate_a": {
+        "name": "Translate A",
+        "tooltip": "Enable translation for A"
+      },
+      "text_b": {
+        "name": "Text B",
+        "tooltip": "Second text"
+      },
+      "translate_b": {
+        "name": "Translate B",
+        "tooltip": "Enable translation for B"
+      },
+      "text_c": {
+        "name": "Text C",
+        "tooltip": "Third text"
+      },
+      "translate_c": {
+        "name": "Translate C",
+        "tooltip": "Enable translation for C"
+      },
+      "text_d": {
+        "name": "Text D",
+        "tooltip": "Fourth text"
+      },
+      "translate_d": {
+        "name": "Translate D",
+        "tooltip": "Enable translation for D"
+      },
+      "delimiter": {
+        "name": "Delimiter",
+        "tooltip": "Text separator"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "CLIP encoder"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Text",
+        "tooltip": "Merged translated text"
+      },
+      "1": {
+        "name": "Conditioning",
+        "tooltip": "CLIP conditioning"
+      }
+    }
+  },
+  "A1r JoyTag TextBox": {
+    "display_name": "JoyTag Text Box",
+    "description": "Extract image tags using the JoyTag vision model for auto-tagging images.",
+    "inputs": {
+      "image": {
+        "name": "Image",
+        "tooltip": "Input image to tag"
+      },
+      "text": {
+        "name": "Text",
+        "tooltip": "Additional text input"
+      },
+      "apply_tag": {
+        "name": "Apply Tag",
+        "tooltip": "Enable/disable JoyTag processing"
+      },
+      "threshold": {
+        "name": "Threshold",
+        "tooltip": "Tag confidence threshold"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Text",
+        "tooltip": "Generated or input text"
+      }
+    }
+  },
+  "A1r Int to Boolean": {
+    "display_name": "Int to Boolean",
+    "description": "Convert an integer to a boolean value (0=False, non-zero=True).",
+    "inputs": {
+      "input_int": {
+        "name": "Integer",
+        "tooltip": "Input integer value"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Boolean",
+        "tooltip": "Output boolean"
+      }
+    }
+  },
+  "A1r Simple Boolean": {
+    "display_name": "Simple Boolean",
+    "description": "A simple boolean pass-through node for workflow control.",
+    "inputs": {
+      "enable": {
+        "name": "Enable",
+        "tooltip": "Boolean value"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Boolean",
+        "tooltip": "Output boolean"
+      }
+    }
+  },
+  "A1r Boolean AB": {
+    "display_name": "Boolean A&B",
+    "description": "Boolean toggle ensuring at least one is always enabled (mutual exclusion).",
+    "inputs": {
+      "enable_a": {
+        "name": "Enable A",
+        "tooltip": "First boolean"
+      },
+      "enable_b": {
+        "name": "Enable B",
+        "tooltip": "Second boolean"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Boolean A",
+        "tooltip": "First output"
+      },
+      "1": {
+        "name": "Boolean B",
+        "tooltip": "Second output"
+      }
+    }
+  },
+  "A1r Boolean A B": {
+    "display_name": "Boolean A|B",
+    "description": "Boolean toggle with A as main control (A auto-enables when B is enabled).",
+    "inputs": {
+      "enable_a": {
+        "name": "Enable A",
+        "tooltip": "Main boolean"
+      },
+      "enable_b": {
+        "name": "Enable B",
+        "tooltip": "Secondary boolean"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Boolean A",
+        "tooltip": "Main output"
+      },
+      "1": {
+        "name": "Boolean B",
+        "tooltip": "Secondary output"
+      }
+    }
+  },
+  "A1r Math Int": {
+    "display_name": "Math Int",
+    "description": "Perform basic arithmetic operations on two integer values.",
+    "inputs": {
+      "a": {
+        "name": "A",
+        "tooltip": "First integer"
+      },
+      "b": {
+        "name": "B",
+        "tooltip": "Second integer"
+      },
+      "operation": {
+        "name": "Operation",
+        "tooltip": "Math operation",
+        "options": {
+          "add": "Add",
+          "subtract": "Subtract",
+          "multiply": "Multiply",
+          "divide": "Divide",
+          "modulo": "Modulo",
+          "power": "Power"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Result",
+        "tooltip": "Calculation result"
+      }
+    }
+  },
+  "A1r Math Logic Gate": {
+    "display_name": "Math LogicGate",
+    "description": "Perform logical operations on two boolean inputs.",
+    "inputs": {
+      "a": {
+        "name": "A",
+        "tooltip": "First boolean"
+      },
+      "b": {
+        "name": "B",
+        "tooltip": "Second boolean"
+      },
+      "operation": {
+        "name": "Operation",
+        "tooltip": "Logic operation"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Boolean",
+        "tooltip": "Logic result"
+      },
+      "1": {
+        "name": "Integer",
+        "tooltip": "Integer result"
+      }
+    }
+  },
+  "A1r Custom Slider": {
+    "display_name": "Custom Slider",
+    "description": "Switch between integer and float values dynamically based on switch_type.",
+    "inputs": {
+      "int_value": {
+        "name": "Int Value",
+        "tooltip": "Integer value option"
+      },
+      "float_value": {
+        "name": "Float Value",
+        "tooltip": "Float value option"
+      },
+      "switch_type": {
+        "name": "Switch Type",
+        "tooltip": "0=Integer, 1=Float"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Value",
+        "tooltip": "Selected value"
+      }
+    }
+  },
+  "A1r Custom Boolean": {
+    "display_name": "Custom Boolean",
+    "description": "Convert boolean to integer with configurable true/false value mappings.",
+    "inputs": {
+      "input_bool": {
+        "name": "Boolean",
+        "tooltip": "Input boolean"
+      },
+      "true_value": {
+        "name": "True Value",
+        "tooltip": "Output when true"
+      },
+      "false_value": {
+        "name": "False Value",
+        "tooltip": "Output when false"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Integer",
+        "tooltip": "Integer output"
+      }
+    }
+  },
+  "A1r Latent Encode Transform": {
+    "display_name": "Latent Encode Transform",
+    "description": "Switch between text to image and image to image latent encoding modes.",
+    "inputs": {
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Encoding mode",
+        "options": {
+          "text to image": "Text to Image",
+          "image to image": "Image to Image"
+        }
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "VAE encoder"
+      },
+      "width": {
+        "name": "Width",
+        "tooltip": "Latent width"
+      },
+      "height": {
+        "name": "Height",
+        "tooltip": "Latent height"
+      },
+      "batch_size": {
+        "name": "Batch Size",
+        "tooltip": "Number of images"
+      },
+      "pixels": {
+        "name": "Pixels",
+        "tooltip": "Input image (image to image mode)"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Latent",
+        "tooltip": "Encoded latent"
+      }
+    }
+  },
+  "A1r VAE Decode Transform": {
+    "display_name": "VAE Decode Transform",
+    "description": "Unified VAE decoder with Standard and Tiled modes, preview support.",
+    "inputs": {
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Decode mode",
+        "options": {
+          "standard": "Standard",
+          "tiled": "Tiled"
+        }
+      },
+      "latent": {
+        "name": "Latent",
+        "tooltip": "Input latent"
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "VAE decoder"
+      },
+      "tile_size": {
+        "name": "Tile Size",
+        "tooltip": "Tile size for tiled mode"
+      },
+      "enable_preview": {
+        "name": "Enable Preview",
+        "tooltip": "Show preview"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image",
+        "tooltip": "Decoded image"
+      },
+      "1": {
+        "name": "Latent",
+        "tooltip": "Passthrough latent"
+      }
+    }
+  },
+  "A1r Image Upscale Transform": {
+    "display_name": "Image Upscale Transform",
+    "description": "Upscale images by target size or scale factor with various interpolation methods.",
+    "inputs": {
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Upscale mode",
+        "options": {
+          "scale": "Scale Factor",
+          "size": "Target Size"
+        }
+      },
+      "image": {
+        "name": "Image",
+        "tooltip": "Input image"
+      },
+      "upscale_method": {
+        "name": "Method",
+        "tooltip": "Interpolation method"
+      },
+      "scale_by": {
+        "name": "Scale By",
+        "tooltip": "Scale multiplier"
+      },
+      "width": {
+        "name": "Width",
+        "tooltip": "Target width"
+      },
+      "height": {
+        "name": "Height",
+        "tooltip": "Target height"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image",
+        "tooltip": "Upscaled image"
+      }
+    }
+  },
+  "A1r Latent Upscale Transform": {
+    "display_name": "Latent Upscale Transform",
+    "description": "Upscale latent samples by target size or scale factor.",
+    "inputs": {
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Upscale mode",
+        "options": {
+          "scale": "Scale Factor",
+          "size": "Target Size"
+        }
+      },
+      "latent": {
+        "name": "Latent",
+        "tooltip": "Input latent"
+      },
+      "upscale_method": {
+        "name": "Method",
+        "tooltip": "Interpolation method"
+      },
+      "scale_by": {
+        "name": "Scale By",
+        "tooltip": "Scale multiplier"
+      },
+      "width": {
+        "name": "Width",
+        "tooltip": "Target width"
+      },
+      "height": {
+        "name": "Height",
+        "tooltip": "Target height"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Latent",
+        "tooltip": "Upscaled latent"
+      }
+    }
+  },
+  "A1r Checkpoint Input Switch": {
+    "display_name": "Checkpoint Input Switch",
+    "description": "Switch between two checkpoint inputs (Model/CLIP/VAE).",
+    "inputs": {
+      "model_a": {
+        "name": "Model A",
+        "tooltip": "First model"
+      },
+      "clip_a": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP"
+      },
+      "vae_a": {
+        "name": "VAE A",
+        "tooltip": "First VAE"
+      },
+      "model_b": {
+        "name": "Model B",
+        "tooltip": "Second model"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP"
+      },
+      "vae_b": {
+        "name": "VAE B",
+        "tooltip": "Second VAE"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Selected model"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "Selected CLIP"
+      },
+      "2": {
+        "name": "VAE",
+        "tooltip": "Selected VAE"
+      }
+    }
+  },
+  "A1r Model Input Switch": {
+    "display_name": "Model Input Switch",
+    "description": "Switch between two model inputs.",
+    "inputs": {
+      "model_a": {
+        "name": "Model A",
+        "tooltip": "First model"
+      },
+      "model_b": {
+        "name": "Model B",
+        "tooltip": "Second model"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Model",
+        "tooltip": "Selected model"
+      }
+    }
+  },
+  "A1r CLIP Input Switch": {
+    "display_name": "CLIP Input Switch",
+    "description": "Switch between two CLIP inputs.",
+    "inputs": {
+      "clip_a": {
+        "name": "CLIP A",
+        "tooltip": "First CLIP"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "Second CLIP"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "CLIP",
+        "tooltip": "Selected CLIP"
+      }
+    }
+  },
+  "A1r VAE Input Switch": {
+    "display_name": "VAE Input Switch",
+    "description": "Switch between two VAE inputs.",
+    "inputs": {
+      "vae_a": {
+        "name": "VAE A",
+        "tooltip": "First VAE"
+      },
+      "vae_b": {
+        "name": "VAE B",
+        "tooltip": "Second VAE"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "VAE",
+        "tooltip": "Selected VAE"
+      }
+    }
+  },
+  "A1r Conditioning Input Switch": {
+    "display_name": "Conditioning Input Switch",
+    "description": "Switch between two conditioning inputs.",
+    "inputs": {
+      "conditioning_a": {
+        "name": "Conditioning A",
+        "tooltip": "First conditioning"
+      },
+      "conditioning_b": {
+        "name": "Conditioning B",
+        "tooltip": "Second conditioning"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Positive",
+        "tooltip": "Selected positive conditioning"
+      },
+      "1": {
+        "name": "Negative",
+        "tooltip": "Selected negative conditioning"
+      }
+    }
+  },
+  "A1r Image Input Switch": {
+    "display_name": "Image Input Switch",
+    "description": "Switch between up to four image inputs with fallback priority.",
+    "inputs": {
+      "input": {
+        "name": "Input",
+        "tooltip": "Select input source (1-4)"
+      },
+      "image_a": {
+        "name": "Image A",
+        "tooltip": "First image"
+      },
+      "image_b": {
+        "name": "Image B",
+        "tooltip": "Second image"
+      },
+      "image_c": {
+        "name": "Image C",
+        "tooltip": "Third image"
+      },
+      "image_d": {
+        "name": "Image D",
+        "tooltip": "Fourth image"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image",
+        "tooltip": "Selected image"
+      }
+    }
+  },
+  "A1r Text Input Switch": {
+    "display_name": "Text Input Switch",
+    "description": "Switch between two text inputs.",
+    "inputs": {
+      "text1": {
+        "name": "Text 1",
+        "tooltip": "First text"
+      },
+      "text2": {
+        "name": "Text 2",
+        "tooltip": "Second text"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Text",
+        "tooltip": "Selected text"
+      }
+    }
+  },
+  "A1r Int Input Switch": {
+    "display_name": "Int Input Switch",
+    "description": "Switch between two integer inputs.",
+    "inputs": {
+      "input": {
+        "name": "Input",
+        "tooltip": "Select input (1 or 2)"
+      },
+      "int1": {
+        "name": "Int 1",
+        "tooltip": "First integer"
+      },
+      "int2": {
+        "name": "Int 2",
+        "tooltip": "Second integer"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Integer",
+        "tooltip": "Selected integer"
+      }
+    }
+  },
+  "A1r Float Input Switch": {
+    "display_name": "Float Input Switch",
+    "description": "Switch between two float inputs.",
+    "inputs": {
+      "input": {
+        "name": "Input",
+        "tooltip": "Select input (1 or 2)"
+      },
+      "float1": {
+        "name": "Float 1",
+        "tooltip": "First float"
+      },
+      "float2": {
+        "name": "Float 2",
+        "tooltip": "Second float"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Float",
+        "tooltip": "Selected float"
+      }
+    }
+  },
+  "A1r Image Output Switch": {
+    "display_name": "Image Output Switch",
+    "description": "Route a single image input to one of two outputs.",
+    "inputs": {
+      "input": {
+        "name": "Input",
+        "tooltip": "Select output route (1 or 2)"
+      },
+      "image": {
+        "name": "Image",
+        "tooltip": "Input image"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image 1",
+        "tooltip": "First output"
+      },
+      "1": {
+        "name": "Image 2",
+        "tooltip": "Second output"
+      }
+    }
+  },
+  "A1r Image Mask Output Switch": {
+    "display_name": "Image & Mask Output Switch",
+    "description": "Route image and mask inputs to one of two output pairs.",
+    "inputs": {
+      "input": {
+        "name": "Input",
+        "tooltip": "Select output route (1 or 2)"
+      },
+      "image": {
+        "name": "Image",
+        "tooltip": "Input image"
+      },
+      "mask": {
+        "name": "Mask",
+        "tooltip": "Input mask"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image 1",
+        "tooltip": "First image output"
+      },
+      "1": {
+        "name": "Image 2",
+        "tooltip": "Second image output"
+      },
+      "2": {
+        "name": "Mask 1",
+        "tooltip": "First mask output"
+      },
+      "3": {
+        "name": "Mask 2",
+        "tooltip": "Second mask output"
+      }
+    }
+  }
+}

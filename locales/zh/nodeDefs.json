@@ -1,0 +1,2136 @@
+{
+  "A1r KSampler Config": {
+    "display_name": "K采样器配置面板",
+    "description": "K采样器参数配置，包括采样器、调度器、步数、CFG和噪声强度",
+    "inputs": {
+      "sampler_name": {
+        "name": "采样器",
+        "tooltip": "使用的采样算法"
+      },
+      "scheduler": {
+        "name": "调度器",
+        "tooltip": "使用的噪声调度器"
+      },
+      "steps": {
+        "name": "步数",
+        "tooltip": "采样步数"
+      },
+      "cfg": {
+        "name": "CFG",
+        "tooltip": "无分类器引导比例"
+      },
+      "denoise": {
+        "name": "噪声",
+        "tooltip": "噪声强度"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "采样器",
+        "tooltip": "选定的采样算法"
+      },
+      "1": {
+        "name": "调度器",
+        "tooltip": "选定的调度器"
+      },
+      "2": {
+        "name": "步数",
+        "tooltip": "步数值"
+      },
+      "3": {
+        "name": "CFG",
+        "tooltip": "CFG值"
+      },
+      "4": {
+        "name": "噪声",
+        "tooltip": "噪声强度"
+      }
+    }
+  },
+  "A1r KSampler Config Values": {
+    "display_name": "K采样器数值配置面板",
+    "description": "K采样器数值配置，包括步数、CFG和噪声强度",
+    "inputs": {
+      "steps": {
+        "name": "步数",
+        "tooltip": "采样步数"
+      },
+      "cfg": {
+        "name": "CFG",
+        "tooltip": "无分类器引导比例"
+      },
+      "denoise": {
+        "name": "噪声",
+        "tooltip": "噪声强度"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "步数",
+        "tooltip": "采样步数"
+      },
+      "1": {
+        "name": "CFG",
+        "tooltip": "CFG值"
+      },
+      "2": {
+        "name": "噪声",
+        "tooltip": "噪声强度"
+      }
+    }
+  },
+  "A1r LoRA Config": {
+    "display_name": "LoRA配置面板",
+    "description": "单个LoRA配置,支持动态强度范围和堆栈输出",
+    "inputs": {
+      "lora_name": {
+        "name": "LoRA名称",
+        "tooltip": "选择要应用的LoRA模型"
+      },
+      "model_strength": {
+        "name": "模型强度",
+        "tooltip": "LoRA对模型的影响强度"
+      },
+      "clip_strength": {
+        "name": "CLIP强度",
+        "tooltip": "LoRA对CLIP的影响强度"
+      },
+      "range": {
+        "name": "范围",
+        "tooltip": "强度范围",
+        "options": {
+          "mini": "迷你 (-0.5 至 0.5)",
+          "standard": "标准 (-1.0 至 1.0)",
+          "extended": "扩展 (-1.5 至 1.5)",
+          "wide": "宽广 (-2.0 至 2.0)",
+          "large": "极限 (-5.0 至 5.0)"
+        }
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "输入要追加的LoRA堆栈"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "LoRA堆栈",
+        "tooltip": "输出LoRA堆栈"
+      },
+      "1": {
+        "name": "名称",
+        "tooltip": "LoRA名称"
+      },
+      "2": {
+        "name": "模型",
+        "tooltip": "模型强度"
+      },
+      "3": {
+        "name": "CLIP",
+        "tooltip": "CLIP强度"
+      }
+    }
+  },
+  "A1r LoRA Config Advance": {
+    "display_name": "高级LoRA配置面板",
+    "description": "高级配置面板，添加或去除LoRA，支持最多6个LoRA，每个都有独立的启用/禁用开关",
+    "inputs": {
+      "enable_1": {
+        "name": "启用 LoRA 1",
+        "tooltip": "启用/禁用第一个LoRA"
+      },
+      "lora_name_1": {
+        "name": "LoRA名称 1",
+        "tooltip": "第一个LoRA模型"
+      },
+      "strength_1": {
+        "name": "强度 1",
+        "tooltip": "第一个LoRA的强度"
+      },
+      "enable_2": {
+        "name": "启用 LoRA 2",
+        "tooltip": "启用/禁用第二个LoRA"
+      },
+      "lora_name_2": {
+        "name": "LoRA名称 2",
+        "tooltip": "第二个LoRA模型"
+      },
+      "strength_2": {
+        "name": "强度 2",
+        "tooltip": "第二个LoRA的强度"
+      },
+      "enable_3": {
+        "name": "启用 LoRA 3",
+        "tooltip": "启用/禁用第三个LoRA"
+      },
+      "lora_name_3": {
+        "name": "LoRA名称 3",
+        "tooltip": "第三个LoRA模型"
+      },
+      "strength_3": {
+        "name": "强度 3",
+        "tooltip": "第三个LoRA的强度"
+      },
+      "enable_4": {
+        "name": "启用 LoRA 4",
+        "tooltip": "启用/禁用第四个LoRA"
+      },
+      "lora_name_4": {
+        "name": "LoRA名称 4",
+        "tooltip": "第四个LoRA模型"
+      },
+      "strength_4": {
+        "name": "强度 4",
+        "tooltip": "第四个LoRA的强度"
+      },
+      "enable_5": {
+        "name": "启用 LoRA 5",
+        "tooltip": "启用/禁用第五个LoRA"
+      },
+      "lora_name_5": {
+        "name": "LoRA名称 5",
+        "tooltip": "第五个LoRA模型"
+      },
+      "strength_5": {
+        "name": "强度 5",
+        "tooltip": "第五个LoRA的强度"
+      },
+      "enable_6": {
+        "name": "启用 LoRA 6",
+        "tooltip": "启用/禁用第六个LoRA"
+      },
+      "lora_name_6": {
+        "name": "LoRA名称 6",
+        "tooltip": "第六个LoRA模型"
+      },
+      "strength_6": {
+        "name": "强度 6",
+        "tooltip": "第六个LoRA的强度"
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "输入要追加的LoRA堆栈"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "LoRA堆栈",
+        "tooltip": "合并的LoRA堆栈输出"
+      }
+    }
+  },
+  "A1r ControlNet Config": {
+    "display_name": "ControlNet配置面板",
+    "description": "ControlNet参数配置，包括模型名称、强度和起止百分比",
+    "inputs": {
+      "control_net_name": {
+        "name": "ControlNet名称",
+        "tooltip": "选择ControlNet模型"
+      },
+      "strength": {
+        "name": "强度",
+        "tooltip": "ControlNet效果强度"
+      },
+      "start_percent": {
+        "name": "起效",
+        "tooltip": "效果起始百分比"
+      },
+      "end_percent": {
+        "name": "结束",
+        "tooltip": "效果结束百分比"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "名称",
+        "tooltip": "选择ControlNet模型"
+      },
+      "1": {
+        "name": "强度",
+        "tooltip": "ControlNet效果强度"
+      },
+      "2": {
+        "name": "起效",
+        "tooltip": "效果起始百分比"
+      },
+      "3": {
+        "name": "结束",
+        "tooltip": "效果结束百分比"
+      }
+    }
+  },
+  "A1r Seed Control": {
+    "display_name": "种子控制",
+    "description": "随机种控制节点，手动随机和拉取种子两个功能",
+    "inputs": {
+      "seed": {
+        "name": "种子",
+        "tooltip": "随机种子值"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "种子",
+        "tooltip": "输出种子值"
+      }
+    }
+  },
+  "A1r Widget Collector": {
+    "display_name": "部件收集器",
+    "description": "用于收集和控制节点的小部件，设为活动模式后可在其他节点右键菜单中添加部件"
+  },
+  "A1r Node Mode Collector": {
+    "display_name": "节点收集器",
+    "description": "用于收集和控制节点/群组，作为布尔小部件添加至面板，控制节点/群组激活状态，支持静音/旁路选择",
+    "inputs": {
+      "trigger": {
+        "name": "触发器",
+        "tooltip": "触发信号输入"
+      }
+    }
+  },
+  "A1r Node Mode Console": {
+    "display_name": "节点控制台",
+    "description": "只有一个节点收集器，若干个部件收集，能够传递触发信号，影响节点收集器中所有小部件的激活状态",
+    "outputs": {
+      "0": {
+        "name": "触发器",
+        "tooltip": "触发信号输出"
+      }
+    }
+  },
+  "A1r Mode Relay": {
+    "display_name": "模式中继器",
+    "description": "用于在工作流中传递触发信号的中继节点",
+    "inputs": {
+      "trigger": {
+        "name": "触发器",
+        "tooltip": "输入触发信号"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "触发器",
+        "tooltip": "输出触发信号"
+      }
+    }
+  },
+  "A1r Mode Inverter": {
+    "display_name": "模式反转器",
+    "description": "反转布尔触发信号的反转器节点",
+    "inputs": {
+      "trigger": {
+        "name": "触发器",
+        "tooltip": "输入触发信号"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "触发器",
+        "tooltip": "输出触发信号"
+      }
+    }
+  },
+  "A1r Checkpoint Picker": {
+    "display_name": "大模型选择器",
+    "description": "从可用列表中选择一个大模型",
+    "inputs": {
+      "ckpt_name": {
+        "name": "大模型",
+        "tooltip": "选择大模型"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "大模型名称",
+        "tooltip": "选定的大模型名称"
+      }
+    }
+  },
+  "A1r Upscale Method Picker": {
+    "display_name": "放大方法选择器",
+    "description": "从列表中选择一个放大方法",
+    "inputs": {
+      "upscale_method": {
+        "name": "放大方法",
+        "tooltip": "选择放大方法"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "放大方法",
+        "tooltip": "选定的放大方法"
+      }
+    }
+  },
+  "A1r Size Picker": {
+    "display_name": "尺寸选择器",
+    "description": "从预定尺寸预设中选择尺寸",
+    "inputs": {
+      "resolution": {
+        "name": "尺寸预设",
+        "tooltip": "选择尺寸预设"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "宽度",
+        "tooltip": "图像宽度"
+      },
+      "1": {
+        "name": "高度",
+        "tooltip": "图像高度"
+      }
+    }
+  },
+  "A1r Size Canvas": {
+    "display_name": "尺寸画板",
+    "description": "定义宽度和高度的自定义画布尺寸",
+    "inputs": {
+      "preset": {
+        "name": "尺寸预设",
+        "tooltip": "选择预设尺寸"
+      },
+      "width": {
+        "name": "宽度",
+        "tooltip": "画布宽度(像素)"
+      },
+      "height": {
+        "name": "高度",
+        "tooltip": "画布高度(像素)"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "宽度",
+        "tooltip": "输出宽度"
+      },
+      "1": {
+        "name": "高度",
+        "tooltip": "输出高度"
+      }
+    }
+  },
+  "A1r Unity KSampler": {
+    "display_name": "联合K采样器",
+    "description": "联合K采样节点，支持三种模式：文生图、图生图和潜空间放大",
+    "inputs": {
+      "mode": {
+        "name": "采样模式",
+        "tooltip": "选择模式",
+        "options": {
+          "text to image": "文生图",
+          "image to image": "图生图",
+          "latent upscale": "潜空间放大"
+        }
+      },
+      "model": {
+        "name": "模型",
+        "tooltip": "用于采样的模型"
+      },
+      "positive": {
+        "name": "正面提示词",
+        "tooltip": "正面条件提示词"
+      },
+      "negative": {
+        "name": "负面提示词",
+        "tooltip": "负面条件提示词"
+      },
+      "sampler": {
+        "name": "采样器",
+        "tooltip": "采样算法"
+      },
+      "scheduler": {
+        "name": "调度器",
+        "tooltip": "噪声调度器"
+      },
+      "seed": {
+        "name": "种子",
+        "tooltip": "随机种子,用于可重现性"
+      },
+      "steps": {
+        "name": "步数",
+        "tooltip": "采样步数"
+      },
+      "cfg": {
+        "name": "CFG",
+        "tooltip": "无分类器引导比例"
+      },
+      "denoise": {
+        "name": "噪声",
+        "tooltip": "噪声强度"
+      },
+      "width": {
+        "name": "宽度",
+        "tooltip": "生成图像的宽度"
+      },
+      "height": {
+        "name": "高度",
+        "tooltip": "生成图像的高度"
+      },
+      "batch_size": {
+        "name": "批次大小",
+        "tooltip": "生成图像的数量"
+      },
+      "pixels": {
+        "name": "像素",
+        "tooltip": "输入图像"
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "用于编码的VAE"
+      },
+      "latent": {
+        "name": "潜空间",
+        "tooltip": "输入潜空间"
+      },
+      "upscale_method": {
+        "name": "放大方法",
+        "tooltip": "放大方法"
+      },
+      "upscale_by": {
+        "name": "放大倍数",
+        "tooltip": "放大倍数"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "潜空间",
+        "tooltip": "生成的潜空间图像"
+      }
+    }
+  },
+  "A1r Sampler Picker": {
+    "display_name": "采样器选择器",
+    "description": "选择采样算法和噪声调度器",
+    "inputs": {
+      "sampler_name": {
+        "name": "采样器",
+        "tooltip": "采样算法"
+      },
+      "scheduler": {
+        "name": "调度器",
+        "tooltip": "噪声调度器"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "采样器",
+        "tooltip": "采样器"
+      },
+      "1": {
+        "name": "调度器",
+        "tooltip": "调度器"
+      }
+    }
+  },
+  "A1r Save Preview Image": {
+    "display_name": "保存/预览图片",
+    "description": "保存和预览图片，支持可选的保存控制",
+    "inputs": {
+      "images": {
+        "name": "图片",
+        "tooltip": "要保存/预览的图片"
+      },
+      "enable_save": {
+        "name": "启用保存",
+        "tooltip": "切换是否保存到磁盘"
+      },
+      "filename_prefix": {
+        "name": "文件名前缀",
+        "tooltip": "保存文件的前缀"
+      }
+    }
+  },
+  "A1r Image Filter": {
+    "display_name": "图片过滤器",
+    "description": "使用弹出对话框手动选择过滤图片",
+    "inputs": {
+      "images": {
+        "name": "图片",
+        "tooltip": "要过滤的图片"
+      },
+      "timeout": {
+        "name": "时限",
+        "tooltip": "等待选择的时间(秒)"
+      },
+      "on_timeout": {
+        "name": "保存行为",
+        "tooltip": "通过筛选和超时的操作",
+        "options": {
+          "send_all": "全部通过",
+          "send_first": "仅通过第一张",
+          "send_last": "仅通过最后一张",
+          "send_none": "阻止所有"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "图片",
+        "tooltip": "过滤后的图片"
+      },
+      "1": {
+        "name": "潜空间",
+        "tooltip": "过滤后的潜空间"
+      }
+    }
+  },
+  "A1r Checkpoint Loader": {
+    "display_name": "大模型加载器",
+    "description": "加载大模型，支持可选的自定义VAE覆盖，VAE选择None则使用大模型嵌入的VAE",
+    "inputs": {
+      "ckpt_name": {
+        "name": "大模型名称",
+        "tooltip": "选择大模型"
+      },
+      "vae_name": {
+        "name": "VAE",
+        "tooltip": "选择VAE模型"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "加载的模型"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "CLIP模型"
+      },
+      "2": {
+        "name": "VAE",
+        "tooltip": "VAE模型"
+      }
+    }
+  },
+  "A1r Double CheckpointLoader": {
+    "display_name": "双大模型加载器",
+    "description": "同时加载两个大模型，支持可选的第二大模型启用/禁用和可选的自定义VAE覆盖，VAE选择None则使用大模型嵌入的VAE",
+    "inputs": {
+      "ckpt_name_a": {
+        "name": "大模型 A",
+        "tooltip": "大模型名称A"
+      },
+      "ckpt_name_b": {
+        "name": "大模型 B",
+        "tooltip": "大模型名称B"
+      },
+      "vae_name": {
+        "name": "VAE",
+        "tooltip": "共享VAE模型"
+      },
+      "enable_second": {
+        "name": "启用模型B",
+        "tooltip": "启用/禁用第二个大模型"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型 A",
+        "tooltip": "第一个模型"
+      },
+      "1": {
+        "name": "CLIP A",
+        "tooltip": "第一个CLIP"
+      },
+      "2": {
+        "name": "VAE A",
+        "tooltip": "第一个VAE"
+      },
+      "3": {
+        "name": "模型 B",
+        "tooltip": "第二个模型"
+      },
+      "4": {
+        "name": "CLIP B",
+        "tooltip": "第二个CLIP"
+      },
+      "5": {
+        "name": "VAE B",
+        "tooltip": "第二个VAE"
+      }
+    }
+  },
+  "A1r Separate CheckpointLoader": {
+    "display_name": "分离大模型加载器",
+    "description": "基于分离模式在两个大模型之间切换",
+    "inputs": {
+      "ckpt_name_a": {
+        "name": "大模型 A",
+        "tooltip": "第一个大模型选项"
+      },
+      "ckpt_name_b": {
+        "name": "大模型 B",
+        "tooltip": "第二个大模型选项"
+      },
+      "vae_name": {
+        "name": "VAE",
+        "tooltip": "VAE模型(None = 使用嵌入的)"
+      },
+      "separate_mode": {
+        "name": "分离模式",
+        "tooltip": "在模型A和模型B之间切换"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "选定的模型"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "CLIP模型"
+      },
+      "2": {
+        "name": "VAE",
+        "tooltip": "VAE模型"
+      }
+    }
+  },
+  "A1r Six LoRA Loader": {
+    "display_name": "六LoRA加载器",
+    "description": "加载最多六个LoRA，每个都有独立的启用/禁用开关和强度控制",
+    "inputs": {
+      "model": {
+        "name": "模型",
+        "tooltip": "输入模型"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "输入CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "可选LoRA堆栈输入"
+      },
+      "enable_lora_1": {
+        "name": "启用 LoRA 1",
+        "tooltip": "启用/禁用第一个LoRA"
+      },
+      "lora_name_1": {
+        "name": "LoRA名称 1",
+        "tooltip": "第一个LoRA模型"
+      },
+      "model_strength_1": {
+        "name": "模型强度 1",
+        "tooltip": "第一个LoRA的模型强度"
+      },
+      "clip_strength_1": {
+        "name": "CLIP强度 1",
+        "tooltip": "第一个LoRA的CLIP强度"
+      },
+      "enable_lora_2": {
+        "name": "启用 LoRA 2",
+        "tooltip": "启用/禁用第二个LoRA"
+      },
+      "lora_name_2": {
+        "name": "LoRA名称 2",
+        "tooltip": "第二个LoRA模型"
+      },
+      "model_strength_2": {
+        "name": "模型强度 2",
+        "tooltip": "第二个LoRA的模型强度"
+      },
+      "clip_strength_2": {
+        "name": "CLIP强度 2",
+        "tooltip": "第二个LoRA的CLIP强度"
+      },
+      "enable_lora_3": {
+        "name": "启用 LoRA 3",
+        "tooltip": "启用/禁用第三个LoRA"
+      },
+      "lora_name_3": {
+        "name": "LoRA名称 3",
+        "tooltip": "第三个LoRA模型"
+      },
+      "model_strength_3": {
+        "name": "模型强度 3",
+        "tooltip": "第三个LoRA的模型强度"
+      },
+      "clip_strength_3": {
+        "name": "CLIP强度 3",
+        "tooltip": "第三个LoRA的CLIP强度"
+      },
+      "enable_lora_4": {
+        "name": "启用 LoRA 4",
+        "tooltip": "启用/禁用第四个LoRA"
+      },
+      "lora_name_4": {
+        "name": "LoRA名称 4",
+        "tooltip": "第四个LoRA模型"
+      },
+      "model_strength_4": {
+        "name": "模型强度 4",
+        "tooltip": "第四个LoRA的模型强度"
+      },
+      "clip_strength_4": {
+        "name": "CLIP强度 4",
+        "tooltip": "第四个LoRA的CLIP强度"
+      },
+      "enable_lora_5": {
+        "name": "启用 LoRA 5",
+        "tooltip": "启用/禁用第五个LoRA"
+      },
+      "lora_name_5": {
+        "name": "LoRA名称 5",
+        "tooltip": "第五个LoRA模型"
+      },
+      "model_strength_5": {
+        "name": "模型强度 5",
+        "tooltip": "第五个LoRA的模型强度"
+      },
+      "clip_strength_5": {
+        "name": "CLIP强度 5",
+        "tooltip": "第五个LoRA的CLIP强度"
+      },
+      "enable_lora_6": {
+        "name": "启用 LoRA 6",
+        "tooltip": "启用/禁用第六个LoRA"
+      },
+      "lora_name_6": {
+        "name": "LoRA名称 6",
+        "tooltip": "第六个LoRA模型"
+      },
+      "model_strength_6": {
+        "name": "模型强度 6",
+        "tooltip": "第六个LoRA的模型强度"
+      },
+      "clip_strength_6": {
+        "name": "CLIP强度 6",
+        "tooltip": "第六个LoRA的CLIP强度"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "应用LoRA后的模型"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "应用LoRA后的CLIP"
+      }
+    }
+  },
+  "A1r Six LoRA Loader 2P": {
+    "display_name": "双通道六LoRA加载器",
+    "description": "为两对模型/CLIP加载最多六个LoRA，带启用/禁用开关",
+    "inputs": {
+      "model_a": {
+        "name": "模型 A",
+        "tooltip": "第一个模型输入"
+      },
+      "clip_a": {
+        "name": "CLIP A",
+        "tooltip": "第一个CLIP输入"
+      },
+      "model_b": {
+        "name": "模型 B",
+        "tooltip": "第二个模型输入"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "第二个CLIP输入"
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "可选LoRA堆栈输入"
+      },
+      "enable_lora_1": {
+        "name": "启用 LoRA 1",
+        "tooltip": "启用/禁用第一个LoRA"
+      },
+      "lora_name_1": {
+        "name": "LoRA名称 1",
+        "tooltip": "第一个LoRA模型"
+      },
+      "model_strength_1": {
+        "name": "模型强度 1",
+        "tooltip": "第一个LoRA的模型强度"
+      },
+      "clip_strength_1": {
+        "name": "CLIP强度 1",
+        "tooltip": "第一个LoRA的CLIP强度"
+      },
+      "enable_lora_2": {
+        "name": "启用 LoRA 2",
+        "tooltip": "启用/禁用第二个LoRA"
+      },
+      "lora_name_2": {
+        "name": "LoRA名称 2",
+        "tooltip": "第二个LoRA模型"
+      },
+      "model_strength_2": {
+        "name": "模型强度 2",
+        "tooltip": "第二个LoRA的模型强度"
+      },
+      "clip_strength_2": {
+        "name": "CLIP强度 2",
+        "tooltip": "第二个LoRA的CLIP强度"
+      },
+      "enable_lora_3": {
+        "name": "启用 LoRA 3",
+        "tooltip": "启用/禁用第三个LoRA"
+      },
+      "lora_name_3": {
+        "name": "LoRA名称 3",
+        "tooltip": "第三个LoRA模型"
+      },
+      "model_strength_3": {
+        "name": "模型强度 3",
+        "tooltip": "第三个LoRA的模型强度"
+      },
+      "clip_strength_3": {
+        "name": "CLIP强度 3",
+        "tooltip": "第三个LoRA的CLIP强度"
+      },
+      "enable_lora_4": {
+        "name": "启用 LoRA 4",
+        "tooltip": "启用/禁用第四个LoRA"
+      },
+      "lora_name_4": {
+        "name": "LoRA名称 4",
+        "tooltip": "第四个LoRA模型"
+      },
+      "model_strength_4": {
+        "name": "模型强度 4",
+        "tooltip": "第四个LoRA的模型强度"
+      },
+      "clip_strength_4": {
+        "name": "CLIP强度 4",
+        "tooltip": "第四个LoRA的CLIP强度"
+      },
+      "enable_lora_5": {
+        "name": "启用 LoRA 5",
+        "tooltip": "启用/禁用第五个LoRA"
+      },
+      "lora_name_5": {
+        "name": "LoRA名称 5",
+        "tooltip": "第五个LoRA模型"
+      },
+      "model_strength_5": {
+        "name": "模型强度 5",
+        "tooltip": "第五个LoRA的模型强度"
+      },
+      "clip_strength_5": {
+        "name": "CLIP强度 5",
+        "tooltip": "第五个LoRA的CLIP强度"
+      },
+      "enable_lora_6": {
+        "name": "启用 LoRA 6",
+        "tooltip": "启用/禁用第六个LoRA"
+      },
+      "lora_name_6": {
+        "name": "LoRA名称 6",
+        "tooltip": "第六个LoRA模型"
+      },
+      "model_strength_6": {
+        "name": "模型强度 6",
+        "tooltip": "第六个LoRA的模型强度"
+      },
+      "clip_strength_6": {
+        "name": "CLIP强度 6",
+        "tooltip": "第六个LoRA的CLIP强度"
+      },
+      "output1_source": {
+        "name": "输出 1 来源",
+        "tooltip": "选择模型A或模型B作为输出1的来源"
+      },
+      "output2_source": {
+        "name": "输出 2 来源",
+        "tooltip": "选择模型A或模型B作为输出2的来源"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型 A",
+        "tooltip": "带LoRA的第一个模型"
+      },
+      "1": {
+        "name": "CLIP A",
+        "tooltip": "带LoRA的第一个CLIP"
+      },
+      "2": {
+        "name": "模型 B",
+        "tooltip": "带LoRA的第二个模型"
+      },
+      "3": {
+        "name": "CLIP B",
+        "tooltip": "带LoRA的第二个CLIP"
+      }
+    }
+  },
+  "A1r Six LoRA Loader Separate": {
+    "display_name": "分离六LoRA加载器",
+    "description": "加载最多六个LoRA，支持在两对模型/CLIP之间模式切换",
+    "inputs": {
+      "model": {
+        "name": "模型 A",
+        "tooltip": "第一个模型输入"
+      },
+      "clip": {
+        "name": "CLIP A",
+        "tooltip": "第一个CLIP输入"
+      },
+      "model_b": {
+        "name": "模型 B",
+        "tooltip": "第二个模型输入"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "第二个CLIP输入"
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "可选LoRA堆栈输入"
+      },
+      "enable_lora_1": {
+        "name": "启用 LoRA 1",
+        "tooltip": "启用/禁用第一个LoRA"
+      },
+      "lora_name_1": {
+        "name": "LoRA名称 1",
+        "tooltip": "第一个LoRA模型"
+      },
+      "model_strength_1": {
+        "name": "模型强度 1",
+        "tooltip": "第一个LoRA的模型强度"
+      },
+      "clip_strength_1": {
+        "name": "CLIP强度 1",
+        "tooltip": "第一个LoRA的CLIP强度"
+      },
+      "enable_lora_2": {
+        "name": "启用 LoRA 2",
+        "tooltip": "启用/禁用第二个LoRA"
+      },
+      "lora_name_2": {
+        "name": "LoRA名称 2",
+        "tooltip": "第二个LoRA模型"
+      },
+      "model_strength_2": {
+        "name": "模型强度 2",
+        "tooltip": "第二个LoRA的模型强度"
+      },
+      "clip_strength_2": {
+        "name": "CLIP强度 2",
+        "tooltip": "第二个LoRA的CLIP强度"
+      },
+      "enable_lora_3": {
+        "name": "启用 LoRA 3",
+        "tooltip": "启用/禁用第三个LoRA"
+      },
+      "lora_name_3": {
+        "name": "LoRA名称 3",
+        "tooltip": "第三个LoRA模型"
+      },
+      "model_strength_3": {
+        "name": "模型强度 3",
+        "tooltip": "第三个LoRA的模型强度"
+      },
+      "clip_strength_3": {
+        "name": "CLIP强度 3",
+        "tooltip": "第三个LoRA的CLIP强度"
+      },
+      "enable_lora_4": {
+        "name": "启用 LoRA 4",
+        "tooltip": "启用/禁用第四个LoRA"
+      },
+      "lora_name_4": {
+        "name": "LoRA名称 4",
+        "tooltip": "第四个LoRA模型"
+      },
+      "model_strength_4": {
+        "name": "模型强度 4",
+        "tooltip": "第四个LoRA的模型强度"
+      },
+      "clip_strength_4": {
+        "name": "CLIP强度 4",
+        "tooltip": "第四个LoRA的CLIP强度"
+      },
+      "enable_lora_5": {
+        "name": "启用 LoRA 5",
+        "tooltip": "启用/禁用第五个LoRA"
+      },
+      "lora_name_5": {
+        "name": "LoRA名称 5",
+        "tooltip": "第五个LoRA模型"
+      },
+      "model_strength_5": {
+        "name": "模型强度 5",
+        "tooltip": "第五个LoRA的模型强度"
+      },
+      "clip_strength_5": {
+        "name": "CLIP强度 5",
+        "tooltip": "第五个LoRA的CLIP强度"
+      },
+      "enable_lora_6": {
+        "name": "启用 LoRA 6",
+        "tooltip": "启用/禁用第六个LoRA"
+      },
+      "lora_name_6": {
+        "name": "LoRA名称 6",
+        "tooltip": "第六个LoRA模型"
+      },
+      "model_strength_6": {
+        "name": "模型强度 6",
+        "tooltip": "第六个LoRA的模型强度"
+      },
+      "clip_strength_6": {
+        "name": "CLIP强度 6",
+        "tooltip": "第六个LoRA的CLIP强度"
+      },
+      "separate_mode": {
+        "name": "模式",
+        "tooltip": "在模型A和模型B之间切换"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "带LoRA的选定模型"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "带LoRA的选定CLIP"
+      }
+    }
+  },
+  "A1r Stack LoRA Loader": {
+    "display_name": "堆栈LoRA加载器",
+    "description": "将LoRA堆栈应用到模型和CLIP，无需单独小部件控制",
+    "inputs": {
+      "model": {
+        "name": "模型",
+        "tooltip": "输入模型"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "输入CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "要应用的LoRA堆栈"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "应用LoRA后的模型"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "应用LoRA后的CLIP"
+      }
+    }
+  },
+  "A1r Stack LoRA Loader 2P": {
+    "display_name": "双通道堆栈LoRA加载器",
+    "description": "将LoRA堆栈应用到两对模型/CLIP，支持启用/禁用第二对",
+    "inputs": {
+      "model_a": {
+        "name": "模型 A",
+        "tooltip": "第一个模型"
+      },
+      "clip_a": {
+        "name": "CLIP A",
+        "tooltip": "第一个CLIP"
+      },
+      "model_b": {
+        "name": "模型 B",
+        "tooltip": "第二个模型"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "第二个CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "要应用的LoRA堆栈"
+      },
+      "output1_source": {
+        "name": "输出 1 来源",
+        "tooltip": "选择模型A或模型B作为输出1的来源"
+      },
+      "output2_source": {
+        "name": "输出 2 来源",
+        "tooltip": "选择CLIP A或CLIP B作为输出2的来源"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型 A",
+        "tooltip": "带LoRA的第一个模型"
+      },
+      "1": {
+        "name": "CLIP A",
+        "tooltip": "带LoRA的第一个CLIP"
+      },
+      "2": {
+        "name": "模型 B",
+        "tooltip": "带LoRA的第二个模型"
+      },
+      "3": {
+        "name": "CLIP B",
+        "tooltip": "带LoRA的第二个CLIP"
+      }
+    }
+  },
+  "A1r Stack LoRA Loader Separate": {
+    "display_name": "分离堆栈LoRA加载器",
+    "description": "应用LoRA堆栈，支持在两对模型/CLIP之间模式切换",
+    "inputs": {
+      "model_a": {
+        "name": "模型 A",
+        "tooltip": "第一个模型"
+      },
+      "clip_a": {
+        "name": "CLIP A",
+        "tooltip": "第一个CLIP"
+      },
+      "model_b": {
+        "name": "模型 B",
+        "tooltip": "第二个模型"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "第二个CLIP"
+      },
+      "lora_stack": {
+        "name": "LoRA堆栈",
+        "tooltip": "要应用的LoRA堆栈"
+      },
+      "separate_mode": {
+        "name": "模式",
+        "tooltip": "在两对之间切换"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "带LoRA的选定模型"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "带LoRA的选定CLIP"
+      }
+    }
+  },
+  "A1r ControlNet Loader": {
+    "display_name": "ControlNet加载器",
+    "description": "加载并应用ControlNet模型到条件，带强度和时间控制",
+    "inputs": {
+      "positive": {
+        "name": "正向条件",
+        "tooltip": "输入正向条件"
+      },
+      "negative": {
+        "name": "负向条件",
+        "tooltip": "输入负向条件"
+      },
+      "image": {
+        "name": "图像",
+        "tooltip": "控制图像"
+      },
+      "control_net_name": {
+        "name": "ControlNet模型名称",
+        "tooltip": "选择ControlNet模型"
+      },
+      "strength": {
+        "name": "强度",
+        "tooltip": "ControlNet强度"
+      },
+      "start_percent": {
+        "name": "起效",
+        "tooltip": "起始百分比"
+      },
+      "end_percent": {
+        "name": "结束",
+        "tooltip": "结束百分比"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "正向条件",
+        "tooltip": "带ControlNet的输出条件"
+      },
+      "1": {
+        "name": "负向条件",
+        "tooltip": "带ControlNet的输出条件"
+      }
+    }
+  },
+  "A1r Text Box": {
+    "display_name": "文本框",
+    "description": "基础文本输入节点，用于输入多行文本字符串",
+    "inputs": {
+      "text": {
+        "name": "文本",
+        "tooltip": "在此处输入您的文本"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "文本",
+        "tooltip": "输出文本字符串"
+      }
+    }
+  },
+  "A1r Text Show": {
+    "display_name": "文本显示",
+    "description": "显示输入文本,带有复制按钮",
+    "inputs": {
+      "text": {
+        "name": "文本",
+        "tooltip": "要显示的文本"
+      }
+    }
+  },
+  "A1r Text Merge": {
+    "display_name": "文本合并",
+    "description": "使用自定义分隔符合并最多四个文本输入，过滤空字符串",
+    "inputs": {
+      "text_a": {
+        "name": "文本 A",
+        "tooltip": "第一个文本输入"
+      },
+      "text_b": {
+        "name": "文本 B",
+        "tooltip": "第二个文本输入"
+      },
+      "text_c": {
+        "name": "文本 C",
+        "tooltip": "第三个文本输入"
+      },
+      "text_d": {
+        "name": "文本 D",
+        "tooltip": "第四个文本输入"
+      },
+      "delimiter": {
+        "name": "分隔符",
+        "tooltip": "文本分隔符"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "文本",
+        "tooltip": "合并后的文本输出"
+      }
+    }
+  },
+  "A1r Text Merge with Clip Encode": {
+    "display_name": "文本合并CLIP编码",
+    "description": "合并多个文本输入并一步用CLIP编码",
+    "inputs": {
+      "text_a": {
+        "name": "文本 A",
+        "tooltip": "第一个文本输入"
+      },
+      "text_b": {
+        "name": "文本 B",
+        "tooltip": "第二个文本输入"
+      },
+      "text_c": {
+        "name": "文本 C",
+        "tooltip": "第三个文本输入"
+      },
+      "text_d": {
+        "name": "文本 D",
+        "tooltip": "第四个文本输入"
+      },
+      "delimiter": {
+        "name": "分隔符",
+        "tooltip": "文本分隔符"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "CLIP编码器"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "文本",
+        "tooltip": "合并的文本"
+      },
+      "1": {
+        "name": "条件",
+        "tooltip": "CLIP条件"
+      }
+    }
+  },
+  "A1r Text Translate": {
+    "display_name": "文本翻译",
+    "description": "使用百度或DeepSeek API在中英文之间翻译文本",
+    "inputs": {
+      "platform": {
+        "name": "平台",
+        "tooltip": "翻译服务平台",
+        "options": {
+          "Baidu": "百度翻译",
+          "DeepSeek": "DeepSeek"
+        }
+      },
+      "from_lang": {
+        "name": "源语言",
+        "tooltip": "源语言"
+      },
+      "to_lang": {
+        "name": "目标语言",
+        "tooltip": "目标语言"
+      },
+      "text": {
+        "name": "文本",
+        "tooltip": "要翻译的文本"
+      },
+      "enable_translate": {
+        "name": "启用翻译",
+        "tooltip": "切换翻译开/关"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "可选CLIP编码器"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "文本",
+        "tooltip": "翻译后的文本"
+      },
+      "1": {
+        "name": "条件",
+        "tooltip": "CLIP条件"
+      }
+    }
+  },
+  "A1r Text Translate Merge with Clip Encode": {
+    "display_name": "文本翻译合并CLIP编码",
+    "description": "合并4个文本，每个带独立翻译开关，并用CLIP编码",
+    "inputs": {
+      "platform": {
+        "name": "平台",
+        "tooltip": "翻译服务平台"
+      },
+      "from_lang": {
+        "name": "源语言",
+        "tooltip": "源语言"
+      },
+      "to_lang": {
+        "name": "目标语言",
+        "tooltip": "目标语言"
+      },
+      "text_a": {
+        "name": "文本 A",
+        "tooltip": "第一个文本"
+      },
+      "enable_a": {
+        "name": "翻译 A",
+        "tooltip": "为A启用翻译"
+      },
+      "text_b": {
+        "name": "文本 B",
+        "tooltip": "第二个文本"
+      },
+      "enable_b": {
+        "name": "翻译 B",
+        "tooltip": "为B启用翻译"
+      },
+      "text_c": {
+        "name": "文本 C",
+        "tooltip": "第三个文本"
+      },
+      "enable_c": {
+        "name": "翻译 C",
+        "tooltip": "为C启用翻译"
+      },
+      "text_d": {
+        "name": "文本 D",
+        "tooltip": "第四个文本"
+      },
+      "enable_d": {
+        "name": "翻译 D",
+        "tooltip": "为D启用翻译"
+      },
+      "delimiter": {
+        "name": "分隔符",
+        "tooltip": "文本分隔符"
+      },
+      "clip": {
+        "name": "CLIP",
+        "tooltip": "CLIP编码器"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "文本",
+        "tooltip": "合并的翻译文本"
+      },
+      "1": {
+        "name": "条件",
+        "tooltip": "CLIP条件"
+      }
+    }
+  },
+  "A1r JoyTag TextBox": {
+    "display_name": "JoyTag文本框",
+    "description": "使用JoyTag视觉模型提取图像标签，用于自动标记图像",
+    "inputs": {
+      "image": {
+        "name": "图像",
+        "tooltip": "要标记的输入图像"
+      },
+      "THRESHOLD": {
+        "name": "阈值",
+        "tooltip": "标签置信度阈值，更高的阈值会生成更少的标签"
+      },
+      "apply_tag": {
+        "name": "应用标签",
+        "tooltip": "启用/禁用JoyTag处理"
+      },
+      "positive": {
+        "name": "文本",
+        "tooltip": "额外文本输入"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "文本",
+        "tooltip": "生成或输入的文本"
+      }
+    }
+  },
+  "A1r Int to Boolean": {
+    "display_name": "整数转布尔",
+    "description": "将整数转换为布尔值（0为false，非0为true）",
+    "inputs": {
+      "input_int": {
+        "name": "整数",
+        "tooltip": "输入整数值"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "布尔",
+        "tooltip": "输出布尔"
+      }
+    }
+  },
+  "A1r Simple Boolean": {
+    "display_name": "布尔",
+    "description": "用于工作流控制的简单布尔传递节点",
+    "inputs": {
+      "enable": {
+        "name": "启用",
+        "tooltip": "布尔值"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "布尔",
+        "tooltip": "输出布尔"
+      }
+    }
+  },
+  "A1r Boolean AB": {
+    "display_name": "布尔 或",
+    "description": "布尔切换,确保至少一个始终启用(互斥)",
+    "inputs": {
+      "enable_a": {
+        "name": "启用 A",
+        "tooltip": "第一个布尔"
+      },
+      "enable_b": {
+        "name": "启用 B",
+        "tooltip": "第二个布尔"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "布尔 A",
+        "tooltip": "第一个输出"
+      },
+      "1": {
+        "name": "布尔 B",
+        "tooltip": "第二个输出"
+      }
+    }
+  },
+  "A1r Boolean A B": {
+    "display_name": "布尔 与",
+    "description": "布尔切换,A为主控制(B启用时A自动启用)",
+    "inputs": {
+      "enable_a": {
+        "name": "启用 A",
+        "tooltip": "主布尔"
+      },
+      "enable_b": {
+        "name": "启用 B",
+        "tooltip": "次要布尔"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "布尔 A",
+        "tooltip": "主输出"
+      },
+      "1": {
+        "name": "布尔 B",
+        "tooltip": "次要输出"
+      }
+    }
+  },
+  "A1r Math Int": {
+    "display_name": "整数计算",
+    "description": "对两个整数值执行基本算术运算",
+    "inputs": {
+      "a": {
+        "name": "A",
+        "tooltip": "第一个整数"
+      },
+      "b": {
+        "name": "B",
+        "tooltip": "第二个整数"
+      },
+      "operation": {
+        "name": "运算",
+        "tooltip": "数学运算",
+        "options": {
+          "add": "加法",
+          "subtract": "减法",
+          "multiply": "乘法",
+          "divide": "除法",
+          "modulo": "取模",
+          "power": "幂运算"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "结果",
+        "tooltip": "计算结果"
+      }
+    }
+  },
+  "A1r Math Logic Gate": {
+    "display_name": "逻辑门计算",
+    "description": "对两个布尔输入执行逻辑运算",
+    "inputs": {
+      "a": {
+        "name": "A",
+        "tooltip": "第一个布尔"
+      },
+      "b": {
+        "name": "B",
+        "tooltip": "第二个布尔"
+      },
+      "operation": {
+        "name": "运算",
+        "tooltip": "逻辑运算"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "布尔",
+        "tooltip": "逻辑结果"
+      },
+      "1": {
+        "name": "整数",
+        "tooltip": "整数结果"
+      }
+    }
+  },
+  "A1r Custom Slider": {
+    "display_name": "自定义滑块",
+    "description": "根据switch_type在整数和浮点值之间动态切换",
+    "inputs": {
+      "int_value": {
+        "name": "整数值",
+        "tooltip": "整数值选项"
+      },
+      "float_value": {
+        "name": "浮点值",
+        "tooltip": "浮点值选项"
+      },
+      "switch_type": {
+        "name": "切换类型",
+        "tooltip": "0=整数, 1=浮点"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "值",
+        "tooltip": "选定的值"
+      }
+    }
+  },
+  "A1r Custom Boolean": {
+    "display_name": "自定义布尔",
+    "description": "将布尔转换为整数,可配置真/假值映射",
+    "inputs": {
+      "input_bool": {
+        "name": "布尔",
+        "tooltip": "输入布尔"
+      },
+      "true_value": {
+        "name": "真值",
+        "tooltip": "为真时输出"
+      },
+      "false_value": {
+        "name": "假值",
+        "tooltip": "为假时输出"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "整数",
+        "tooltip": "整数输出"
+      }
+    }
+  },
+  "A1r Latent Encode Transform": {
+    "display_name": "潜空间编码转换",
+    "description": "在文生图和图生图潜空间编码模式之间切换",
+    "inputs": {
+      "mode": {
+        "name": "模式",
+        "tooltip": "编码模式",
+        "options": {
+          "text to image": "文生图",
+          "image to image": "图生图"
+        }
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "VAE编码器"
+      },
+      "width": {
+        "name": "宽度",
+        "tooltip": "潜空间宽度"
+      },
+      "height": {
+        "name": "高度",
+        "tooltip": "潜空间高度"
+      },
+      "batch_size": {
+        "name": "批次大小",
+        "tooltip": "图像数量"
+      },
+      "pixels": {
+        "name": "像素",
+        "tooltip": "输入图像(图生图模式)"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "潜空间",
+        "tooltip": "编码的潜空间"
+      }
+    }
+  },
+  "A1r VAE Decode Transform": {
+    "display_name": "VAE解码转换",
+    "description": "统一VAE解码器,支持标准和平铺模式,预览支持",
+    "inputs": {
+      "mode": {
+        "name": "模式",
+        "tooltip": "解码模式",
+        "options": {
+          "standard": "标准",
+          "tiled": "平铺"
+        }
+      },
+      "latent": {
+        "name": "潜空间",
+        "tooltip": "输入潜空间"
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "VAE解码器"
+      },
+      "tile_size": {
+        "name": "平铺大小",
+        "tooltip": "平铺模式的平铺大小"
+      },
+      "enable_preview": {
+        "name": "启用预览",
+        "tooltip": "显示预览"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "图像",
+        "tooltip": "解码的图像"
+      },
+      "1": {
+        "name": "潜空间",
+        "tooltip": "穿透潜空间"
+      }
+    }
+  },
+  "A1r Image Upscale Transform": {
+    "display_name": "图像放大转换",
+    "description": "通过目标尺寸或缩放因子放大图像,使用各种插值方法",
+    "inputs": {
+      "mode": {
+        "name": "模式",
+        "tooltip": "放大模式",
+        "options": {
+          "scale": "缩放因子",
+          "size": "目标尺寸"
+        }
+      },
+      "image": {
+        "name": "图像",
+        "tooltip": "输入图像"
+      },
+      "upscale_method": {
+        "name": "方法",
+        "tooltip": "插值方法"
+      },
+      "scale_by": {
+        "name": "缩放倍数",
+        "tooltip": "缩放乘数"
+      },
+      "width": {
+        "name": "宽度",
+        "tooltip": "目标宽度"
+      },
+      "height": {
+        "name": "高度",
+        "tooltip": "目标高度"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "图像",
+        "tooltip": "放大的图像"
+      }
+    }
+  },
+  "A1r Latent Upscale Transform": {
+    "display_name": "潜空间放大转换",
+    "description": "通过目标尺寸或缩放因子放大潜空间样本",
+    "inputs": {
+      "mode": {
+        "name": "模式",
+        "tooltip": "放大模式",
+        "options": {
+          "scale": "缩放因子",
+          "size": "目标尺寸"
+        }
+      },
+      "latent": {
+        "name": "潜空间",
+        "tooltip": "输入潜空间"
+      },
+      "upscale_method": {
+        "name": "方法",
+        "tooltip": "插值方法"
+      },
+      "scale_by": {
+        "name": "缩放倍数",
+        "tooltip": "缩放乘数"
+      },
+      "width": {
+        "name": "宽度",
+        "tooltip": "目标宽度"
+      },
+      "height": {
+        "name": "高度",
+        "tooltip": "目标高度"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "潜空间",
+        "tooltip": "放大的潜空间"
+      }
+    }
+  },
+  "A1r Checkpoint Input Switch": {
+    "display_name": "大模型输入切换",
+    "description": "在两个大模型输入之间切换(模型/CLIP/VAE)",
+    "inputs": {
+      "model_a": {
+        "name": "模型 A",
+        "tooltip": "第一个模型"
+      },
+      "clip_a": {
+        "name": "CLIP A",
+        "tooltip": "第一个CLIP"
+      },
+      "vae_a": {
+        "name": "VAE A",
+        "tooltip": "第一个VAE"
+      },
+      "model_b": {
+        "name": "模型 B",
+        "tooltip": "第二个模型"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "第二个CLIP"
+      },
+      "vae_b": {
+        "name": "VAE B",
+        "tooltip": "第二个VAE"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "选定的模型"
+      },
+      "1": {
+        "name": "CLIP",
+        "tooltip": "选定的CLIP"
+      },
+      "2": {
+        "name": "VAE",
+        "tooltip": "选定的VAE"
+      }
+    }
+  },
+  "A1r Model Input Switch": {
+    "display_name": "模型输入切换",
+    "description": "在两个模型输入之间切换",
+    "inputs": {
+      "model_a": {
+        "name": "模型 A",
+        "tooltip": "第一个模型"
+      },
+      "model_b": {
+        "name": "模型 B",
+        "tooltip": "第二个模型"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型",
+        "tooltip": "选定的模型"
+      }
+    }
+  },
+  "A1r CLIP Input Switch": {
+    "display_name": "CLIP输入切换",
+    "description": "在两个CLIP输入之间切换",
+    "inputs": {
+      "clip_a": {
+        "name": "CLIP A",
+        "tooltip": "第一个CLIP"
+      },
+      "clip_b": {
+        "name": "CLIP B",
+        "tooltip": "第二个CLIP"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "CLIP",
+        "tooltip": "选定的CLIP"
+      }
+    }
+  },
+  "A1r VAE Input Switch": {
+    "display_name": "VAE输入切换",
+    "description": "在两个VAE输入之间切换",
+    "inputs": {
+      "vae_a": {
+        "name": "VAE A",
+        "tooltip": "第一个VAE"
+      },
+      "vae_b": {
+        "name": "VAE B",
+        "tooltip": "第二个VAE"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "VAE",
+        "tooltip": "选定的VAE"
+      }
+    }
+  },
+  "A1r Conditioning Input Switch": {
+    "display_name": "条件输入切换",
+    "description": "在两个条件输入之间切换",
+    "inputs": {
+      "conditioning_a": {
+        "name": "条件 A",
+        "tooltip": "第一个条件"
+      },
+      "conditioning_b": {
+        "name": "条件 B",
+        "tooltip": "第二个条件"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "正面",
+        "tooltip": "选定的正面条件"
+      },
+      "1": {
+        "name": "负面",
+        "tooltip": "选定的负面条件"
+      }
+    }
+  },
+  "A1r Image Input Switch": {
+    "display_name": "图像输入切换",
+    "description": "在最多四个图像输入之间切换,带回退优先级",
+    "inputs": {
+      "input": {
+        "name": "输入",
+        "tooltip": "选择输入源(1-4)"
+      },
+      "image_a": {
+        "name": "图像 A",
+        "tooltip": "第一个图像"
+      },
+      "image_b": {
+        "name": "图像 B",
+        "tooltip": "第二个图像"
+      },
+      "image_c": {
+        "name": "图像 C",
+        "tooltip": "第三个图像"
+      },
+      "image_d": {
+        "name": "图像 D",
+        "tooltip": "第四个图像"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "图像",
+        "tooltip": "选定的图像"
+      }
+    }
+  },
+  "A1r Text Input Switch": {
+    "display_name": "文本输入切换",
+    "description": "在两个文本输入之间切换",
+    "inputs": {
+      "text1": {
+        "name": "文本 1",
+        "tooltip": "第一个文本"
+      },
+      "text2": {
+        "name": "文本 2",
+        "tooltip": "第二个文本"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "文本",
+        "tooltip": "选定的文本"
+      }
+    }
+  },
+  "A1r Int Input Switch": {
+    "display_name": "整数输入切换",
+    "description": "在两个整数输入之间切换",
+    "inputs": {
+      "input": {
+        "name": "输入",
+        "tooltip": "选择输入(1或2)"
+      },
+      "int1": {
+        "name": "整数 1",
+        "tooltip": "第一个整数"
+      },
+      "int2": {
+        "name": "整数 2",
+        "tooltip": "第二个整数"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "整数",
+        "tooltip": "选定的整数"
+      }
+    }
+  },
+  "A1r Float Input Switch": {
+    "display_name": "浮点输入切换",
+    "description": "在两个浮点输入之间切换",
+    "inputs": {
+      "input": {
+        "name": "输入",
+        "tooltip": "选择输入(1或2)"
+      },
+      "float1": {
+        "name": "浮点 1",
+        "tooltip": "第一个浮点"
+      },
+      "float2": {
+        "name": "浮点 2",
+        "tooltip": "第二个浮点"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "浮点",
+        "tooltip": "选定的浮点"
+      }
+    }
+  },
+  "A1r Image Output Switch": {
+    "display_name": "图像输出切换",
+    "description": "将单个图像输入路由到两个输出之一",
+    "inputs": {
+      "input": {
+        "name": "输入",
+        "tooltip": "选择输出路由(1或2)"
+      },
+      "image": {
+        "name": "图像",
+        "tooltip": "输入图像"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "图像 1",
+        "tooltip": "第一个输出"
+      },
+      "1": {
+        "name": "图像 2",
+        "tooltip": "第二个输出"
+      }
+    }
+  },
+  "A1r Image Mask Output Switch": {
+    "display_name": "图像和遮罩输出切换",
+    "description": "将图像和遮罩输入路由到两个输出对之一",
+    "inputs": {
+      "input": {
+        "name": "输入",
+        "tooltip": "选择输出路由(1或2)"
+      },
+      "image": {
+        "name": "图像",
+        "tooltip": "输入图像"
+      },
+      "mask": {
+        "name": "遮罩",
+        "tooltip": "输入遮罩"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "图像 1",
+        "tooltip": "第一个图像输出"
+      },
+      "1": {
+        "name": "图像 2",
+        "tooltip": "第二个图像输出"
+      },
+      "2": {
+        "name": "遮罩 1",
+        "tooltip": "第一个遮罩输出"
+      },
+      "3": {
+        "name": "遮罩 2",
+        "tooltip": "第二个遮罩输出"
+      }
+    }
+  }
+}
