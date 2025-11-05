@@ -59,11 +59,17 @@ const FALLBACK_SIZE = [200, 100];
 const GRAPH_READY_TIMEOUT = 5000; // 最大等待时间
 
 // ============================================================================
+// Debug Configuration
+// ============================================================================
+
+const DEBUG = false; // Set to true to enable debug logging
+
+// ============================================================================
 // Utility Functions
 // ============================================================================
 
 const Logger = {
-    _enabled: false,
+    _enabled: DEBUG,
     
     enable() {
         this._enabled = true;
@@ -80,7 +86,9 @@ const Logger = {
     },
     
     warn(...args) {
-        console.warn('[A1rSpace][SizeFixer]', ...args);
+        if (this._enabled || (typeof window !== 'undefined' && window._A1R_DEBUG)) {
+            console.warn('[A1rSpace][SizeFixer]', ...args);
+        }
     },
     
     error(...args) {
@@ -313,7 +321,10 @@ const LifecycleWrappers = {
      */
     wrapOnConfigure(nodeType, nodeData, originalMethod) {
         nodeType.prototype.onConfigure = function(info) {
-            Logger.debug('onConfigure:', nodeData.name, info);
+            Logger.debug('[Size Fixer] onConfigure START:', nodeData.name,
+                'has metadata=', !!info.a1r_metadata?.size_data,
+                'userModified from file=', info.a1r_metadata?.size_data?.userModified,
+                'size from file=', info.size);
             
             // 保存当前状态
             const prevUserModified = this._a1r_size_data?.userModified;
@@ -332,7 +343,7 @@ const LifecycleWrappers = {
                 this._a1r_size_data.lastWidth = savedData.lastWidth;
                 this._a1r_size_data.lastHeight = savedData.lastHeight;
                 
-                Logger.debug('Restored metadata:', savedData);
+                Logger.debug('[Size Fixer] Restored metadata:', savedData);
             }
             
             // 确定最终尺寸
@@ -368,7 +379,13 @@ const LifecycleWrappers = {
                     nodeName: nodeData.name,
                     applyMin: true
                 });
+                Logger.debug('[Size Fixer] Applied final size:', finalSize,
+                    'userModified=', this._a1r_size_data.userModified);
             }
+            
+            Logger.debug('[Size Fixer] onConfigure END:', nodeData.name,
+                'final size=', this.size,
+                'userModified=', this._a1r_size_data.userModified);
             
             return result;
         };
@@ -381,7 +398,11 @@ const LifecycleWrappers = {
         nodeType.prototype.onResize = function(size) {
             const result = originalMethod ? originalMethod.apply(this, arguments) : undefined;
             
-            Logger.debug('onResize:', nodeData.name, size, 'programmatic:', !!this._a1r_programmatic_resize);
+            const isProgrammatic = !!this._a1r_programmatic_resize;
+            Logger.debug('[Size Fixer] onResize:', nodeData.name, 
+                'new size=', size,
+                'programmatic=', isProgrammatic,
+                'will set userModified=', !isProgrammatic);
             
             SizeHelper.initSizeMetadata(this);
             
@@ -395,6 +416,10 @@ const LifecycleWrappers = {
                     userModified: isUserModified,
                     nodeName: nodeData.name
                 });
+                
+                Logger.debug('[Size Fixer] onResize complete:', 
+                    'userModified=', this._a1r_size_data.userModified,
+                    'final size=', this.size);
             }
             
             return result;
@@ -439,8 +464,9 @@ const LifecycleWrappers = {
                     lastHeight: this._a1r_size_data.lastHeight
                 };
                 
-                Logger.debug('onSerialize:', nodeData.name, 
+                Logger.debug('[Size Fixer] onSerialize:', nodeData.name, 
                     'size:', info.size, 
+                    'userModified:', info.a1r_metadata.size_data.userModified,
                     'metadata:', info.a1r_metadata.size_data);
                 
             } catch (e) {

@@ -1,5 +1,16 @@
 import { app } from "/scripts/app.js";
 
+// ==================== Debug Configuration ====================
+const DEBUG = false; // Set to true to enable debug logging
+
+function debugLog(...args) {
+    if (DEBUG) {
+        console.log(...args);
+    }
+}
+
+debugLog('[LoRA Config AD] File loaded');
+
 // ==================== 基础工具函数 ====================
 
 /**
@@ -680,11 +691,16 @@ class MasterToggleWidget extends BaseCustomWidget {
 
 // ==================== ComfyUI 扩展注册 ====================
 
+debugLog('[LoRA Config AD] Registering extension');
+
 app.registerExtension({
     name: "A1rSpace.LoRAConfigAdvance",
     
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        debugLog('[LoRA Config AD] beforeRegisterNodeDef:', nodeData.name);
         if (nodeData.name !== "A1r LoRA Config Advance") return;
+        
+        debugLog('[LoRA Config AD] Applying to A1r LoRA Config Advance');
 
         // ==================== 添加节点方法到原型 ====================
         
@@ -786,7 +802,11 @@ app.registerExtension({
             }
 
             if (!this._a1r_size_data || !this._a1r_size_data.userModified) {
+                console.debug('[LoRA Config AD] addLoRAEntry: calling updateNodeSize (userModified=', 
+                    this._a1r_size_data?.userModified, ')');
                 this.updateNodeSize();
+            } else {
+                console.debug('[LoRA Config AD] addLoRAEntry: skipping updateNodeSize (userModified=true)');
             }
 
             return widget;
@@ -818,12 +838,35 @@ app.registerExtension({
         nodeType.prototype.updateNodeSize = function() {
             this.initLoRAData();
 
+            // ✅ CRITICAL: NEVER modify _a1r_size_data if it already exists with userModified=true
+            // This method is called by size_fixer after onConfigure, we must preserve user modifications
             if (!this._a1r_size_data) {
                 this._a1r_size_data = {
                     userModified: false,
                     lastWidth: null,
-                    lastHeight: null,
+                    lastHeight: null
                 };
+            }
+            
+            // ⚠️ CRITICAL: If user has manually resized, IMMEDIATELY restore saved size and return
+            // Do NOT run any size calculation logic that might reset the size
+            if (this._a1r_size_data.userModified && 
+                this._a1r_size_data.lastWidth && 
+                this._a1r_size_data.lastHeight) {
+                debugLog('[LoRA Config AD] updateNodeSize: USER-MODIFIED mode, restoring saved size',
+                    this._a1r_size_data.lastWidth, 'x', this._a1r_size_data.lastHeight);
+                this.size = [this._a1r_size_data.lastWidth, this._a1r_size_data.lastHeight];
+                this.setDirtyCanvas(true, true);
+                return;
+            }
+            
+            // ⚠ DO NOT modify userModified if it's already set! Size_fixer sets this during onConfigure
+            // Only initialize missing fields, NEVER overwrite existing ones
+            if (this._a1r_size_data.lastWidth === undefined || this._a1r_size_data.lastWidth === null) {
+                this._a1r_size_data.lastWidth = this.size?.[0] || 300;
+            }
+            if (this._a1r_size_data.lastHeight === undefined || this._a1r_size_data.lastHeight === null) {
+                this._a1r_size_data.lastHeight = this.size?.[1] || 90;
             }
 
             if (!this.size || !Array.isArray(this.size) || this.size.length < 2) {
@@ -877,9 +920,11 @@ app.registerExtension({
             totalHeight += bottomPadding + extraGrowthPadding;
 
             if (!this._a1r_size_data.userModified) {
+                debugLog('[LoRA Config AD] updateNodeSize: AUTO mode, updating height from', this.size[1], 'to', totalHeight);
                 this.size[1] = totalHeight;
                 this._a1r_size_data.lastHeight = totalHeight;
             } else {
+                debugLog('[LoRA Config AD] updateNodeSize: USER-MODIFIED mode, keeping height', this.size[1]);
                 const minHeight = 90;
                 if (this.size[1] < minHeight) {
                     this.size[1] = minHeight;
@@ -931,14 +976,24 @@ app.registerExtension({
                 // ignore
             }
 
+            // ✅ CRITICAL: Initialize _a1r_size_data with defaults, but NEVER overwrite existing values
+            // size_fixer's onResize may have already set userModified=true before this runs
             if (!this._a1r_size_data) {
-                this._a1r_size_data = {
-                    userModified: false,
-                    lastWidth: 300,
-                    lastHeight: 120,
-                };
+                this._a1r_size_data = {};
+            }
+            
+            // Fill in missing fields with defaults, but preserve any existing values
+            if (this._a1r_size_data.userModified === undefined) {
+                this._a1r_size_data.userModified = false;
+            }
+            if (!this._a1r_size_data.lastWidth) {
+                this._a1r_size_data.lastWidth = 300;
+            }
+            if (!this._a1r_size_data.lastHeight) {
+                this._a1r_size_data.lastHeight = 120;
             }
 
+            // 只在没有有效尺寸时才设置默认尺寸
             if (!this.size || !Array.isArray(this.size) || this.size.length < 2) {
                 this.size = [
                     this._a1r_size_data.lastWidth || 300,
@@ -1009,15 +1064,43 @@ app.registerExtension({
             this.updateNodeSize();
 
             setTimeout(() => {
+                debugLog('[LoRA Config AD] onNodeCreated 10ms callback START:',
+                    'userModified=', this._a1r_size_data?.userModified,
+                    'size=', this.size);
+                
                 try {
                     this.updateNodeSize();
                 } catch (err) {
                     console.warn('A1r.LoRAConfigAdvance: updateNodeSize failed on create', err);
                 }
-                if (!this._a1r_size_data) this._a1r_size_data = {};
-                this._a1r_size_data.lastWidth = this.size[0];
-                this._a1r_size_data.lastHeight = this.size[1];
-                this._a1r_size_data.userModified = false;
+                
+                // ✅ CRITICAL: NEVER forcibly set userModified=false here!
+                // size_fixer may have already restored userModified=true from saved data
+                // Only initialize if fields are missing, preserve existing values
+                if (!this._a1r_size_data) {
+                    this._a1r_size_data = {
+                        userModified: false,
+                        lastWidth: this.size[0],
+                        lastHeight: this.size[1]
+                    };
+                    debugLog('[LoRA Config AD] 10ms callback: Created NEW metadata with userModified=false');
+                } else {
+                    // Update dimensions but DO NOT touch userModified
+                    const beforeModified = this._a1r_size_data.userModified;
+                    if (this._a1r_size_data.lastWidth === undefined || this._a1r_size_data.lastWidth === null) {
+                        this._a1r_size_data.lastWidth = this.size[0];
+                    }
+                    if (this._a1r_size_data.lastHeight === undefined || this._a1r_size_data.lastHeight === null) {
+                        this._a1r_size_data.lastHeight = this.size[1];
+                    }
+                    debugLog('[LoRA Config AD] 10ms callback: Updated dimensions ONLY,',
+                        'userModified preserved:', beforeModified, '→', this._a1r_size_data.userModified);
+                }
+                
+                debugLog('[LoRA Config AD] onNodeCreated 10ms callback END:',
+                    'userModified=', this._a1r_size_data?.userModified,
+                    'size=', this.size);
+                
                 this.setDirtyCanvas(true, true);
             }, 10);
             
@@ -1061,6 +1144,8 @@ app.registerExtension({
             
             return onMouseDown?.apply(this, arguments);
         };
+        
+        // 注意: onResize 由 size_fixer.js 统一管理,这里不需要单独包装
         
         // ==================== 右键菜单 ====================
         const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions;
@@ -1126,74 +1211,130 @@ app.registerExtension({
                 }
             });
             
+            debugLog('[LoRA Config AD] onSerialize:', 
+                'entries=', o._a1r_lora_entries.length,
+                'userModified=', this._a1r_size_data?.userModified,
+                'size=', this.size,
+                '_a1r_size_data=', this._a1r_size_data);
+            
+            // 注意: 尺寸数据由 size_fixer.js 统一管理和序列化
+            // size_fixer 会将尺寸保存到 o.a1r_metadata.size_data
+            
             return result;
         };
         
         // ==================== 反序列化 ====================
         const onConfigure = nodeType.prototype.onConfigure;
         nodeType.prototype.onConfigure = function(o) {
+            debugLog('[LoRA Config AD] onConfigure START:', 
+                'has _a1r_lora_entries=', !!o._a1r_lora_entries,
+                'has a1r_metadata=', !!o.a1r_metadata,
+                'userModified from metadata=', o.a1r_metadata?.size_data?.userModified,
+                'current size=', this.size,
+                'current _a1r_size_data=', this._a1r_size_data);
+            
             const result = onConfigure?.apply(this, arguments);
             
+            debugLog('[LoRA Config AD] onConfigure AFTER apply:',
+                'userModified=', this._a1r_size_data?.userModified,
+                'size=', this.size,
+                '_a1r_size_data=', this._a1r_size_data);
+            
             const _saved = this._a1r_savedWidgetValues;
+            const self = this; // ✅ CRITICAL: Capture 'this' context for setTimeout callback
+            
+            // ✅ CRITICAL: Use longer delay to ensure size_fixer.onConfigure completes BEFORE this callback
+            // size_fixer wraps onConfigure and sets size/metadata AFTER the wrapped function returns
+            // 150ms was too short, causing race condition where setTimeout reads old values
             setTimeout(() => {
-                this.initLoRAData();
+                // Re-read current values at callback execution time (not closure capture time)
+                debugLog('[LoRA Config AD] onConfigure setTimeout callback START:', 
+                    'userModified=', self._a1r_size_data?.userModified,
+                    'size=', self.size,
+                    'this===self?', this === self);
+                
+                self.initLoRAData();
 
                 // 优先从显式保存的 LoRA 条目数据恢复
                 if (o._a1r_lora_entries && Array.isArray(o._a1r_lora_entries) && o._a1r_lora_entries.length > 0) {
-                    this.clearAllLoRAEntries();
+                    self.clearAllLoRAEntries();
                     
                     o._a1r_lora_entries.forEach((entryData) => {
-                        const widget = new LoRAEntryWidget(`lora_entry_${this.loraEntries.length}`);
+                        const widget = new LoRAEntryWidget(`lora_entry_${self.loraEntries.length}`);
                         widget.data = {
                             enabled: Boolean(entryData.enabled),
                             lora: String(entryData.lora || "None"),
                             strength: parseFloat(entryData.strength) || 1.0
                         };
                         
-                        const masterIndex = this.widgets.indexOf(this.masterToggle);
-                        const insertIndex = masterIndex !== -1 ? masterIndex + 1 + this.loraEntries.length : this.widgets.length;
-                        this.widgets.splice(insertIndex, 0, widget);
+                        const masterIndex = self.widgets.indexOf(self.masterToggle);
+                        const insertIndex = masterIndex !== -1 ? masterIndex + 1 + self.loraEntries.length : self.widgets.length;
+                        self.widgets.splice(insertIndex, 0, widget);
                         
-                        this.loraEntries.push({ widget });
+                        self.loraEntries.push({ widget });
                     });
                     
                     // 同步到后端 widgets
-                    this.syncToBackend();
+                    self.syncToBackend();
                 } else {
-                    // 降级方案：从后端 widgets 恢复（兼容旧版本保存的数据）
-                    if (Array.isArray(_saved) && this.widgets) {
-                        for (let i = 0; i < _saved.length && i < this.widgets.length; i++) {
+                    // 降级方案:从后端 widgets 恢复(兼容旧版本保存的数据)
+                    if (Array.isArray(_saved) && self.widgets) {
+                        for (let i = 0; i < _saved.length && i < self.widgets.length; i++) {
                             try {
-                                if (this.widgets[i]) this.widgets[i].value = _saved[i];
+                                if (self.widgets[i]) self.widgets[i].value = _saved[i];
                             } catch (err) {
                                 console.warn("A1r.LoRAConfigAdvance: failed to restore widget value", err);
                             }
                         }
                     }
 
-                    this.loadFromBackend();
+                    self.loadFromBackend();
                 }
 
                 // 确保至少有一个条目
-                if (!this.loraEntries || this.loraEntries.length === 0) {
-                    this.addLoRAEntry();
+                // 重要: 使用 { suppressSync: false } 允许同步,但 addLoRAEntry 内部会检查 userModified
+                // 所以这里不会触发不必要的 updateNodeSize
+                if (!self.loraEntries || self.loraEntries.length === 0) {
+                    self.addLoRAEntry({ suppressSync: false });
                 }
 
-                const prevUserModified = this._a1r_size_data?.userModified;
-                try {
-                    this.updateNodeSize();
-                    if (!this._a1r_size_data) this._a1r_size_data = {};
-                    this._a1r_size_data.lastWidth = this.size[0];
-                    this._a1r_size_data.lastHeight = this.size[1];
-                } catch (err) {
-                    console.warn('A1r.LoRAConfigAdvance: updateNodeSize failed during onConfigure', err);
+                // 尺寸管理策略:
+                // - size_fixer.js 在此 setTimeout 之前已经完成,恢复了 userModified 标记和用户自定义尺寸
+                // - addLoRAEntry 已经根据 userModified 决定是否更新尺寸
+                // - 这里再次检查,确保尺寸正确
+                
+                debugLog('[LoRA Config AD] onConfigure setTimeout: Size decision point', 
+                    'userModified=', self._a1r_size_data?.userModified,
+                    'size=', self.size,
+                    'entries=', self.loraEntries.length);
+                
+                if (self._a1r_size_data && self._a1r_size_data.userModified) {
+                    // 用户手动调整过尺寸,保持 size_fixer 恢复的尺寸,不重新计算
+                    debugLog('[LoRA Config AD] ✓ Skipping updateNodeSize (user-modified size preserved)');
+                    // 什么都不做,保留 size_fixer 设置的 self.size
+                } else {
+                    // 自动尺寸模式,根据条目数量重新计算高度
+                    // 注意: addLoRAEntry 可能已经调用过 updateNodeSize,这里再调用一次确保准确
+                    debugLog('[LoRA Config AD] ⚠ Calling updateNodeSize (auto mode - will recalculate)');
+                    self._a1r_programmatic_resize = true;
+                    
+                    try {
+                        self.updateNodeSize();
+                        debugLog('[LoRA Config AD] updateNodeSize completed, new size=', self.size);
+                    } catch (err) {
+                        console.warn('A1r.LoRAConfigAdvance: updateNodeSize failed during onConfigure', err);
+                    } finally {
+                        delete self._a1r_programmatic_resize;
+                    }
                 }
-                if (prevUserModified) this._a1r_size_data.userModified = true;
 
-                this.setDirtyCanvas(true, true);
-            }, 150);
+                debugLog('[LoRA Config AD] onConfigure setTimeout callback END:', 'final size=', self.size);
+                self.setDirtyCanvas(true, true);
+            }, 200); // Increased from 150ms to 200ms to ensure size_fixer completes first
             
             return result;
         };
     }
 });
+
+debugLog('[LoRA Config AD] Extension registered successfully');
