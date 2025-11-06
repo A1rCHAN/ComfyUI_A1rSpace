@@ -1,7 +1,9 @@
 # ComfyUI_A1rSpace
+[中文版本 / Chinese](README_zh.md)
+## PREFACE
 A comfyui custom node package used by myself. Cause the workflow is too complicated when I used before, it's hard to load and debug, lots of nodes spend too much source. I need a powerful but simple and easy to use and a clean UI.  
+This is my old workflow, the image have embedded workflow, you can try it anyway.  
 ![Example Image](template/old_workflow.png)  
-This image have embedded workflow, you can try it anyway.  
 Notice, this node package is development base on ComfyUI Desketop v0.3.6x +.  
 If you are using older version, I can't guarantee it will work.  
 Let me show a simple template:  
@@ -10,93 +12,92 @@ There have some nodes looks like empty, it cause of the workflow embedded png ca
 
 ## Introduce
 ### KSampler:
-* Unity KSampler  
+* **Unity KSampler**  
 The "mode" widget can choose between "text to image", "image to image" and "latent upscale", UI will change accordingly.  
 In "text to image" mode, pixel and vae input are optional, and the "denoise" widget is not available (Read-only).  
 In "image to image" mode, width, height and batch_size are optional.  
 ![Example Image](template/unity_ksampler.png)
 
 ### Nodes Mode Control:
-* Widget Collector  
+* **Widget Collector**  
 Collect the widgets of the node, changes will be synced to the origin node.  
-* Node Mode Collector  
+* **Node Mode Collector**  
 Collect the node and group as a bool widget, on/off will change the node mode (active/bypass/mute), you can change the off behavior (bypass/mute) in properties.  
-* Node Mode Console  
+* **Node Mode Console**  
 One node/group collector plus "Widget Collector", output "TRIGGER", when linked to a "Node Mode Collector", the "Node Mode Collector" will be triggered when the bool widget is change.  
-**Note:**
-To use these nodes, you need "Set as Active Panel" in the node menu, then you can right click other nodes you want, and you will see the options, when you finish adding, you need right click the "collector" node and "Deactivate Panel".  
-* Mode Relay & Mode Inverter 
+**Note:** To use these nodes, you need "Set as Active Panel" in the node menu, then you can right click other nodes you want, and you will see the options, when you finish adding, you need right click the "collector" node and "Deactivate Panel".  
+* **Mode Relay & Mode Inverter** 
 "Mode Relay" Just a relay, "Mode Inverter" will invert the mode.  
 ![Example Image](template/node_mode.png)
 
 ### Custom tools:
-* Custom Silder  
+* **Custom Silder**  
 A custom slider, you can set the min, max, step, precision.  
-* Custom Boolean  
+* **Custom Boolean**  
 A custom boolean to integer output, you can set the true/false value and name.  
 ![Example Image](template/custom_tool.png)
 
 ### Image Save Helper:
-* Save/Preview Image  
+* **Save/Preview Image**  
 Add a button to enable saving.  
-* Image Filter  
+* **Image Filter**  
 Set a "timeout" and "on_timeout" to configure the filter, when image pass the filter, will have a dialog to filter the image by hand.  
 ![Example Image](template/image.png)
 
 ### Transform Nodes:
-* Latent Encode Transform & Latent Decode Transform  
+* **Latent Encode Transform & Latent Decode Transform**  
 "Encode" node combined "Empty Latent" and "VAE Encode" node, switch "mode" to choose between "text to image" and "image to image". The "Decode" node combined "VAE Decode" and "VAE Decode (Tiled)" node, and add a image preview function.  
-* Image Upscale Transform & Latent Upscale Transform  
+* **Image Upscale Transform & Latent Upscale Transform**  
 They combined the "Upscale" and "UpscaleBy", you can switch them.  
 ![Example Image](template/transform.png)
 
 ### Config Pads:
-* KSampler Config Pad & KSampler Config Pad (Lite) & ControlNet Config Pad  
+* **KSampler Config Pad & KSampler Config Pad (Lite) & ControlNet Config Pad**  
 They are simple config pad, link to their widgets directly, just its.  
-* LoRA Config Pad  
+* **LoRA Config Pad**  
 Add a "lora_stack" that made linking easier, but this "LORASTACK" just accept my special "LoRA Loader" nodes.  
-* LoRA Config Pad AD  
+* **LoRA Config Pad AD**  
 Learn from rgthree's "Power Lora Loader", but just "lora_stack" in/output and 6 widgets added.  
 ![Example Image](template/config_pad.png)
 
 ### Loader Nodes:
-* Checkpoint Loader & Double Checkpoint Loader & Separate Checkpoint Loader  
+* **Checkpoint Loader & Double Checkpoint Loader & Separate Checkpoint Loader**  
 "Checkpoint Loader" added a VAE chooser, "vae_name" can be "None", that "VAE" will output the embedded VAE by ckpt.  
 "Double Checkpoint Loader" provide two ways of loading, and "enable_second" can switch "ckpt_name_b".  
 "Separate Checkpoint Loader" just load the ckpt that you specified.  
 ![Example Image](template/ckpt_loader.png)
 
-* Six LoRA Loader & Six LoRA Loader (2P) & Six LoRA Loader (Separate)  
+* **Six LoRA Loader & Six LoRA Loader (2P) & Six LoRA Loader (Separate)**  
 They work same as my Checkpoint Loaders.  
 ![Example Image](template/six_lora.png)
 
-* Stack LoRA Loader & Stack LoRA Loader (2P) & Stack LoRA Loader (Separate)  
+* **Stack LoRA Loader & Stack LoRA Loader (2P) & Stack LoRA Loader (Separate)**  
 Removed the widgets, just work on "lora_stack".  
 ![Example Image](template/stack_lora.png)
 
-* ControlNet Loader  
+* **ControlNet Loader**  
 Just combined "ControlNet Loader" and "ControlNet Apply".  
 ![Example Image](template/cn_loader.png)
 
 ### Seed:
-* Seed Control  
+* **Seed Control**  
 "Manual random" can queue a random seed, have 2.5s cd.  
 "Pull last seed" can pull and queue the last one seed from the history.  
 ![Example Image](template/seed.png)
 
 ### Text nodes:
-* Text Show  
+* **Text Show**  
 Provide a frame to display inputs texts. Have a copy button.  
-* Text Box  
+* **Text Box**  
 Just a text enter box.  
 ![Example Image](template/text_box_show.png)  
 
-* Text Merge  
+* **Text Merge**  
 Merge the text using the specified separator.  
 It can automatically remove extra punctuation at the end of each box before merging them.  
-* TextMerge withClipEncode  
+* **TextMerge withClipEncode**  
 base on TextMerge, but with clip encode.  
-* Text Translate  
+* **Text Translate**  
 Translate the text using Baidu or Deepseek API.  
 Have a button to enable/disable the translation.  
 Just EN<->ZH.  
@@ -105,9 +106,9 @@ There is their api website:
 Baidu: [https://api.fanyi.baidu.com/manage/developer]  
 Deepseek: [https://platform.deepseek.com/api_keys]  
 Deepseek will more professional but paid.  
-* Translate ClipEncode Merge  
+* **Translate ClipEncode Merge**  
 Combine Merge, CLIP Encode and Translate.  
-* JoyTag Text Box  
+* **JoyTag Text Box**  
 A text box with JoyTag.  
 It will output the text directly by disable 'apply_tag' button.  
 Needs JoyTag model.  
@@ -118,38 +119,38 @@ You can also manually download them from [https://huggingface.co/fancyfeast/joyt
 ![Example Image](template/text.png)
 
 ### Pickers:
-* Checkpoint Picker  
+* **Checkpoint Picker**  
 Pick a checkpoint from the checkpoint list.  
-* Upscale Method Picker  
+* **Upscale Method Picker**  
 Pick a upscale method from the method list.  
-* Size Picker  
+* **Size Picker**  
 Pick a size from the size list.  
-* Sampler Picker  
+* **Sampler Picker**  
 Pick a sampler from the sampler list.  
 ![Example Image](template/picker.png)
 
 ### Switchers:
-* Checkpoint Input Switch  
-* Model Input Switch  
-* CLIP Input Switch  
-* VAE Input Switch  
-* Conditioning Input Switch  
-* Text Input Switch  
-* Image Input Switch  
-* Int Input Switch  
-* Float Input Switch  
-* Image Output Switch  
-* Image & Mask Output Switch  
+* **Checkpoint Input Switch**  
+* **Model Input Switch**  
+* **CLIP Input Switch**  
+* **VAE Input Switch**  
+* **Conditioning Input Switch**  
+* **Text Input Switch**  
+* **Image Input Switch**  
+* **Int Input Switch**  
+* **Float Input Switch**  
+* **Image Output Switch**  
+* **Image & Mask Output Switch**  
 They just switch, that's all.  
 ![Example Image](template/switch.png)
 
 ### Utils:
-* Int to Boolean  
-* Simple Boolean  
-* Boolean A&B  
-* Boolean A|B  
-* Math Int  
-* Math LogicGate
+* **Int to Boolean**  
+* **Simple Boolean**  
+* **Boolean A&B**  
+* **Boolean A|B**  
+* **Math Int**  
+* **Math LogicGate**
 "Boolean A&B" and "Boolean A|B" are special, "A&B" means "A or B", "A|B" means "A with B".  
 ![Example Image](template/utils.png)
 
@@ -184,6 +185,7 @@ In case of unpredictable problems, it just works on my nodes.
   ```
   git pull
   ```
+
 ### Update history
 - version 1.1.0:  
   A important update. Re-build all the nodes, provide more powerful functions. The dev version(1.0.x) is not stable, I will delete it soon.  
@@ -195,18 +197,18 @@ In case of unpredictable problems, it just works on my nodes.
 3. Find and fix bugs.
 4. Language support.
 
-## The custom nodes that my old workflow uses:  
-[https://github.com/Fannovel16/comfyui_controlnet_aux]  
-[https://github.com/ltdrdata/ComfyUI-Impact-Pack]  
-[https://github.com/pythongosssss/ComfyUI-Custom-Scripts]  
-[https://github.com/chflame163/ComfyUI_LayerStyle]  
-[https://github.com/yolain/ComfyUI-Easy-Use]  
-[https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes]  
-[https://github.com/pythongosssss/ComfyUI-WD14-Tagger]  
-[https://github.com/Smirnov75/ComfyUI-mxToolkit]  
-[https://github.com/ltdrdata/ComfyUI-Impact-Subpack]  
-[https://github.com/aidenli/ComfyUI_NYJY]  
-[https://github.com/chrisgoringe/cg-image-filter]  
-They are all great, unbelievable custom node autohers.  
-Actually, I am not good at coding, but learned a lot from them, and I finished this with AI tools.  
-Thanks all.
+## Thanks to these node authors — I learned from their code and my old workflows used these nodes:  
+[ControlNet Aux — powerful ControlNet utilities](https://github.com/Fannovel16/comfyui_controlnet_aux)  
+[Impact Pack — indispensable for retouching and local edits](https://github.com/ltdrdata/ComfyUI-Impact-Pack)  
+[Custom Scripts — handy helpers for prompt input](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)  
+[Layer Style — a rich and powerful image processing node pack](https://github.com/chflame163/ComfyUI_LayerStyle)  
+[Easy Use — as the name implies, many useful tools](https://github.com/yolain/ComfyUI-Easy-Use)  
+[Comfyroll (CR) — I like the text utilities and input switches](https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes)  
+[WD14 Tagger — who doesn't love automatic tagging?](https://github.com/pythongosssss/ComfyUI-WD14-Tagger)  
+[mxToolkit — small but excellent collection of nodes I love](https://github.com/Smirnov75/ComfyUI-mxToolkit)  
+[Impact Subpack — mainly uses box detection features](https://github.com/ltdrdata/ComfyUI-Impact-Subpack)  
+[NYJY — translation and prompt utilities; I reused a lot of its code](https://github.com/aidenli/ComfyUI_NYJY)  
+[Image Filter — yes, for filtering images; I like it](https://github.com/chrisgoringe/cg-image-filter)  
+They are all excellent — incredible and outstanding custom node authors.  
+Using ComfyUI's official developer documentation together with these authors' code, my prior coding experience, and AI tools, I completed this project.  
+Thanks to everyone.
