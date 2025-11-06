@@ -1,5 +1,5 @@
 # ComfyUI_A1rSpace
-[中文版本 / Chinese](README_zh.md)
+[中文 / Chinese](README_zh.md)
 ## PREFACE
 A comfyui custom node package used by myself. Cause the workflow is too complicated when I used before, it's hard to load and debug, lots of nodes spend too much source. I need a powerful but simple and easy to use and a clean UI.  
 This is my old workflow, the image have embedded workflow, you can try it anyway.  
@@ -103,8 +103,8 @@ Have a button to enable/disable the translation.
 Just EN<->ZH.  
 Allow empty input.  
 There is their api website:  
-Baidu: [https://api.fanyi.baidu.com/manage/developer]  
-Deepseek: [https://platform.deepseek.com/api_keys]  
+[Baidu](https://api.fanyi.baidu.com/manage/developer)  
+[Deepseek](https://platform.deepseek.com/api_keys)  
 Deepseek will more professional but paid.  
 * **Translate ClipEncode Merge**  
 Combine Merge, CLIP Encode and Translate.  
@@ -115,7 +115,7 @@ Needs JoyTag model.
 Required files "model.safetensors", "config.json", "top_tags.txt".  
 Put them in to `ComfyUI\models\joytag`.  
 Node will dowload them automatically if not found.  
-You can also manually download them from [https://huggingface.co/fancyfeast/joytag/tree/main]. (The model.onnx file does not need to be downloaded)  
+You can also manually download them from [Hugging Face](https://huggingface.co/fancyfeast/joytag/tree/main). (The model.onnx file does not need to be downloaded)  
 ![Example Image](template/text.png)
 
 ### Pickers:

@@ -1,5 +1,5 @@
 # ComfyUI_A1rSpace
-[English version / 英文版](README.md)
+[English / 英文](README.md)
 ## 前言
 一个我自己使用的ComfyUI自定义节点包。  
 因为之前使用的工作流太复杂了，很难加载和调试，大量的节点消耗了太多资源。我需要一个功能强大但简单易用且UI清爽的解决方案。  
@@ -103,8 +103,8 @@
 只支持英文<->中文。  
 允许空输入。  
 这是它们的API网站：  
-百度：(https://api.fanyi.baidu.com/manage/developer)  
-Deepseek：(https://platform.deepseek.com/api_keys)  
+[百度翻译](https://api.fanyi.baidu.com/manage/developer)  
+[Deepseek](https://platform.deepseek.com/api_keys)  
 Deepseek更专业但需要付费。  
 * **文本翻译合并CLIP编码**  
 结合合并、CLIP编码和翻译。  
@@ -115,7 +115,7 @@ Deepseek更专业但需要付费。
 需要文件"model.safetensors"、"config.json"、"top_tags.txt"。  
 将它们放入`ComfyUI\models\joytag`。  
 如果找不到，节点会自动下载它们（当然前提是你的网络允许）。  
-你也可以从(https://huggingface.co/fancyfeast/joytag/tree/main)手动下载它们。（不需要下载model.onnx文件也可以）  
+你也可以从[Hugging Face](https://huggingface.co/fancyfeast/joytag/tree/main)手动下载它们。（不需要下载model.onnx文件也可以）  
 ![Example Image](template/text.png)
 
 ### 选择器：
