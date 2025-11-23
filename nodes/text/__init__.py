@@ -1,0 +1,11 @@
+def get_node_mappings():
+    from .text_basic import TEXT_BASIC_CLASS_MAPPINGS, TEXT_BASIC_DISPLAY_NAME_MAPPINGS
+    from .text_advanced import TEXT_ADVANCED_CLASS_MAPPINGS, TEXT_ADVANCED_DISPLAY_NAME_MAPPINGS
+    
+    return {
+        **TEXT_BASIC_CLASS_MAPPINGS,
+        **TEXT_ADVANCED_CLASS_MAPPINGS
+    }, {
+        **TEXT_BASIC_DISPLAY_NAME_MAPPINGS,
+        **TEXT_ADVANCED_DISPLAY_NAME_MAPPINGS
+    }

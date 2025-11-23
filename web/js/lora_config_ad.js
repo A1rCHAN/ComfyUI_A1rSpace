@@ -235,7 +235,8 @@ class LoRAEntryWidget extends BaseCustomWidget {
         this.data = {
             enabled: true,
             lora: "None",
-            strength: 1.0
+            strength: 1.0,
+            strength_clip: 1.0
         };
         
         // 定义所有可交互区域
@@ -245,6 +246,9 @@ class LoRAEntryWidget extends BaseCustomWidget {
             strengthDec: { bounds: [0, 0], onDown: this.onStrengthDec, disabled: false },
             strengthVal: { bounds: [0, 0], onDown: this.onStrengthInput, disabled: false },
             strengthInc: { bounds: [0, 0], onDown: this.onStrengthInc, disabled: false },
+            strengthClipDec: { bounds: [0, 0], onDown: this.onStrengthClipDec, disabled: false },
+            strengthClipVal: { bounds: [0, 0], onDown: this.onStrengthClipInput, disabled: false },
+            strengthClipInc: { bounds: [0, 0], onDown: this.onStrengthClipInc, disabled: false },
         };
         
         this.lastEvent = null;
@@ -282,18 +286,38 @@ class LoRAEntryWidget extends BaseCustomWidget {
             strength = 1.0;
             this.data.strength = 1.0;
         }
+        let strengthClip = parseFloat(this.data.strength_clip);
+        if (isNaN(strengthClip)) {
+            strengthClip = 1.0;
+            this.data.strength_clip = 1.0;
+        }
+
+        const advanceMode = !!node.properties?.advanceMode;
         
         // 计算禁用状态，范围为 [-10, 10]
         const minStrength = -10;
         const maxStrength = 10;
         const disableDecrease = strength <= minStrength;
         const disableIncrease = strength >= maxStrength;
+        const disableClipDecrease = strengthClip <= minStrength;
+        const disableClipIncrease = strengthClip >= maxStrength;
         
         // 更新 hitAreas 的禁用状态
         this.hitAreas.lora.disabled = !enabled;
         this.hitAreas.strengthDec.disabled = !enabled || disableDecrease;
         this.hitAreas.strengthVal.disabled = !enabled;
         this.hitAreas.strengthInc.disabled = !enabled || disableIncrease;
+        
+        this.hitAreas.strengthClipDec.disabled = !enabled || disableClipDecrease;
+        this.hitAreas.strengthClipVal.disabled = !enabled;
+        this.hitAreas.strengthClipInc.disabled = !enabled || disableClipIncrease;
+
+        // 如果不是高级模式，禁用 Clip 区域
+        if (!advanceMode) {
+            this.hitAreas.strengthClipDec.bounds = [0, 0];
+            this.hitAreas.strengthClipVal.bounds = [0, 0];
+            this.hitAreas.strengthClipInc.bounds = [0, 0];
+        }
         
         ctx.save();
 
@@ -347,7 +371,9 @@ class LoRAEntryWidget extends BaseCustomWidget {
         posX += enableWidth + spacing;
         
         // 3.2 绘制 LoRA 选择器
-        const loraWidth = contentWidth - enableWidth - strengthWidth - spacing * 2;
+        // 如果是高级模式，需要挤压 LoRA 选择器的宽度以容纳第二个强度调节器
+        const strengthAreaWidth = advanceMode ? (strengthWidth * 2 + spacing) : strengthWidth;
+        const loraWidth = contentWidth - enableWidth - strengthAreaWidth - spacing * 2;
         const loraX = posX;
 
         ctx.fillStyle = enabled ? "#383838" : "#2a2a2a";
@@ -372,21 +398,54 @@ class LoRAEntryWidget extends BaseCustomWidget {
         this.hitAreas.lora.bounds = [loraX, loraWidth];
         posX += loraWidth + spacing;
         
-        // 3.3 绘制强度调节器 — 使用相同的 centerY 以垂直对齐
-        const [decBounds, valBounds, incBounds] = drawNumberWidgetPart(ctx, {
-            posX: contentX + contentWidth,
-            posY: y,
-            height: rowHeight,
-            value: strength,
-            enabled: enabled,
-            disableDecrease: disableDecrease,
-            disableIncrease: disableIncrease,
-            centerY: centerY
-        });
-        
-        this.hitAreas.strengthDec.bounds = decBounds;
-        this.hitAreas.strengthVal.bounds = valBounds;
-        this.hitAreas.strengthInc.bounds = incBounds;
+        // 3.3 绘制强度调节器
+        if (advanceMode) {
+            // 绘制 Model Strength (左侧)
+            const [mDec, mVal, mInc] = drawNumberWidgetPart(ctx, {
+                posX: contentX + contentWidth - strengthWidth - spacing, // 左移一个身位
+                posY: y,
+                height: rowHeight,
+                value: strength,
+                enabled: enabled,
+                disableDecrease: disableDecrease,
+                disableIncrease: disableIncrease,
+                centerY: centerY
+            });
+            this.hitAreas.strengthDec.bounds = mDec;
+            this.hitAreas.strengthVal.bounds = mVal;
+            this.hitAreas.strengthInc.bounds = mInc;
+
+            // 绘制 Clip Strength (右侧)
+            const [cDec, cVal, cInc] = drawNumberWidgetPart(ctx, {
+                posX: contentX + contentWidth,
+                posY: y,
+                height: rowHeight,
+                value: strengthClip,
+                enabled: enabled,
+                disableDecrease: disableClipDecrease,
+                disableIncrease: disableClipIncrease,
+                centerY: centerY
+            });
+            this.hitAreas.strengthClipDec.bounds = cDec;
+            this.hitAreas.strengthClipVal.bounds = cVal;
+            this.hitAreas.strengthClipInc.bounds = cInc;
+        } else {
+            // 普通模式，只绘制一个 (Model Strength)
+            const [decBounds, valBounds, incBounds] = drawNumberWidgetPart(ctx, {
+                posX: contentX + contentWidth,
+                posY: y,
+                height: rowHeight,
+                value: strength,
+                enabled: enabled,
+                disableDecrease: disableDecrease,
+                disableIncrease: disableIncrease,
+                centerY: centerY
+            });
+            
+            this.hitAreas.strengthDec.bounds = decBounds;
+            this.hitAreas.strengthVal.bounds = valBounds;
+            this.hitAreas.strengthInc.bounds = incBounds;
+        }
         
         ctx.restore();
     }
@@ -464,6 +523,62 @@ class LoRAEntryWidget extends BaseCustomWidget {
                 const value = parseFloat(input);
                 if (!isNaN(value)) {
                     this.data.strength = Math.max(-10, Math.min(10, parseFloat(value.toFixed(2))));
+                    node.syncToBackend();
+                    node.setDirtyCanvas(true, true);
+                }
+            }
+        }
+        return true;
+    }
+
+    onStrengthClipDec(event, pos, node) {
+        const current = parseFloat(this.data.strength_clip) || 1.0;
+        const newValue = Math.max(-10, parseFloat((current - 0.05).toFixed(2)));
+        
+        if (newValue !== current) {
+            this.data.strength_clip = newValue;
+            node.syncToBackend();
+            node.setDirtyCanvas(true, true);
+        }
+        return true;
+    }
+    
+    onStrengthClipInc(event, pos, node) {
+        const current = parseFloat(this.data.strength_clip) || 1.0;
+        const newValue = Math.min(10, parseFloat((current + 0.05).toFixed(2)));
+        
+        if (newValue !== current) {
+            this.data.strength_clip = newValue;
+            node.syncToBackend();
+            node.setDirtyCanvas(true, true);
+        }
+        return true;
+    }
+    
+    onStrengthClipInput(event, pos, node) {
+        const current = parseFloat(this.data.strength_clip) || 1.0;
+        
+        const canvas = app.canvas;
+        if (canvas && canvas.prompt) {
+            canvas.prompt(
+                "Clip Strength", 
+                current, 
+                (value) => {
+                    const parsedValue = parseFloat(value);
+                    if (!isNaN(parsedValue)) {
+                        this.data.strength_clip = Math.max(-10, Math.min(10, parseFloat(parsedValue.toFixed(2))));
+                        node.syncToBackend();
+                        node.setDirtyCanvas(true, true);
+                    }
+                },
+                this.lastEvent || event
+            );
+        } else {
+            const input = prompt("Enter clip strength value (-10 to 10):", current.toFixed(2));
+            if (input !== null) {
+                const value = parseFloat(input);
+                if (!isNaN(value)) {
+                    this.data.strength_clip = Math.max(-10, Math.min(10, parseFloat(value.toFixed(2))));
                     node.syncToBackend();
                     node.setDirtyCanvas(true, true);
                 }
@@ -628,6 +743,36 @@ class MasterToggleWidget extends BaseCustomWidget {
         const rowHeight = 24;
         let centerY = y + rowHeight / 2;
 
+        // 绘制 Add 按钮背景 (全宽)
+        try {
+            const addBtnHeight = 24;
+            const addX = margin;
+            const addBtnWidth = widget_width - margin * 2;
+            const addY = y + Math.round((rowHeight - addBtnHeight) / 2);
+
+            const isFull = node.loraEntries && node.loraEntries.length >= (node.maxEntries || 6);
+
+            ctx.fillStyle = isFull ? '#333' : '#2a2a2a';
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            drawRoundedRect(ctx, addX, addY, addBtnWidth, addBtnHeight, 6, true, true);
+
+            // 绘制 "Add LoRA" 文本 (居中于右侧区域)
+            const enableWidth = 35;
+            const spacing = 4;
+            const textStartX = contentX + enableWidth + spacing;
+            const textWidth = (addX + addBtnWidth) - textStartX - innerPadding;
+            
+            ctx.fillStyle = isFull ? '#888' : '#fff';
+            ctx.font = '13px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const txt = isFull ? ` ` : '➕ Add LoRA';
+            ctx.fillText(txt, textStartX + textWidth / 2, addY + addBtnHeight / 2);
+        } catch (err) {
+            // ignore drawing errors
+        }
+
         // 计算状态
         node.initLoRAData?.();
         const total = (node.loraEntries || []).length;
@@ -640,7 +785,7 @@ class MasterToggleWidget extends BaseCustomWidget {
         const isAllOff = enabledCount === 0;
         const isMixed = !isAllOn && !isAllOff;
 
-        // 绘制三态开关
+        // 绘制三态开关 (在背景之上)
         const toggleWidth = 26;
         const toggleH = 14;
         const yToggle = Math.round(centerY - toggleH / 2);
@@ -654,35 +799,6 @@ class MasterToggleWidget extends BaseCustomWidget {
             ctx.fill();
         } else {
             drawTogglePart(ctx, { posX: posX, posY: y, height: rowHeight, value: !!isAllOn, centerY: centerY });
-        }
-
-        // 绘制右侧的 Add 按钮
-        try {
-            const addBtnHeight = 24;
-            const enableWidth = 35;
-            const spacing = 4;
-            const contentWidth = Math.max(0, widget_width - margin * 2 - innerPadding * 2);
-            const addLeft = contentX + enableWidth + spacing;
-            const addRight = contentX + contentWidth;
-            const addX = addLeft;
-            const addBtnWidth = Math.max(48, addRight - addLeft);
-            const addY = y + Math.round((rowHeight - addBtnHeight) / 2);
-
-            const isFull = node.loraEntries && node.loraEntries.length >= (node.maxEntries || 6);
-
-            ctx.fillStyle = isFull ? '#333' : '#2a2a2a';
-            ctx.strokeStyle = '#222';
-            ctx.lineWidth = 1;
-            drawRoundedRect(ctx, addX, addY, addBtnWidth, addBtnHeight, 6, true, true);
-
-            ctx.fillStyle = isFull ? '#888' : '#fff';
-            ctx.font = '13px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            const txt = isFull ? ` ` : '➕ Add LoRA';
-            ctx.fillText(txt, addX + addBtnWidth / 2, addY + addBtnHeight / 2);
-        } catch (err) {
-            // ignore drawing errors
         }
 
         this._lastWidth = widget_width - 20;
@@ -720,10 +836,12 @@ app.registerExtension({
                 const enableWidget = this.widgets.find(w => w.name === `enable_${i}`);
                 const loraWidget = this.widgets.find(w => w.name === `lora_name_${i}`);
                 const strengthWidget = this.widgets.find(w => w.name === `strength_${i}`);
+                const strengthClipWidget = this.widgets.find(w => w.name === `strength_clip_${i}`);
                 
                 if (enableWidget) enableWidget.value = false;
                 if (loraWidget) loraWidget.value = "None";
                 if (strengthWidget) strengthWidget.value = 1.0;
+                if (strengthClipWidget) strengthClipWidget.value = 1.0;
             }
             
             this.loraEntries.forEach((entry, visualIndex) => {
@@ -733,10 +851,12 @@ app.registerExtension({
                     const enableWidget = this.widgets.find(w => w.name === `enable_${backendIndex}`);
                     const loraWidget = this.widgets.find(w => w.name === `lora_name_${backendIndex}`);
                     const strengthWidget = this.widgets.find(w => w.name === `strength_${backendIndex}`);
+                    const strengthClipWidget = this.widgets.find(w => w.name === `strength_clip_${backendIndex}`);
                     
                     if (enableWidget) enableWidget.value = entry.widget.data.enabled;
                     if (loraWidget) loraWidget.value = entry.widget.data.lora;
                     if (strengthWidget) strengthWidget.value = entry.widget.data.strength;
+                    if (strengthClipWidget) strengthClipWidget.value = entry.widget.data.strength_clip;
                 }
             });
         };
@@ -749,13 +869,15 @@ app.registerExtension({
                 const enableWidget = this.widgets.find(w => w.name === `enable_${i}`);
                 const loraWidget = this.widgets.find(w => w.name === `lora_name_${i}`);
                 const strengthWidget = this.widgets.find(w => w.name === `strength_${i}`);
+                const strengthClipWidget = this.widgets.find(w => w.name === `strength_clip_${i}`);
                 
                 if (enableWidget?.value || (loraWidget?.value && loraWidget.value !== "None")) {
                     const widget = new LoRAEntryWidget(`lora_entry_${this.loraEntries.length}`);
                     widget.data = {
                         enabled: Boolean(enableWidget?.value),
                         lora: String(loraWidget?.value || "None"),
-                        strength: parseFloat(strengthWidget?.value) || 1.0
+                        strength: parseFloat(strengthWidget?.value) || 1.0,
+                        strength_clip: parseFloat(strengthClipWidget?.value) || 1.0
                     };
                     
                     const masterIndex = this.widgets.indexOf(this.masterToggle);
@@ -1005,6 +1127,15 @@ app.registerExtension({
 
             this.initLoRAData();
 
+            // Initialize properties
+            if (!this.properties) {
+                this.properties = {};
+            }
+            // Default to Advance Mode = true
+            if (this.properties.advanceMode === undefined) {
+                this.properties.advanceMode = true;
+            }
+
             const hideWidget = (widget) => {
                 if (!widget) return;
 
@@ -1031,19 +1162,21 @@ app.registerExtension({
                 const enableWidget = this.widgets?.find(w => w.name === `enable_${i}`);
                 const loraWidget = this.widgets?.find(w => w.name === `lora_name_${i}`);
                 const strengthWidget = this.widgets?.find(w => w.name === `strength_${i}`);
+                const strengthClipWidget = this.widgets?.find(w => w.name === `strength_clip_${i}`);
 
                 if (enableWidget) hideWidget(enableWidget);
                 if (loraWidget) hideWidget(loraWidget);
                 if (strengthWidget) hideWidget(strengthWidget);
+                if (strengthClipWidget) hideWidget(strengthClipWidget);
 
-                removeInputByNames([`enable_${i}`, `lora_name_${i}`, `strength_${i}`]);
+                removeInputByNames([`enable_${i}`, `lora_name_${i}`, `strength_${i}`, `strength_clip_${i}`]);
             }
 
             const originalConfigure = this.onConfigure;
             this.onConfigure = function () {
                 const r = originalConfigure?.apply(this, arguments);
                 for (let j = 1; j <= 6; j++) {
-                    removeInputByNames([`enable_${j}`, `lora_name_${j}`, `strength_${j}`]);
+                    removeInputByNames([`enable_${j}`, `lora_name_${j}`, `strength_${j}`, `strength_clip_${j}`]);
                 }
                 return r;
             };
@@ -1153,6 +1286,15 @@ app.registerExtension({
             const result = getExtraMenuOptions?.apply(this, arguments);
             
             this.initLoRAData();
+
+            // Add Advance Mode toggle
+            options.push({
+                content: `${this.properties.advanceMode ? "Advance Mode" : "Standard Mode"}`,
+                callback: () => {
+                    this.properties.advanceMode = !this.properties.advanceMode;
+                    this.setDirtyCanvas(true, true);
+                }
+            });
             
             if (this.loraEntries && this.loraEntries.length > 0) {
                 const removeItems = this.loraEntries.map((entry, visualIndex) => {
@@ -1166,7 +1308,7 @@ app.registerExtension({
                     };
                 });
                 
-                if (removeItems.length > 0) {
+                if (removeItems.length >= 2) {
                     options.push({
                         content: "Remove LoRA",
                         has_submenu: true,
@@ -1206,7 +1348,8 @@ app.registerExtension({
                     o._a1r_lora_entries.push({
                         enabled: entry.widget.data.enabled,
                         lora: entry.widget.data.lora,
-                        strength: entry.widget.data.strength
+                        strength: entry.widget.data.strength,
+                        strength_clip: entry.widget.data.strength_clip
                     });
                 }
             });
@@ -1235,6 +1378,14 @@ app.registerExtension({
             
             const result = onConfigure?.apply(this, arguments);
             
+            // Ensure advanceMode default for loaded workflows
+            if (!this.properties) {
+                this.properties = {};
+            }
+            if (this.properties.advanceMode === undefined) {
+                this.properties.advanceMode = true;
+            }
+
             debugLog('[LoRA Config AD] onConfigure AFTER apply:',
                 'userModified=', this._a1r_size_data?.userModified,
                 'size=', this.size,
@@ -1264,7 +1415,8 @@ app.registerExtension({
                         widget.data = {
                             enabled: Boolean(entryData.enabled),
                             lora: String(entryData.lora || "None"),
-                            strength: parseFloat(entryData.strength) || 1.0
+                            strength: parseFloat(entryData.strength) || 1.0,
+                            strength_clip: parseFloat(entryData.strength_clip) || 1.0
                         };
                         
                         const masterIndex = self.widgets.indexOf(self.masterToggle);

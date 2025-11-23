@@ -1291,12 +1291,96 @@ app.registerExtension({
                                 mirrorWidget.options.disabled = true;
                             }
                         }
+                        
+                        // 特殊处理: 为VAE Decode Transform重建widget联动逻辑
+                        if (targetNode.type === "A1r VAE Decode Transform") {
+                            const linkedWidgets = ["decode", "tiled", "preview"];
+                            if (linkedWidgets.includes(widgetName)) {
+                                this.setupVAEDecodeTransformBehavior(targetNode, widgetName, mirrorWidget, targetWidget);
+                            }
+                        }
                     }
                 } catch (error) {
                     console.error("Failed to add widget to console:", error);
                 }
                 
                 app.canvas.setDirty(true);
+            };
+            
+            // 为VAE Decode Transform设置特殊的widget联动行为
+            // 此方法会为单个镜像widget设置联动逻辑，让它能够正确操作原节点上的其他widgets
+            nodeType.prototype.setupVAEDecodeTransformBehavior = function(targetNode, widgetName, mirrorWidget, targetWidget) {
+                // 获取原节点上的三个关键widgets
+                const decodeWidget = targetNode.widgets?.find(w => w.name === "decode");
+                const tiledWidget = targetNode.widgets?.find(w => w.name === "tiled");
+                const previewWidget = targetNode.widgets?.find(w => w.name === "preview");
+                
+                if (!decodeWidget || !tiledWidget || !previewWidget) return;
+                
+                // 保存原始callback
+                const originalCallback = mirrorWidget.callback;
+                
+                // 根据不同的widget类型设置不同的联动逻辑
+                if (widgetName === "decode") {
+                    // decode: 禁用时强制禁用tiled和preview
+                    mirrorWidget.callback = function(value) {
+                        if (!value) {
+                            // 同步到目标节点的tiled和preview
+                            tiledWidget.value = false;
+                            previewWidget.value = false;
+                            if (tiledWidget.callback) tiledWidget.callback(false);
+                            if (previewWidget.callback) previewWidget.callback(false);
+                            
+                            // 如果Console中也有这些widgets，同步它们的显示值
+                            const tiledKey = `${targetNode.id}_tiled`;
+                            const previewKey = `${targetNode.id}_preview`;
+                            const tiledCollection = this.collectedWidgets?.get?.(tiledKey);
+                            const previewCollection = this.collectedWidgets?.get?.(previewKey);
+                            if (tiledCollection?.mirrorWidget) tiledCollection.mirrorWidget.value = false;
+                            if (previewCollection?.mirrorWidget) previewCollection.mirrorWidget.value = false;
+                        }
+                        if (originalCallback) {
+                            originalCallback.call(this, value);
+                        }
+                        app.canvas.setDirty(true);
+                    }.bind(this);
+                } else if (widgetName === "tiled") {
+                    // tiled: 启用时强制启用decode
+                    mirrorWidget.callback = function(value) {
+                        if (value) {
+                            // 同步到目标节点的decode
+                            decodeWidget.value = true;
+                            if (decodeWidget.callback) decodeWidget.callback(true);
+                            
+                            // 如果Console中也有decode widget，同步它的显示值
+                            const decodeKey = `${targetNode.id}_decode`;
+                            const decodeCollection = this.collectedWidgets?.get?.(decodeKey);
+                            if (decodeCollection?.mirrorWidget) decodeCollection.mirrorWidget.value = true;
+                        }
+                        if (originalCallback) {
+                            originalCallback.call(this, value);
+                        }
+                        app.canvas.setDirty(true);
+                    }.bind(this);
+                } else if (widgetName === "preview") {
+                    // preview: 启用时强制启用decode
+                    mirrorWidget.callback = function(value) {
+                        if (value) {
+                            // 同步到目标节点的decode
+                            decodeWidget.value = true;
+                            if (decodeWidget.callback) decodeWidget.callback(true);
+                            
+                            // 如果Console中也有decode widget，同步它的显示值
+                            const decodeKey = `${targetNode.id}_decode`;
+                            const decodeCollection = this.collectedWidgets?.get?.(decodeKey);
+                            if (decodeCollection?.mirrorWidget) decodeCollection.mirrorWidget.value = true;
+                        }
+                        if (originalCallback) {
+                            originalCallback.call(this, value);
+                        }
+                        app.canvas.setDirty(true);
+                    }.bind(this);
+                }
             };
             
             // 为添加的小部件设置节点名称监听
@@ -1596,12 +1680,12 @@ app.registerExtension({
                     if (this.collectedNode.isGroup) {
                         o.collected_group = {
                             groupId: this.collectedNode.groupId,
-                            value: this.collectedNode.toggleWidget?.value || true
+                            value: this.collectedNode.toggleWidget?.value ?? true
                         };
                     } else {
                         o.collected_node = {
                             nodeId: this.collectedNode.nodeId,
-                            value: this.collectedNode.toggleWidget?.value || true
+                            value: this.collectedNode.toggleWidget?.value ?? true
                         };
                     }
                 }
@@ -1674,6 +1758,16 @@ app.registerExtension({
                     // 恢复激活状态
                     if (o.isActive) {
                         this.activate();
+                    }
+                    
+                    // 应用节点/组的模式状态 (修复状态持久化问题)
+                    // 这确保了在恢复toggle值后，立即将其应用到被控制节点的mode属性
+                    if (this.collectedNode) {
+                        // 使用setTimeout确保DOM已完全更新
+                        setTimeout(() => {
+                            this.updateNodeMode();
+                            this.updateGroupMode();
+                        }, 100);
                     }
                 }, 500);
                 

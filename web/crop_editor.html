@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Crop Editor</title>
+    <link rel="stylesheet" href="css/crop_editor.css">
+</head>
+<body>
+    <div id="crop-editor-container" class="crop-editor-container">
+        <div class="crop-editor-header">
+            <div class="crop-editor-title">裁剪图像</div>
+            <button class="crop-editor-close" id="crop-close-btn" title="关闭">×</button>
+        </div>
+        
+        <div class="crop-editor-content">
+            <div class="crop-canvas-wrapper">
+                <canvas id="crop-canvas" class="crop-canvas"></canvas>
+                <div id="crop-overlay" class="crop-overlay">
+                    <!-- Crop box -->
+                    <div id="crop-box" class="crop-box">
+                        <!-- Resize handles -->
+                        <div class="crop-handle crop-handle-nw" data-direction="nw"></div>
+                        <div class="crop-handle crop-handle-n" data-direction="n"></div>
+                        <div class="crop-handle crop-handle-ne" data-direction="ne"></div>
+                        <div class="crop-handle crop-handle-w" data-direction="w"></div>
+                        <div class="crop-handle crop-handle-e" data-direction="e"></div>
+                        <div class="crop-handle crop-handle-sw" data-direction="sw"></div>
+                        <div class="crop-handle crop-handle-s" data-direction="s"></div>
+                        <div class="crop-handle crop-handle-se" data-direction="se"></div>
+                        
+                        <!-- Grid lines -->
+                        <div class="crop-grid">
+                            <div class="crop-grid-line crop-grid-v1"></div>
+                            <div class="crop-grid-line crop-grid-v2"></div>
+                            <div class="crop-grid-line crop-grid-h1"></div>
+                            <div class="crop-grid-line crop-grid-h2"></div>
+                        </div>
+                        
+                        <!-- Crop info display -->
+                        <div class="crop-info" id="crop-info">
+                            <span id="crop-dimensions">0 × 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="crop-controls">
+                <div class="crop-control-section">
+                    <label class="crop-control-label">纵横比</label>
+                    <div class="crop-ratio-buttons">
+                        <button class="crop-ratio-btn active" data-ratio="free">自由</button>
+                        <button class="crop-ratio-btn" data-ratio="1:1">1:1</button>
+                        <button class="crop-ratio-btn" data-ratio="4:3">4:3</button>
+                        <button class="crop-ratio-btn" data-ratio="3:4">3:4</button>
+                        <button class="crop-ratio-btn" data-ratio="16:9">16:9</button>
+                        <button class="crop-ratio-btn" data-ratio="9:16">9:16</button>
+                        <button class="crop-ratio-btn" data-ratio="3:2">3:2</button>
+                        <button class="crop-ratio-btn" data-ratio="2:3">2:3</button>
+                    </div>
+                </div>
+                
+                <div class="crop-control-section">
+                    <label class="crop-control-label">裁剪区域</label>
+                    <div class="crop-input-group">
+                        <div class="crop-input-row">
+                            <label>X:</label>
+                            <input type="number" id="crop-x" class="crop-input" min="0" value="0">
+                            <label>Y:</label>
+                            <input type="number" id="crop-y" class="crop-input" min="0" value="0">
+                        </div>
+                        <div class="crop-input-row">
+                            <label>宽度:</label>
+                            <input type="number" id="crop-width" class="crop-input" min="1" value="100">
+                            <label>高度:</label>
+                            <input type="number" id="crop-height" class="crop-input" min="1" value="100">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="crop-control-section">
+                    <button class="crop-action-btn crop-reset-btn" id="crop-reset-btn">重置</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="crop-editor-footer">
+            <button class="crop-action-btn crop-cancel-btn" id="crop-cancel-btn">取消</button>
+            <button class="crop-action-btn crop-apply-btn" id="crop-apply-btn">应用裁剪</button>
+        </div>
+    </div>
+    
+    <script src="js/crop_editor.js"></script>
+</body>
+</html>

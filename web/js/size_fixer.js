@@ -15,30 +15,12 @@ import { app } from "/scripts/app.js";
 // ============================================================================
 
 const DEFAULT_SIZE = {
-    // config nodes
-    "A1r KSampler Config": [230, 330],
-    "A1r KSampler Config Values": [230, 200],
-    "A1r LoRA Config": [210, 230],
-    "A1r LoRA Config Advance": [300, 120],
-    "A1r ControlNet Config": [210, 280],
-    "A1r Widget Collector": [220, 30],
-
-    // switch nodes
-    "A1r Latent Encode Transform": [240, 150],
-    "A1r VAE Decode Transform": [210, 110],
-    "A1r Image Upscale Transform": [240, 150],
-    "A1r Latent Upscale Transform": [240, 150],
-
-    // text nodes
-    "A1r Text Box": [400, 200],
-    "A1r Text Merge": [220, 280],
-    "A1r Text Translate Merge with Clip Encode": [220, 470],
-
-    // utils nodes
     "A1r Size Canvas": [270, 340],
 };
 
 const MIN_SIZE = {
+    "A1r LoRA Config Advance": [280, 90],
+
     // control nodes
     "A1r Widget Collector": [200, 30],
     "A1r Node Mode Collector": [200, 30],
@@ -48,7 +30,7 @@ const MIN_SIZE = {
     "A1r Seed Control": [210, 110],
 
     // text nodes
-    "A1r Text Show": [210, 90],
+    "A1r Text Show": [210, 110],
     
     // utils nodes
     "A1r Custom Slider": [210, 30],

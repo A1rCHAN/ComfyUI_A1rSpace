@@ -1,0 +1,337 @@
+/**
+ * Crop Editor Styles
+ * Windows 10 Photos app inspired design
+ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+    background: #1e1e1e;
+    color: #fff;
+    overflow: hidden;
+}
+
+.crop-editor-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000;
+}
+
+/* Header */
+.crop-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.crop-editor-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.crop-editor-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.crop-editor-close:hover {
+    background: #3d3d3d;
+}
+
+/* Content */
+.crop-editor-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.crop-canvas-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #000;
+    overflow: hidden;
+}
+
+.crop-canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Overlay */
+.crop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+/* Crop Box */
+.crop-box {
+    position: absolute;
+    pointer-events: all;
+    cursor: move;
+    user-select: none;
+}
+
+/* Crop Grid */
+.crop-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.crop-grid-line {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.crop-grid-v1, .crop-grid-v2 {
+    width: 1px;
+    height: 100%;
+}
+
+.crop-grid-v1 { left: 33.33%; }
+.crop-grid-v2 { left: 66.66%; }
+
+.crop-grid-h1, .crop-grid-h2 {
+    height: 1px;
+    width: 100%;
+}
+
+.crop-grid-h1 { top: 33.33%; }
+.crop-grid-h2 { top: 66.66%; }
+
+/* Resize Handles */
+.crop-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border: 2px solid #0078d4;
+    border-radius: 50%;
+    pointer-events: all;
+}
+
+.crop-handle-nw { top: -6px; left: -6px; cursor: nw-resize; }
+.crop-handle-n { top: -6px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+.crop-handle-ne { top: -6px; right: -6px; cursor: ne-resize; }
+.crop-handle-w { top: 50%; left: -6px; transform: translateY(-50%); cursor: w-resize; }
+.crop-handle-e { top: 50%; right: -6px; transform: translateY(-50%); cursor: e-resize; }
+.crop-handle-sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+.crop-handle-s { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+.crop-handle-se { bottom: -6px; right: -6px; cursor: se-resize; }
+
+/* Crop Info */
+.crop-info {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Controls Panel */
+.crop-controls {
+    width: 280px;
+    background: #252525;
+    border-left: 1px solid #3d3d3d;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.crop-control-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.crop-control-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0e0e0;
+}
+
+/* Ratio Buttons */
+.crop-ratio-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.crop-ratio-btn {
+    padding: 8px 12px;
+    background: #2d2d2d;
+    border: 1px solid #3d3d3d;
+    color: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.crop-ratio-btn:hover {
+    background: #3d3d3d;
+    border-color: #4d4d4d;
+}
+
+.crop-ratio-btn.active {
+    background: #0078d4;
+    border-color: #0078d4;
+    color: #ffffff;
+}
+
+/* Input Groups */
+.crop-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.crop-input-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.crop-input-row label {
+    font-size: 12px;
+    color: #b0b0b0;
+}
+
+.crop-input {
+    padding: 6px 8px;
+    background: #2d2d2d;
+    border: 1px solid #3d3d3d;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 13px;
+    width: 100%;
+}
+
+.crop-input:focus {
+    outline: none;
+    border-color: #0078d4;
+}
+
+/* Action Buttons */
+.crop-action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.crop-reset-btn {
+    background: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #3d3d3d;
+}
+
+.crop-reset-btn:hover {
+    background: #3d3d3d;
+}
+
+.crop-cancel-btn {
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid #5d5d5d;
+}
+
+.crop-cancel-btn:hover {
+    background: #3d3d3d;
+}
+
+.crop-apply-btn {
+    background: #0078d4;
+    color: #ffffff;
+}
+
+.crop-apply-btn:hover {
+    background: #1084d8;
+}
+
+/* Footer */
+.crop-editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #2d2d2d;
+    border-top: 1px solid #3d3d3d;
+}
+
+/* Scrollbar */
+.crop-controls::-webkit-scrollbar {
+    width: 8px;
+}
+
+.crop-controls::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.crop-controls::-webkit-scrollbar-thumb {
+    background: #3d3d3d;
+    border-radius: 4px;
+}
+
+.crop-controls::-webkit-scrollbar-thumb:hover {
+    background: #4d4d4d;
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

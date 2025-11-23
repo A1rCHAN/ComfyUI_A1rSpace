@@ -1,7 +1,9 @@
 # type: ignore
 """
-KSampler nodes for A1rSpace
-Provides unified sampling interface and sampler/scheduler selection utilities.
+Unity KSampler and related sampling nodes for ComfyUI A1rSpace extension.
+
+This module provides unified sampling interface with multiple modes and
+sampler/scheduler selection utilities.
 """
 
 import torch
@@ -11,60 +13,7 @@ import comfy.utils
 import comfy
 import latent_preview
 
-from .config import AlwaysEqual, ModelList, NumericConfig
-
-
-def _to_int(name, v):
-    """
-    Convert value to integer with detailed error handling.
-    
-    Args:
-        name: Parameter name for error messages
-        v: Value to convert (int, float, or string)
-    
-    Returns:
-        Integer value
-    
-    Raises:
-        TypeError: If conversion fails
-    """
-    if isinstance(v, int):
-        return v
-    if isinstance(v, float):
-        return int(v)
-    if isinstance(v, str):
-        v_strip = v.strip()
-        if v_strip.isdigit():
-            return int(v_strip)
-        try:
-            return int(v_strip, 0)
-        except Exception:
-            raise TypeError(f"{name} must be INT, got string '{v}'")
-    raise TypeError(f"{name} must be INT, got {type(v).__name__}")
-
-
-def _to_float(name, v):
-    """
-    Convert value to float with detailed error handling.
-    
-    Args:
-        name: Parameter name for error messages
-        v: Value to convert (int, float, or string)
-    
-    Returns:
-        Float value
-    
-    Raises:
-        TypeError: If conversion fails
-    """
-    if isinstance(v, (float, int)):
-        return float(v)
-    if isinstance(v, str):
-        try:
-            return float(v.strip())
-        except Exception:
-            raise TypeError(f"{name} must be FLOAT, got string '{v}'")
-    raise TypeError(f"{name} must be FLOAT, got {type(v).__name__}")
+from ..common import AlwaysEqual, ModelList, NumericConfig, to_int, to_float
 
 
 def common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent, 
@@ -138,6 +87,7 @@ class SamplerPicker:
     def select(self, sampler_name, scheduler):
         """Return selected sampler and scheduler."""
         return (sampler_name, scheduler)
+
 
 class UnityKSampler:
     """
@@ -215,10 +165,10 @@ class UnityKSampler:
             Tuple containing the sampled latent
         """
         # Convert and validate parameters
-        seed = _to_int("seed", seed)
-        steps = _to_int("steps", steps)
-        cfg = _to_float("cfg", cfg)
-        denoise = _to_float("denoise", denoise)
+        seed = to_int("seed", seed)
+        steps = to_int("steps", steps)
+        cfg = to_float("cfg", cfg)
+        denoise = to_float("denoise", denoise)
         
         sampler = str(sampler)
         scheduler = str(scheduler)
@@ -228,10 +178,10 @@ class UnityKSampler:
             # Text to image mode: Create empty latent from dimensions
             if width is None or height is None:
                 raise ValueError("Width and height are required for 'text to image' mode")
-            width = _to_int("width", width)
-            height = _to_int("height", height)
+            width = to_int("width", width)
+            height = to_int("height", height)
             
-            batch_size_value = _to_int("batch_size", batch_size) if batch_size is not None else 1
+            batch_size_value = to_int("batch_size", batch_size) if batch_size is not None else 1
             if batch_size_value < 1:
                 batch_size_value = 1
             
@@ -247,7 +197,7 @@ class UnityKSampler:
             if pixels is None or vae is None:
                 raise ValueError("Pixels and VAE are required for 'image to image' mode")
             
-            batch_size_value = _to_int("batch_size", batch_size) if batch_size is not None else pixels.shape[0]
+            batch_size_value = to_int("batch_size", batch_size) if batch_size is not None else pixels.shape[0]
             if batch_size_value < 1:
                 batch_size_value = 1
             
@@ -272,7 +222,7 @@ class UnityKSampler:
             # Latent upscale mode: Upscale existing latent
             if latent is None:
                 raise ValueError("Latent input is required for 'latent upscale' mode")
-            upscale_by = _to_float("upscale_by", upscale_by) if upscale_by is not None else 1.5
+            upscale_by = to_float("upscale_by", upscale_by) if upscale_by is not None else 1.5
             method = str(upscale_method) if upscale_method is not None else "nearest-exact"
             
             # Upscale latent (same as LatentUpscale node)
@@ -306,6 +256,8 @@ class UnityKSampler:
 
         return result
 
+
+# Export node mappings
 KSAMPLER_CLASS_MAPPINGS = {
     "A1r Sampler Picker": SamplerPicker,
     "A1r Unity KSampler": UnityKSampler,

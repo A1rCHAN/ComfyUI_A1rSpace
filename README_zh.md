@@ -156,36 +156,59 @@ Deepseek更专业但需要付费。
 
 ### 折叠输出：
 这不是一个节点，而是一个功能。  
-你可以折叠节点的输出，只需右键点击节点并选择"折叠输出"。  
-当你有很多输出时，它可以让你的节点更清爽。  
-为了避免不可预测的问题，它只在我的节点上工作。  
-**注意：**该功能会在“折叠”和“展开”时，强制刷新节点尺寸，可能对有些用户来说不太友好（比如我自己，未来会针对这个功能展开修复工作），但不影响功能。  
+你可以折叠节点的输入和输出端点，只需右键点击节点并选择"折叠输出"。  
+它可以让你的节点看起来更清爽。  
 
 ## 安装和更新
-### 安装：
-* 将仓库克隆到custom_nodes目录并安装依赖：
+### 安装:
+* 在custom_nodes文件夹中使用git克隆（或者直接从Manager下载，搜索“A1rSpace”），然后安装依赖:
   ```
   git clone https://github.com/A1rCHAN/ComfyUI_A1rSpace.git
   ```
-* 在你的Python环境中安装依赖。
-  * 对于Windows便携版，在`ComfyUI\custom_nodes\ComfyUI_A1rSpace`内运行以下命令：
+* 在Python环境中安装依赖项：  
+  路径由您实际的Python环境位置决定  
+  * 便携版用户在`ComfyUI\custom_nodes\ComfyUI_A1rSpace`中运行:  
     ```
     ..\..\..\python_embeded\python.exe -m pip install -r requirements.txt
     ```
-  * 如果你的ComfyUI虚拟环境在`ComfyUI\.venv\Scripts\python.exe`：
+    给新手的提示：1个 “..” 表示当前目录的上级目录，以此类推。  
+    比如官方文档给出的目录结构:  
+      ComfyUI_windows_portable  
+      ├── 📂ComfyUI                   // ComfyUI 程序主体  
+      ├── 📂python_embeded            // 独立的 Python 环境  
+      ├── 📂update                    // 用于升级便携版安装包的批处理脚本  
+      ├── README_VERY_IMPORTANT.txt   // 英文版本的 ComfyUI 便携版使用说明  
+      ├── run_cpu.bat                 // 双击启动 ComfyUI（仅支持 CPU）  
+      └── run_nvidia_gpu.bat          // 双击启动 ComfyUI（仅支持 Nvidia 显卡）  
+  * 桌面版用户在`ComfyUI\custom_nodes\ComfyUI_A1rSpace`中运行:  
+    安装前可选：
     ```
-    ..\..\.venv\Scripts\python.exe -m pip install -r requirements.txt
+    ..\..\.venv\Scripts\activate.ps1
     ```
-  * 对于使用venv或conda，首先激活你的Python环境，然后运行：
+    运行：
     ```
     pip install -r requirements.txt
     ```
+    提示：使用ComfyUI venv安装依赖包可以避免母包的污染。
+
+* 国内用户我建议使用镜像安装：  
+  阿里云镜像（快）
+  ```
+  pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+  ```
+  清华镜像（稳）
+  ```
+  pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
+  ```
 
 ### 更新：
-* 在`ComfyUI\custom_nodes\ComfyUI_A1rSpace`内：
+* 方法1：  
+  在`ComfyUI\custom_nodes\ComfyUI_A1rSpace`内运行：
   ```
   git pull
   ```
+* 方法2：  
+  在Manager中更新
 
 ### 更新历史
 - 版本 1.1.0：  

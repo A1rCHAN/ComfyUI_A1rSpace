@@ -1,6 +1,7 @@
 // Tools for the UI
-import "./js/collapse_outputs.js";
+// Keep 'size_fixer' early to avoid size issues
 import "./js/size_fixer.js";
+import "./js/collapse_outputs.js";
 import "./js/slider_widget_style.js";
 import "./js/bypass_disabled.js";
 
@@ -12,7 +13,9 @@ import "./js/collector_widget.js";
 import "./js/custom_boolean.js";
 import "./js/custom_slider.js";
 import "./js/image_filter.js";
-import "./js/image_save_preview.js";
+import "./js/image_loader_crop.js";
+import "./js/image_save.js";
+import "./js/image_save_preview_ad.js";
 import "./js/ksampler_unity.js";
 import "./js/lora_config_ad.js";
 import "./js/lora_config.js";
@@ -26,5 +29,6 @@ import "./js/transform_vaedecode.js";
 
 // testing nodes
 import "./js/draggable_list.js";
+import "./js/image_saver.js";
 
 console.log("[A1rSpace] Extensions Loaded.");

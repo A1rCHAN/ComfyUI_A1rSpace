@@ -9,6 +9,7 @@ import shutil
 import time
 import traceback
 from typing import Dict, List, Tuple
+import json
 
 from aiohttp import web
 from PIL import Image, PngImagePlugin
@@ -275,3 +276,46 @@ async def filter_timeout(request):
 	except Exception as e:
 		traceback.print_exc()
 		return web.json_response({"error": str(e)}, status=500)
+
+@server.PromptServer.instance.routes.get("/a1rspace/api_config")
+async def get_api_config(request):
+    """
+    Get API configuration.
+    """
+    try:
+        from .nodes.common.config_loader import load_config
+        config = load_config()
+        return web.json_response(config)
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+@server.PromptServer.instance.routes.post("/a1rspace/api_config")
+async def save_api_config(request):
+    """
+    Save API configuration.
+    """
+    try:
+        data = await request.json()
+        
+        # Validate data structure if needed, but for now just save it
+        # We expect Baidu and DeepSeek keys
+        
+        from .nodes.common.config_loader import _config_path
+        
+        if _config_path and os.path.exists(_config_path):
+             with open(_config_path, "w", encoding='utf-8') as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+        else:
+             # If _config_path is not set (load_config not called yet), calculate it
+             plugin_base_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+             config_path = os.path.join(plugin_base_path, "config.json")
+             with open(config_path, "w", encoding='utf-8') as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+        
+        # Reload config cache
+        from .nodes.common.config_loader import reload_config
+        reload_config()
+        
+        return web.json_response({"success": True})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)

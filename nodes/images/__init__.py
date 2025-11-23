@@ -1,0 +1,3 @@
+def get_node_mappings():
+    from .image_nodes import IMAGE_CLASS_MAPPINGS, IMAGE_DISPLAY_NAME_MAPPINGS
+    return IMAGE_CLASS_MAPPINGS, IMAGE_DISPLAY_NAME_MAPPINGS

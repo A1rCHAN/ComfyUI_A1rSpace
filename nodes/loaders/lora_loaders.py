@@ -1,112 +1,16 @@
 # type: ignore
 """
-Model loader nodes for ComfyUI A1rSpace extension.
+LoRA loader nodes for ComfyUI A1rSpace extension.
 
-This module provides various checkpoint, LoRA, and ControlNet loader nodes
-with support for dual-model workflows, stacking, and separate loading modes.
+This module provides various LoRA loading nodes with support for:
+- Up to six LoRAs with individual enable/disable switches
+- Dual-model output workflows
+- LoRA stack support
+- Separate model selection modes
 """
-from .config import ModelList, NumericConfig
-from .models import ModelLoaderBase
-import folder_paths
 
-class CheckpointLoaderVAE(ModelLoaderBase):
-    """
-    Load checkpoint with optional custom VAE override.
-    """
-    
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "ckpt_name": (ModelList.ckpt_list(),),
-                "vae_name": (ModelList.vae_list(), {"default": "None"}),
-            }
-        }
-    
-    RETURN_TYPES = ("MODEL", "CLIP", "VAE")
-    FUNCTION = "load_model"
-
-    CATEGORY = "A1rSpace/Loader"
-    DESCRIPTION = "Load checkpoint with optional custom VAE override."
-
-    def load_model(self, ckpt_name, vae_name):
-        model, clip, ckpt_vae = self.load_checkpoint(ckpt_name)
-
-        custom_vae = self.load_vae(vae_name)
-        vae = custom_vae if custom_vae is not None else ckpt_vae
-
-        return (model, clip, vae)
-
-class DoubleCheckpointLoaderVAE(ModelLoaderBase):
-    """
-    Load two checkpoints simultaneously with optional second checkpoint enable/disable.
-    """
-    
-    @classmethod
-    def INPUT_TYPES(cls):
-        inputs = {
-            "required": {
-                "ckpt_name_a": (ModelList.ckpt_list(),),
-                "ckpt_name_b": (ModelList.ckpt_list(),),
-                "vae_name": (ModelList.vae_list(), {"default": "None"}),
-                "enable_second": ("BOOLEAN", {"default": False,}),
-            }
-        }
-        return inputs
-    
-    RETURN_TYPES = ("MODEL", "CLIP", "VAE", "MODEL", "CLIP", "VAE",)
-    RETURN_NAMES = ("MODEL_A", "CLIP_A", "VAE_A", "MODEL_B", "CLIP_B", "VAE_B",)
-    FUNCTION = "load_model"
-    
-    CATEGORY = "A1rSpace/Loader"
-    DESCRIPTION = "Load two checkpoints simultaneously with optional second checkpoint enable/disable."
-
-    def load_model(self, ckpt_name_a, ckpt_name_b, vae_name, enable_second):
-        model_a, clip_a, ckpt_vae_a = self.load_checkpoint(ckpt_name_a)
-        model_b, clip_b, ckpt_vae_b = None, None, None
-
-        if enable_second:
-            model_b, clip_b, ckpt_vae_b = self.load_checkpoint(ckpt_name_b)
-
-        custom_vae = self.load_vae(vae_name)
-        if custom_vae is not None:
-            ckpt_vae_a = custom_vae
-            if enable_second:
-                ckpt_vae_b = custom_vae
-
-        control = 2 if enable_second else 1
-        return (model_a, clip_a, ckpt_vae_a, model_b, clip_b, ckpt_vae_b, control)
-
-class SeparateCheckpointLoaderVAE(ModelLoaderBase):
-    """
-    Switch between two checkpoints based on separate_mode boolean.
-    """
-    
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "ckpt_name_a": (ModelList.ckpt_list(),),
-                "ckpt_name_b": (ModelList.ckpt_list(),),
-                "vae_name": (ModelList.vae_list(), {"default": "None"}),
-                "separate_mode": ("BOOLEAN", {"default": False, "label_on": "Model B", "label_off": "Model A"}),
-            }
-        }
-    
-    RETURN_TYPES = ("MODEL", "CLIP", "VAE")
-    FUNCTION = "load_ckpt"
-
-    CATEGORY = "A1rSpace/Loader"
-    DESCRIPTION = "Switch between two checkpoints based on separate_mode boolean."
-
-    def load_ckpt(self, ckpt_name_a, ckpt_name_b, vae_name, separate_mode,):
-        ckpt_name = ckpt_name_b if separate_mode else ckpt_name_a
-        model, clip, ckpt_vae = self.load_checkpoint(ckpt_name)
-
-        custom_vae = self.load_vae(vae_name)
-        vae = custom_vae if custom_vae is not None else ckpt_vae
-        
-        return (model, clip, vae)
+from ..common.model_loader import ModelLoaderBase
+from ..common.shared_utils import ModelList, NumericConfig
 
 class SixLoRALoader(ModelLoaderBase):
     """
@@ -429,68 +333,21 @@ class StackLoRALoaderSeparate(ModelLoaderBase):
 
         return self.apply_lora_stack(base_model, base_clip, lora_stack)
 
-class ControlNetLoader(ModelLoaderBase):
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "positive": ("CONDITIONING",),
-                "negative": ("CONDITIONING",),
-                "image": ("IMAGE",),
-                "control_net_name": (ModelList.controlnet_list(),),
-                "strength": ("FLOAT", NumericConfig.cn_strength()),
-                "start_percent": ("FLOAT", NumericConfig.cn_percent()),
-                "end_percent": ("FLOAT", NumericConfig.cn_percent()),
-            },
-            "optional": {
-                "vae": ("VAE",),
-            }
-        }
-
-    RETURN_TYPES = ("CONDITIONING", "CONDITIONING")
-    RETURN_NAMES = ("positive", "negative")
-    FUNCTION = "apply_cn"
-
-    CATEGORY = "A1rSpace/Loader"
-    DESCRIPTION = "Load and apply ControlNet to conditioning. Combines loader and apply functionality."
-
-    def apply_cn(self, positive, negative, image, control_net_name, strength, start_percent, end_percent, vae=None):
-        if strength == 0:
-            return (positive, negative)
-        
-        if control_net_name == "None":
-            return (positive, negative)
-        
-        # Load ControlNet using base class method
-        control_net = self.load_controlnet(control_net_name)
-        if control_net is None:
-            return (positive, negative)
-        
-        # Apply ControlNet using base class method
-        return self.apply_controlnet(positive, negative, image, control_net, strength, start_percent, end_percent, vae)
-
-LOADER_CLASS_MAPPINGS = {
-    "A1r Checkpoint Loader": CheckpointLoaderVAE,
-    "A1r Double CheckpointLoader": DoubleCheckpointLoaderVAE,
-    "A1r Separate CheckpointLoader": SeparateCheckpointLoaderVAE,
+# Exported mappings
+LORA_LOADER_CLASS_MAPPINGS = {
     "A1r Six LoRA Loader": SixLoRALoader,
     "A1r Six LoRA Loader 2P": SixLoRALoader2P,
     "A1r Six LoRA Loader Separate": SixLoRALoaderSeparate,
     "A1r Stack LoRA Loader": StackLoRALoader,
     "A1r Stack LoRA Loader 2P": StackLoRALoader2P,
     "A1r Stack LoRA Loader Separate": StackLoRALoaderSeparate,
-    "A1r ControlNet Loader": ControlNetLoader,
 }
 
-LOADER_DISPLAY_NAME_MAPPINGS = {
-    "A1r Checkpoint Loader": "Checkpoint Loader",
-    "A1r Double CheckpointLoader": "Double Checkpoint Loader",
-    "A1r Separate CheckpointLoader": "Separate Checkpoint Loader",
+LORA_LOADER_DISPLAY_NAME_MAPPINGS = {
     "A1r Six LoRA Loader": "Six LoRA Loader",
     "A1r Six LoRA Loader 2P": "Six LoRA Loader (2P)",
     "A1r Six LoRA Loader Separate": "Six LoRA Loader (Separate)",
     "A1r Stack LoRA Loader": "Stack LoRA Loader",
     "A1r Stack LoRA Loader 2P": "Stack LoRA Loader (2P)",
     "A1r Stack LoRA Loader Separate": "Stack LoRA Loader (Separate)",
-    "A1r ControlNet Loader": "ControlNet Loader",
 }

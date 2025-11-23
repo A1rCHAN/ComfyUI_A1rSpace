@@ -519,79 +519,19 @@
       }
     }
   },
-  "A1r Text Box": {
-    "display_name": "Text Box",
-    "description": "Basic text input node for entering multiline text strings",
+  "A1r Load Image": {
+    "display_name": "Load Image",
+    "description": "Load images from file",
     "inputs": {
-      "text": {
-        "name": "Text",
-        "tooltip": "Enter your text here"
+      "image": {
+        "name": "image",
+        "tooltip": "Image to load"
       }
     },
     "outputs": {
       "0": {
-        "name": "Text",
-        "tooltip": "Output text string"
-      }
-    }
-  },
-  "A1r Text Show": {
-    "display_name": "Text Show",
-    "description": "Display the input text with copy button",
-    "inputs": {
-      "text": {
-        "name": "Text",
-        "tooltip": "Text to display"
-      }
-    }
-  },
-  "A1r Text Merge": {
-    "display_name": "Text Merge",
-    "description": "Merge up to four text inputs with a custom delimiter, filtering empty strings",
-    "inputs": {
-      "separator": {
-        "name": "Separator",
-        "tooltip": "Delimiter to use between text segments"
-      },
-      "text1": {
-        "name": "Text 1",
-        "tooltip": "First text input"
-      },
-      "text2": {
-        "name": "Text 2",
-        "tooltip": "Second text input"
-      },
-      "text3": {
-        "name": "Text 3",
-        "tooltip": "Third text input"
-      },
-      "text4": {
-        "name": "Text 4",
-        "tooltip": "Fourth text input"
-      }
-    },
-    "outputs": {
-      "0": {
-        "name": "Merged Text",
-        "tooltip": "Combined text output"
-      }
-    }
-  },
-  "A1r Save Preview Image": {
-    "display_name": "Save/Preview Image",
-    "description": "Save and preview images with optional saving control",
-    "inputs": {
-      "images": {
-        "name": "Images",
-        "tooltip": "Images to save/preview"
-      },
-      "enable_save": {
-        "name": "Enable Save",
-        "tooltip": "Toggle saving to disk"
-      },
-      "filename_prefix": {
-        "name": "Filename Prefix",
-        "tooltip": "Prefix for saved files"
+        "name": "image",
+        "tooltip": "Loaded image"
       }
     }
   },
@@ -599,10 +539,6 @@
     "display_name": "Image Filter",
     "description": "Filter images with a popup dialog for manual selection",
     "inputs": {
-      "images": {
-        "name": "Images",
-        "tooltip": "Images to filter"
-      },
       "timeout": {
         "name": "Timeout",
         "tooltip": "Time to wait for user selection (seconds)"
@@ -619,12 +555,30 @@
     },
     "outputs": {
       "0": {
-        "name": "Image",
+        "name": "image",
         "tooltip": "Filtered images"
       },
       "1": {
-        "name": "Latent",
+        "name": "latent",
         "tooltip": "Latent representation"
+      }
+    }
+  },
+  "A1r Save Image": {
+    "display_name": "Save Image",
+    "description": "Save and preview images with optional saving control",
+    "inputs": {
+      "images": {
+        "name": "Images",
+        "tooltip": "Images to save/preview"
+      },
+      "enable_save": {
+        "name": "Enable Save",
+        "tooltip": "Toggle saving to disk"
+      },
+      "filename_prefix": {
+        "name": "Filename Prefix",
+        "tooltip": "Prefix for saved files"
       }
     }
   },
@@ -1008,43 +962,89 @@
       }
     }
   },
-  "A1r Text Merge with Clip Encode": {
-    "display_name": "Text Merge with Clip Encode",
-    "description": "Merge multiple text inputs and encode them with CLIP in one step.",
+  "A1r Image Loader": {
+    "display_name": "Image Loader (with Crop)",
+    "description": "Load images with crop functionality. Right-click to open crop editor with free and fixed aspect ratio support.",
     "inputs": {
-      "text_a": {
-        "name": "Text A",
-        "tooltip": "First text input"
+      "image": {
+        "name": "Image",
+        "tooltip": "Select image file to load"
       },
-      "text_b": {
-        "name": "Text B",
-        "tooltip": "Second text input"
+      "crop_data": {
+        "name": "Crop Data",
+        "tooltip": "JSON data for crop region (auto-filled by crop editor)"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image",
+        "tooltip": "Loaded and cropped image"
       },
-      "text_c": {
-        "name": "Text C",
-        "tooltip": "Third text input"
+      "1": {
+        "name": "Mask",
+        "tooltip": "Alpha channel mask from image"
       },
-      "text_d": {
-        "name": "Text D",
-        "tooltip": "Fourth text input"
+      "2": {
+        "name": "Width",
+        "tooltip": "Width of cropped image"
       },
-      "delimiter": {
-        "name": "Delimiter",
-        "tooltip": "Text separator"
-      },
-      "clip": {
-        "name": "CLIP",
-        "tooltip": "CLIP encoder"
+      "3": {
+        "name": "Height",
+        "tooltip": "Height of cropped image"
+      }
+    }
+  },
+  "A1r Text Box": {
+    "display_name": "Text Box",
+    "description": "Basic text input node for entering multiline text strings",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Enter your text here"
       }
     },
     "outputs": {
       "0": {
         "name": "Text",
-        "tooltip": "Merged text"
+        "tooltip": "Output text string"
+      }
+    }
+  },
+  "A1r Text Show": {
+    "display_name": "Text Show",
+    "description": "Display the input text with copy button",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Text to display"
+      }
+    }
+  },
+  "A1r Text Merge": {
+    "display_name": "Text Merge",
+    "description": "Merge up to four text inputs with a custom delimiter, filtering empty strings",
+    "inputs": {
+      "separator": {
+        "name": "Separator",
+        "tooltip": "Delimiter to use between text segments"
       },
-      "1": {
+      "text1": {
+        "name": "Text A",
+        "tooltip": "First text input"
+      },
+      "text2": {
+        "name": "Text B",
+        "tooltip": "Second text input"
+      }
+    },
+    "outputs": {
+      "0": {
         "name": "Conditioning",
         "tooltip": "CLIP conditioning"
+      },
+      "1": {
+        "name": "Merged Text",
+        "tooltip": "Combined text output"
       }
     }
   },
@@ -1075,20 +1075,12 @@
       "enable_translate": {
         "name": "Enable Translate",
         "tooltip": "Toggle translation on/off"
-      },
-      "clip": {
-        "name": "CLIP",
-        "tooltip": "Optional CLIP encoder"
       }
     },
     "outputs": {
       "0": {
         "name": "Text",
         "tooltip": "Translated text"
-      },
-      "1": {
-        "name": "Conditioning",
-        "tooltip": "CLIP conditioning"
       }
     }
   },
@@ -1147,12 +1139,16 @@
     },
     "outputs": {
       "0": {
-        "name": "Text",
-        "tooltip": "Merged translated text"
+        "name": "Conditioning A",
+        "tooltip": "CLIP conditioning"
       },
       "1": {
-        "name": "Conditioning",
+        "name": "Conditioning B",
         "tooltip": "CLIP conditioning"
+      },
+      "2": {
+        "name": "Text",
+        "tooltip": "Merged translated text"
       }
     }
   },

@@ -13,142 +13,276 @@ class FilterDialog {
         this.currentIndex = 0;
         this.remaining = timeout;
         this.timerElement = null;
+        
+        // Zoom & Pan state
+        this.scale = 1;
+        this.translateX = 0;
+        this.translateY = 0;
+        this.isDragging = false;
+        this.dragStartX = 0;
+        this.dragStartY = 0;
+        this.canvas = null;
+        this.ctx = null;
+        this.image = null;
+        
+        // Event handlers
+        this._handleResize = this.handleResize.bind(this);
+        this._handleMouseMove = this.handleMouseMove.bind(this);
+        this._handleMouseUp = this.handleMouseUp.bind(this);
     }
 
     async show() {
-        // 创建对话框 (无背景遮罩,参考 cg-image-filter)
+        // Create container (Full screen)
         this.dialog = document.createElement('div');
         this.dialog.className = 'a1r-filter-dialog';
         this.dialog.style.cssText = `
             position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--comfy-menu-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 30, 30, 0.95);
             z-index: 9999;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            min-width: 400px;
-            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+            font-family: sans-serif;
+            user-select: none;
         `;
 
-        // 标题栏 (可拖动)
+        // Header
         const header = document.createElement('div');
-        header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;cursor:move;user-select:none;';
-        header.onmousedown = (e) => this.startDrag(e);
+        header.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #2d2d2d;
+            border-bottom: 1px solid #3d3d3d;
+        `;
 
         const title = document.createElement('h3');
         title.textContent = 'Image Filter';
-        title.style.cssText = 'margin:0;color:var(--fg-color);font-size:16px;';
+        title.style.cssText = 'margin:0; font-size:18px; font-weight:600; color: #fff;';
         header.appendChild(title);
 
-        // 倒计时显示
         this.timerElement = document.createElement('div');
-        this.timerElement.style.cssText = 'color:var(--fg-color);font-size:14px;opacity:0.8;';
+        this.timerElement.style.cssText = 'font-size:16px; font-weight:bold; color:#4CAF50;';
         this.timerElement.textContent = `${this.remaining}s`;
         header.appendChild(this.timerElement);
 
         this.dialog.appendChild(header);
 
-        // 图片容器
-        const imgContainer = document.createElement('div');
-        imgContainer.style.cssText = 'text-align:center;margin-bottom:15px;';
+        // Content (Canvas)
+        const content = document.createElement('div');
+        content.style.cssText = `
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1e1e1e;
+        `;
+        
+        this.canvas = document.createElement('canvas');
+        this.canvas.style.cssText = 'display: block; cursor: grab;';
+        content.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext('2d');
 
-        const img = document.createElement('img');
-        img.style.cssText = 'max-width:100%;max-height:500px;border:1px solid var(--border-color);border-radius:4px;display:block;margin:0 auto;';
-        imgContainer.appendChild(img);
+        this.dialog.appendChild(content);
 
-        const counter = document.createElement('div');
-        counter.style.cssText = 'margin-top:10px;color:var(--fg-color);font-size:14px;';
-        imgContainer.appendChild(counter);
+        // Footer / Controls
+        const footer = document.createElement('div');
+        footer.style.cssText = `
+            padding: 15px 20px;
+            background: #2d2d2d;
+            border-top: 1px solid #3d3d3d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        `;
 
-        // 导航按钮 (如果有多张图片)
+        // Left: Navigation
+        const navContainer = document.createElement('div');
+        navContainer.style.cssText = 'display:flex; gap:10px; align-items:center;';
+        
         if (this.images.length > 1) {
-            const navContainer = document.createElement('div');
-            navContainer.style.cssText = 'display:flex;justify-content:center;gap:10px;margin-top:10px;';
-
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = '← Prev';
-            prevBtn.style.cssText = 'padding:5px 15px;background:var(--comfy-input-bg);color:var(--fg-color);border:1px solid var(--border-color);border-radius:4px;cursor:pointer;';
-            prevBtn.onclick = () => {
-                this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-                this.updateImage(img, counter);
-            };
+            const prevBtn = this.createButton('← Prev', () => this.navigate(-1));
+            const nextBtn = this.createButton('Next →', () => this.navigate(1));
+            this.counterElement = document.createElement('span');
+            this.counterElement.textContent = `1 / ${this.images.length}`;
+            this.counterElement.style.cssText = 'margin: 0 10px; color: #aaa;';
+            
             navContainer.appendChild(prevBtn);
-
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Next →';
-            nextBtn.style.cssText = 'padding:5px 15px;background:var(--comfy-input-bg);color:var(--fg-color);border:1px solid var(--border-color);border-radius:4px;cursor:pointer;';
-            nextBtn.onclick = () => {
-                this.currentIndex = (this.currentIndex + 1) % this.images.length;
-                this.updateImage(img, counter);
-            };
+            navContainer.appendChild(this.counterElement);
             navContainer.appendChild(nextBtn);
-
-            imgContainer.appendChild(navContainer);
         }
+        footer.appendChild(navContainer);
 
-        this.dialog.appendChild(imgContainer);
+        // Right: Actions
+        const actionContainer = document.createElement('div');
+        actionContainer.style.cssText = 'display:flex; gap:10px; align-items:center;';
 
-        // 按钮容器
-        const btnContainer = document.createElement('div');
-        btnContainer.style.cssText = 'display:flex;gap:10px;justify-content:center;';
+        const timeoutHint = document.createElement('span');
+        timeoutHint.textContent = `Timeout: ${this.onTimeout}`;
+        timeoutHint.style.cssText = 'margin-right:15px; color:#aaa; font-size:12px;';
+        actionContainer.appendChild(timeoutHint);
 
-        // Send 按钮
-        const sendBtn = document.createElement('button');
-        sendBtn.textContent = 'Send';
-        sendBtn.style.cssText = `
-            padding:10px 30px;
-            background:#4CAF50;
-            color:white;
-            border:none;
-            border-radius:4px;
-            cursor:pointer;
-            font-size:14px;
-            font-weight:bold;
-            transition:opacity 0.2s;
-            min-width:100px;
-        `;
-        sendBtn.onmouseover = () => sendBtn.style.opacity = '0.8';
-        sendBtn.onmouseout = () => sendBtn.style.opacity = '1';
-        sendBtn.onclick = () => this.respond('send');
-        btnContainer.appendChild(sendBtn);
+        const cancelBtn = this.createButton('Cancel', () => this.respond('cancel'), '#f44336');
+        const sendBtn = this.createButton('Send', () => this.respond('send'), '#4CAF50');
+        
+        actionContainer.appendChild(cancelBtn);
+        actionContainer.appendChild(sendBtn);
+        footer.appendChild(actionContainer);
 
-        // Cancel 按钮
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = 'Cancel';
-        cancelBtn.style.cssText = `
-            padding:10px 30px;
-            background:#f44336;
-            color:white;
-            border:none;
-            border-radius:4px;
-            cursor:pointer;
-            font-size:14px;
-            font-weight:bold;
-            transition:opacity 0.2s;
-            min-width:100px;
-        `;
-        cancelBtn.onmouseover = () => cancelBtn.style.opacity = '0.8';
-        cancelBtn.onmouseout = () => cancelBtn.style.opacity = '1';
-        cancelBtn.onclick = () => this.respond('cancel');
-        btnContainer.appendChild(cancelBtn);
-
-        this.dialog.appendChild(btnContainer);
-
-        // 超时提示
-        const timeoutHint = document.createElement('div');
-        timeoutHint.style.cssText = 'margin-top:10px;text-align:center;color:var(--fg-color);font-size:12px;opacity:0.6;';
-        timeoutHint.textContent = `On timeout: ${this.onTimeout}`;
-        this.dialog.appendChild(timeoutHint);
-
+        this.dialog.appendChild(footer);
         document.body.appendChild(this.dialog);
 
-        // 加载图片
+        // Event Listeners
+        this.setupEvents();
+
+        // Load images
         await this.loadImages();
-        this.updateImage(img, counter);
+        this.showCurrentImage();
+    }
+
+    createButton(text, onClick, bgColor = '#444') {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.style.cssText = `
+            padding: 8px 20px;
+            background: ${bgColor};
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        `;
+        btn.onmouseover = () => btn.style.opacity = '0.9';
+        btn.onmouseout = () => btn.style.opacity = '1';
+        btn.onclick = onClick;
+        return btn;
+    }
+
+    setupEvents() {
+        window.addEventListener('resize', this._handleResize);
+        window.addEventListener('mousemove', this._handleMouseMove);
+        window.addEventListener('mouseup', this._handleMouseUp);
+        
+        this.canvas.addEventListener('wheel', (e) => this.handleWheel(e));
+        this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+    }
+
+    handleResize() {
+        if (this.dialog && this.canvas) {
+            const container = this.canvas.parentElement;
+            this.canvas.width = container.clientWidth;
+            this.canvas.height = container.clientHeight;
+            this.redraw();
+        }
+    }
+
+    handleWheel(e) {
+        e.preventDefault();
+        const zoomIntensity = 0.1;
+        const delta = e.deltaY > 0 ? -zoomIntensity : zoomIntensity;
+        const newScale = this.scale * (1 + delta);
+
+        // Limit zoom
+        if (newScale < 0.1 || newScale > 10) return;
+
+        // Zoom towards mouse position
+        const rect = this.canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // Calculate offset to keep mouse point stable
+        this.translateX -= (mouseX - this.translateX) * delta;
+        this.translateY -= (mouseY - this.translateY) * delta;
+        
+        this.scale = newScale;
+        this.redraw();
+    }
+
+    handleMouseDown(e) {
+        this.isDragging = true;
+        this.dragStartX = e.clientX;
+        this.dragStartY = e.clientY;
+        this.canvas.style.cursor = 'grabbing';
+    }
+
+    handleMouseMove(e) {
+        if (!this.isDragging) return;
+        e.preventDefault();
+        const dx = e.clientX - this.dragStartX;
+        const dy = e.clientY - this.dragStartY;
+        
+        this.translateX += dx;
+        this.translateY += dy;
+        
+        this.dragStartX = e.clientX;
+        this.dragStartY = e.clientY;
+        
+        this.redraw();
+    }
+
+    handleMouseUp() {
+        this.isDragging = false;
+        if (this.canvas) this.canvas.style.cursor = 'grab';
+    }
+
+    navigate(dir) {
+        this.currentIndex = (this.currentIndex + dir + this.images.length) % this.images.length;
+        this.showCurrentImage();
+    }
+
+    showCurrentImage() {
+        const blobUrl = this.blobUrls[this.currentIndex];
+        if (blobUrl) {
+            this.image = new Image();
+            this.image.onload = () => {
+                this.fitImage();
+                this.redraw();
+            };
+            this.image.src = blobUrl;
+        }
+        if (this.counterElement) {
+            this.counterElement.textContent = `${this.currentIndex + 1} / ${this.images.length}`;
+        }
+    }
+
+    fitImage() {
+        if (!this.image || !this.canvas) return;
+        
+        // Set canvas size to container size
+        const container = this.canvas.parentElement;
+        this.canvas.width = container.clientWidth;
+        this.canvas.height = container.clientHeight;
+
+        // Calculate scale to fit
+        const scaleX = this.canvas.width / this.image.width;
+        const scaleY = this.canvas.height / this.image.height;
+        this.scale = Math.min(scaleX, scaleY) * 0.9; // 90% fit
+
+        // Center image
+        this.translateX = (this.canvas.width - this.image.width * this.scale) / 2;
+        this.translateY = (this.canvas.height - this.image.height * this.scale) / 2;
+    }
+
+    redraw() {
+        if (!this.ctx || !this.image) return;
+
+        // Clear
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.ctx.save();
+        this.ctx.translate(this.translateX, this.translateY);
+        this.ctx.scale(this.scale, this.scale);
+        this.ctx.drawImage(this.image, 0, 0);
+        this.ctx.restore();
     }
 
     async loadImages() {
@@ -165,14 +299,6 @@ class FilterDialog {
         }
     }
 
-    updateImage(imgElement, counterElement) {
-        const blobUrl = this.blobUrls[this.currentIndex];
-        if (blobUrl) {
-            imgElement.src = blobUrl;
-        }
-        counterElement.textContent = `Image ${this.currentIndex + 1} / ${this.images.length}`;
-    }
-
     updateTimer(remaining) {
         this.remaining = remaining;
         if (this.timerElement) {
@@ -180,7 +306,14 @@ class FilterDialog {
             // 最后 10 秒变红色提醒
             if (remaining <= 10) {
                 this.timerElement.style.color = '#f44336';
+            } else {
+                this.timerElement.style.color = '#4CAF50';
             }
+        }
+        
+        // Auto close on timeout
+        if (remaining <= 0) {
+            this.respond(this.onTimeout);
         }
     }
 
@@ -204,36 +337,15 @@ class FilterDialog {
         this.cleanup();
     }
 
-    startDrag(e) {
-        const dialog = this.dialog;
-        const startX = e.clientX;
-        const startY = e.clientY;
-        const rect = dialog.getBoundingClientRect();
-        const startLeft = rect.left;
-        const startTop = rect.top;
-
-        const onMove = (e) => {
-            const deltaX = e.clientX - startX;
-            const deltaY = e.clientY - startY;
-            dialog.style.left = (startLeft + deltaX) + 'px';
-            dialog.style.top = (startTop + deltaY) + 'px';
-            dialog.style.transform = 'none';
-        };
-
-        const onUp = () => {
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onUp);
-        };
-
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
-    }
-
     cleanup() {
         this.blobUrls.forEach(url => url && URL.revokeObjectURL(url));
         if (this.dialog?.parentNode) {
             this.dialog.parentNode.removeChild(this.dialog);
         }
+        
+        window.removeEventListener('resize', this._handleResize);
+        window.removeEventListener('mousemove', this._handleMouseMove);
+        window.removeEventListener('mouseup', this._handleMouseUp);
     }
 }
 

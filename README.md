@@ -156,35 +156,57 @@ They just switch, that's all.
 
 ### Collapse Outputs:
 This wasn't a node, but a feature.  
-You can collapse the outputs of a node, just right click the node and "Collapse Outputs".  
-It can made your nodes more clean when you have many outputs.  
-In case of unpredictable problems, it just works on my nodes.  
+You can collapse the slot of a node, just right click the node and "Collapse Outputs".  
+It can made your nodes more clean.
 
 ## Installation and Update
 ### Installation:
-* Clone the repo into the custom_nodes directory and install the requirements:
+* Clone the repo into the custom_nodes directory (Or directly download from Manager, search "A1rSpace") and install the requirements:
   ```
   git clone https://github.com/A1rCHAN/ComfyUI_A1rSpace.git
   ```
-* Install dependencies in your Python environment.
-  * For Windows Portable, run the following command inside `ComfyUI\custom_nodes\ComfyUI_A1rSpace`:
+* Install dependencies in your Python environment.  
+  The PATH decides by your actual environment.  
+  * For Portable, run the following command inside `ComfyUI\custom_nodes\ComfyUI_A1rSpace`:
     ```
     ..\..\..\python_embeded\python.exe -m pip install -r requirements.txt
     ```
-  * If your ComfyUI venv inside `ComfyUI\.venv\Scripts\python.exe`:
+    For Python noobs: '..\' means the parent directory of the current directory, and so on.  
+    As the official document:  
+      ComfyUI_windows_portable  
+      ├── 📂ComfyUI                   // ComfyUI main program  
+      ├── 📂python_embeded            // Independent Python environment  
+      ├── 📂update                    // Batch scripts for upgrading portable version  
+      ├── README_VERY_IMPORTANT.txt   // ComfyUI Portable usage instructions in English  
+      ├── run_cpu.bat                 // Double click to start ComfyUI (CPU only)  
+      └── run_nvidia_gpu.bat          // Double click to start ComfyUI (Nvidia GPU)  
+  * For Desktop, run the following command inside `ComfyUI\custom_nodes\ComfyUI_A1rSpace`:  
+    Optional:
     ```
-    ..\..\.venv\Scripts\python.exe -m pip install -r requirements.txt
+    ..\..\.venv\Scripts\activate.ps1
     ```
-  * For using venv or conda, activate your Python environment first, then run:
+    Run:
     ```
     pip install -r requirements.txt
     ```
+    Tips: Use ComfyUI venv to install the dependencies can avoid the pollution of mother packages.
+
+* For Chinese users, I suggest to use mirrors:  
+  Aliyun Mirror (speedy)
+  ```
+  pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+  ```
+  Tsinghua Mirror (stable)
+  ```
+  pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
+  ```
 
 ### Update:
 * Inside `ComfyUI\custom_nodes\ComfyUI_A1rSpace`:
   ```
   git pull
   ```
+* Or update inside Manager.
 
 ### Update history
 - version 1.1.0:  

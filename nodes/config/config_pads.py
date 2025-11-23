@@ -1,12 +1,12 @@
 # type: ignore
 """
-Configuration and utility nodes for ComfyUI A1rSpace extension.
+Configuration pad nodes for ComfyUI A1rSpace extension.
 
 This module provides configuration pads for KSampler, LoRA, ControlNet settings,
 and various utility nodes for workflow control including mode management,
 size pickers, and widget collectors.
 """
-from .config import AlwaysEqual, ModelList, NumericConfig, UpscaleMethods
+from ..common import AlwaysEqual, ModelList, NumericConfig, UpscaleMethods
 
 class KSamplerConfig:
     """
@@ -149,6 +149,9 @@ class LoRAConfigAdvance:
             lora_inputs[f"strength_{i}"] = ("FLOAT", {
                 **NumericConfig.lora_strength_large(),
             })
+            lora_inputs[f"strength_clip_{i}"] = ("FLOAT", {
+                **NumericConfig.lora_strength_large(),
+            })
         
         # 将 lora_stack 也放到 optional 中
         lora_inputs["lora_stack"] = ("LORASTACK", {"forceInput": True})
@@ -203,13 +206,15 @@ class LoRAConfigAdvance:
             enabled = bool(kwargs.get(f"enable_{i}", False))
             name = kwargs.get(f"lora_name_{i}", "") or ""
             strength = float(kwargs.get(f"strength_{i}", 1.0))
+            strength_clip = float(kwargs.get(f"strength_clip_{i}", 1.0))
 
             # 过滤有效的 LoRA 条目
             if enabled and name and name != "None":
                 new_entries.append({
                     "enabled": enabled,
                     "name": name,
-                    "strength": strength,
+                    "model_strength": strength,
+                    "clip_strength": strength_clip,
                 })
 
         # 合并到 stack
@@ -542,6 +547,8 @@ class SizeCanvas:
         h = height if (height is not None) else config.get("default_height", 1024)
         return (w, h)
 
+
+# Export node mappings
 CONFIG_CLASS_MAPPINGS = {
     # Config Pad
     "A1r KSampler Config": KSamplerConfig,

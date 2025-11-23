@@ -57,26 +57,26 @@ app.registerExtension({
 
             // Create the button.
             const copyBtn = document.createElement('button');
-            copyBtn.textContent = '⧉';
+            copyBtn.textContent = 'copy to clipboard';
             copyBtn.title = 'Copy to clipboard';
             copyBtn.style.position = 'absolute';
-            copyBtn.style.right = '6px';
-            copyBtn.style.bottom = '6px';
+            copyBtn.style.left = '1px';
+            copyBtn.style.right = '1px';
+            copyBtn.style.bottom = '1px';
+            copyBtn.style.width = 'auto';
+            copyBtn.style.height = '28px';
+            copyBtn.style.boxSizing = 'border-box';
 
-            copyBtn.display = 'inline-block';
-            copyBtn.style.setProperty('width', 'auto', 'important');
-            copyBtn.style.setProperty('height', 'auto', 'important');
-            copyBtn.style.minWidth = '18px';
-            copyBtn.style.minHeight = '18px';
-
-            copyBtn.style.padding = '0 4px';
             copyBtn.style.fontSize = '12px';
-            copyBtn.style.lineHeight = '1';
-            copyBtn.style.border = '1px solid #666';
-            copyBtn.style.borderRadius = '4px';
+            copyBtn.style.lineHeight = '28px';
+            copyBtn.style.border = 'none';
+            copyBtn.style.borderTop = '1px solid #333';
+            copyBtn.style.borderRadius = '0 0 4px 4px';
+            copyBtn.style.marginTop = '0';
 
-            copyBtn.style.background = '#2e2e2e';
-            copyBtn.style.color = '#ddd';
+            copyBtn.style.background = '#222';
+            copyBtn.style.color = '#ccc';
+            copyBtn.style.textAlign = 'center';
 
             copyBtn.style.cursor = 'pointer';
             copyBtn.style.userSelect = 'none';
@@ -87,11 +87,11 @@ app.registerExtension({
             copyBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 if (await copyHandler()) {
-                    copyBtn.textContent = '✓';
+                    copyBtn.textContent = 'copied successfully';
                 } else {
-                    copyBtn.textContent = '×';
+                    copyBtn.textContent = 'failed to copy';
                 }
-                setTimeout(() => { copyBtn.textContent = '⧉'; }, 700);
+                setTimeout(() => { copyBtn.textContent = 'copy to clipboard'; }, 700);
             });
 
             host.appendChild(copyBtn);
@@ -111,12 +111,13 @@ app.registerExtension({
             const w = created?.widget;
             if (!w) return null;
 
-            // Set read-only and styles
+            // Set styles
             if (w.inputEl) {
+                // Make it read-only but allow interaction (scrolling/selection)
                 w.inputEl.readOnly = true;
-                w.inputEl.style.opacity = 0.85;
-                w.inputEl.style.pointerEvents = "none";
-                w.inputEl.style.userSelect = "none";
+                // w.inputEl.style.opacity = 0.85;
+                // w.inputEl.style.pointerEvents = "none";
+                // w.inputEl.style.userSelect = "none";
 
                 if (getComputedStyle(w.inputEl).position === 'static') {
                     w.inputEl.style.position = 'relative';
@@ -124,10 +125,11 @@ app.registerExtension({
 
                 // Avoid buttons blocking the text.
                 try {
-                    const pr = parseInt(getComputedStyle(w.inputEl).paddingRight || '0', 10) || 0;
+                    // Reserve space for the button at the bottom
+                    w.inputEl.style.height = '100%';
+                    w.inputEl.style.boxSizing = 'border-box';
                     const pb = parseInt(getComputedStyle(w.inputEl).paddingBottom || '0', 10) || 0;
-                    w.inputEl.style.paddingRight = (pr + 28) + 'px';
-                    w.inputEl.style.paddingBottom = (pb + 22) + 'px';
+                    w.inputEl.style.paddingBottom = (pb + 30) + 'px';
                 } catch {}
 
                 // Add copy button.
@@ -255,6 +257,7 @@ app.registerExtension({
 
 
         // Right click menu to copy text.
+        /*
         const origMenu = nodeType.prototype.getExtraMenuOptions;
         nodeType.prototype.getExtraMenuOptions = function(_, options) {
             origMenu?.apply(this, arguments);
@@ -268,5 +271,6 @@ app.registerExtension({
                 }
             });
         };
+        */
     }
 });
