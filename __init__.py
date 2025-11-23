@@ -36,9 +36,6 @@ _NODE_MODULES = [
     ("nodes.config", False),
     ("nodes.utils", False),
     ("nodes.images", False),
-    
-    # Test/Development nodes
-    ("nodes.node_tag_stack", ("TEST_NODE_CLASS_MAPPINGS", "TEST_NODE_DISPLAY_NAME_MAPPINGS")),
 ]
 
 
@@ -164,7 +161,13 @@ try:
         print(f"[A1rSpace] Warning: Failed to check optional dependencies: {e}")
     
     print("=" * 60)
-    print(f"[A1rSpace] ✓ Loaded {loaded_count} nodes successfully!")
+
+    try:
+        all_count = loaded_count + failed_count
+    except Exception:
+        all_count = loaded_count
+
+    print(f"[A1rSpace] ✓ Loaded {loaded_count}/{all_count} nodes successfully!")
     if failed_count > 0:
         print(f"[A1rSpace] ✗ Failed to load {failed_count} modules (see warnings above)")
     print("=" * 60)

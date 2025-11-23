@@ -1,4 +1,3 @@
-# type: ignore
 """
 LoRA loader nodes for ComfyUI A1rSpace extension.
 

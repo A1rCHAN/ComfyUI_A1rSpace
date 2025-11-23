@@ -1,4 +1,3 @@
-# type: ignore
 """
 Transform nodes - latent/image transformations and switches.
 

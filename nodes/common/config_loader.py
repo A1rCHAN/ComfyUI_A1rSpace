@@ -1,4 +1,3 @@
-# type: ignore
 """
 Configuration loading utilities for ComfyUI A1rSpace extension.
 

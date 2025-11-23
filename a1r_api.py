@@ -1,4 +1,3 @@
-# type: ignore
 """
 API routes for A1rSpace ComfyUI extension.
 

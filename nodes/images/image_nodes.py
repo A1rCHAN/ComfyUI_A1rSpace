@@ -13,8 +13,10 @@ import json
 import numpy as np
 import torch
 import folder_paths
+import shutil
 from PIL import Image, ImageSequence, ImageOps, ImageDraw
 from PIL.PngImagePlugin import PngInfo
+from aiohttp import web
 
 from ..text.text_advanced import TextSaveFileName
 
@@ -245,11 +247,7 @@ class ImageFilter:
         try:
             from ...a1r_api import _filter_decisions
         except (ImportError, ValueError):
-            try:
-                from ..a1r_api import _filter_decisions
-            except (ImportError, ValueError):
-                # Fallback if API not available
-                _filter_decisions = {}
+            _filter_decisions = {}
         
         _filter_decisions[filter_id] = None
         
@@ -410,15 +408,162 @@ class SaveImage:
         
         return {"ui": {"images": results}}
 
+# ========== Image Saver API Node ==========
+
+class ImageSaver:
+    """Server-side image saver with API endpoint for manual saving."""
+    
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+        self.type = "output"
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "filename_prefix": ("STRING", {"default": "ComfyUI"}),
+            },
+            "hidden": {
+                "unique_id": "UNIQUE_ID",
+            }
+        }
+    
+    RETURN_TYPES = ()
+    FUNCTION = "execute"
+    OUTPUT_NODE = True
+
+    CATEGORY = "A1rSpace/Image"
+    NODE_METADATA = {
+        "status": "beta",
+        "warning": "Beta version, may contain bugs or unexpected behavior."
+    }
+    
+    def execute(self, filename_prefix, unique_id=None):
+        """Execute function - initialization only."""
+        return {
+            "ui": {
+                "node_id": unique_id,
+                "prefix": filename_prefix,
+                "status": "waiting"
+            }
+        }
+    
+    @classmethod
+    def get_latest_counter(cls, folder, prefix):
+        """Get the latest counter value for filename sequencing."""
+        try:
+            if not os.path.exists(folder):
+                return 1
+            
+            existing_files = os.listdir(folder)
+            matching_files = [f for f in existing_files if f.startswith(prefix) and f.endswith('.png')]
+            
+            if not matching_files:
+                return 1
+            
+            counters = []
+            for f in matching_files:
+                try:
+                    num_part = f[len(prefix):].replace('.png', '')
+                    if num_part.startswith('_'):
+                        num_part = num_part[1:]
+                    counter = int(num_part.split('_')[0])
+                    counters.append(counter)
+                except:
+                    continue
+            
+            return max(counters) + 1 if counters else 1
+        except:
+            return 1
+
+# API route registration (imported by server module)
+def register_image_saver_route(server_instance):
+    """Register the /a1r/save_image API endpoint."""
+    
+    @server_instance.routes.post("/a1r/save_image")
+    async def save_image_endpoint(request):
+        """API endpoint: save image from temp to output directory."""
+        try:
+            data = await request.json()
+            
+            source_file = data.get("source_file")
+            source_type = data.get("source_type", "temp")
+            source_subfolder = data.get("source_subfolder", "")
+            filename_prefix = data.get("filename_prefix", "A1r/Image")
+            
+            # Handle subfolders in prefix
+            subfolder = ""
+            if "/" in filename_prefix or "\\" in filename_prefix:
+                parts = filename_prefix.replace("\\", "/").split("/")
+                filename_prefix = parts[-1]
+                subfolder = "/".join(parts[:-1])
+            
+            # Build source path
+            if source_type == "temp":
+                source_folder = folder_paths.get_temp_directory()
+            elif source_type == "output":
+                source_folder = folder_paths.get_output_directory()
+            else:
+                source_folder = folder_paths.get_input_directory()
+            
+            if source_subfolder:
+                source_folder = os.path.join(source_folder, source_subfolder)
+            
+            source_path = os.path.join(source_folder, source_file)
+            
+            if not os.path.exists(source_path):
+                return web.json_response({
+                    "success": False,
+                    "error": f"Source file not found: {source_path}"
+                }, status=404)
+            
+            # Build target path
+            output_folder = folder_paths.get_output_directory()
+            if subfolder:
+                output_folder = os.path.join(output_folder, subfolder)
+            
+            os.makedirs(output_folder, exist_ok=True)
+            
+            # Get counter
+            counter = ImageSaver.get_latest_counter(output_folder, filename_prefix)
+            
+            # Generate target filename
+            target_filename = f"{filename_prefix}_{counter:05d}.png"
+            target_path = os.path.join(output_folder, target_filename)
+            
+            # Copy file
+            shutil.copy2(source_path, target_path)
+            
+            print(f"[A1r Image Saver] Saved: {target_path}")
+            
+            return web.json_response({
+                "success": True,
+                "filename": target_filename,
+                "subfolder": subfolder,
+                "counter": counter,
+                "path": target_path
+            })
+        
+        except Exception as e:
+            print(f"[A1r Image Saver] Error: {e}")
+            import traceback
+            traceback.print_exc()
+            return web.json_response({
+                "success": False,
+                "error": str(e)
+            }, status=500)
+
 # Exported mappings
 IMAGE_CLASS_MAPPINGS = {
     "A1r Load Image": LoadImage,
     "A1r Image Filter": ImageFilter,
     "A1r Save Image": SaveImage,
+    "A1r Image Saver": ImageSaver,
 }
 
 IMAGE_DISPLAY_NAME_MAPPINGS = {
     "A1r Load Image": "Load Image",
     "A1r Image Filter": "Image Filter",
     "A1r Save Image": "Save Image",
+    "A1r Image Saver": "Image Saver",
 }

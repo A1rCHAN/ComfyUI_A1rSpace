@@ -191,13 +191,13 @@ function openCropEditorWindow(imageUrl, width, height, callback) {
     
     const title = document.createElement('div');
     title.className = 'crop-editor-title';
-    title.textContent = '裁剪图像';
+    title.textContent = 'Crop Image';
     title.style.cssText = 'font-size: 16px; font-weight: 600; color: #ffffff;';
     
     const closeBtn = document.createElement('button');
     closeBtn.className = 'crop-editor-close';
     closeBtn.textContent = '×';
-    closeBtn.title = '关闭';
+    closeBtn.title = 'Close';
     closeBtn.style.cssText = `
         width: 32px;
         height: 32px;
@@ -352,7 +352,7 @@ function openCropEditorWindow(imageUrl, width, height, callback) {
     `;
     
     const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = '取消';
+    cancelBtn.textContent = 'Cancel';
     cancelBtn.style.cssText = `
         padding: 10px 20px;
         border: 1px solid #5d5d5d;
@@ -368,7 +368,7 @@ function openCropEditorWindow(imageUrl, width, height, callback) {
     
     const applyBtn = document.createElement('button');
     applyBtn.id = 'crop-apply-btn';
-    applyBtn.textContent = '应用裁剪';
+    applyBtn.textContent = 'Apply';
     applyBtn.style.cssText = `
         padding: 10px 20px;
         border: none;
@@ -413,9 +413,9 @@ function createControlsPanel(callback, container) {
     // Aspect ratio section
     const ratioSection = document.createElement('div');
     ratioSection.innerHTML = `
-        <label style="font-size: 13px; font-weight: 600; color: #e0e0e0; display: block; margin-bottom: 10px;">纵横比</label>
+        <label style="font-size: 13px; font-weight: 600; color: #e0e0e0; display: block; margin-bottom: 10px;">Aspect Ratio</label>
         <div class="crop-ratio-buttons" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
-            <button class="crop-ratio-btn active" data-ratio="free">自由</button>
+            <button class="crop-ratio-btn active" data-ratio="free">Free</button>
             <button class="crop-ratio-btn" data-ratio="1:1">1:1</button>
             <button class="crop-ratio-btn" data-ratio="4:3">4:3</button>
             <button class="crop-ratio-btn" data-ratio="3:4">3:4</button>
@@ -444,7 +444,7 @@ function createControlsPanel(callback, container) {
     // Input section
     const inputSection = document.createElement('div');
     inputSection.innerHTML = `
-        <label style="font-size: 13px; font-weight: 600; color: #e0e0e0; display: block; margin-bottom: 10px;">裁剪区域</label>
+        <label style="font-size: 13px; font-weight: 600; color: #e0e0e0; display: block; margin-bottom: 10px;">Crop Area</label>
         <div style="display: flex; flex-direction: column; gap: 8px;">
             <div style="display: grid; grid-template-columns: 20px 1fr 20px 1fr; gap: 6px; align-items: center;">
                 <label style="font-size: 11px; color: #b0b0b0; text-align: right;">X</label>
@@ -453,9 +453,9 @@ function createControlsPanel(callback, container) {
                 <input type="number" id="crop-y" min="0" value="0" style="padding: 4px 6px; background: #2d2d2d; border: 1px solid #3d3d3d; color: #ffffff; border-radius: 4px; font-size: 12px; width: 100%; pointer-events: auto;">
             </div>
             <div style="display: grid; grid-template-columns: 20px 1fr 20px 1fr; gap: 6px; align-items: center;">
-                <label style="font-size: 11px; color: #b0b0b0; text-align: right;">宽</label>
+                <label style="font-size: 11px; color: #b0b0b0; text-align: right;">Width</label>
                 <input type="number" id="crop-width" min="1" value="100" style="padding: 4px 6px; background: #2d2d2d; border: 1px solid #3d3d3d; color: #ffffff; border-radius: 4px; font-size: 12px; width: 100%; pointer-events: auto;">
-                <label style="font-size: 11px; color: #b0b0b0; text-align: right;">高</label>
+                <label style="font-size: 11px; color: #b0b0b0; text-align: right;">Height</label>
                 <input type="number" id="crop-height" min="1" value="100" style="padding: 4px 6px; background: #2d2d2d; border: 1px solid #3d3d3d; color: #ffffff; border-radius: 4px; font-size: 12px; width: 100%; pointer-events: auto;">
             </div>
         </div>
@@ -464,7 +464,7 @@ function createControlsPanel(callback, container) {
     // Reset button
     const resetBtn = document.createElement('button');
     resetBtn.id = 'crop-reset-btn';
-    resetBtn.textContent = '重置';
+    resetBtn.textContent = 'Reset';
     resetBtn.style.cssText = `
         padding: 10px 20px;
         background: #2d2d2d;
@@ -497,27 +497,27 @@ function initCropEditor(canvas, cropBox, imageUrl, originalWidth, originalHeight
     let resizeDirection = null;
     
     image.onload = () => {
-        // Setup canvas - 使用真实容器的尺寸
-        const canvasWrapperEl = canvas.parentElement.parentElement; // canvasWrapper是真实容器
-        const maxWidth = canvasWrapperEl.clientWidth - 20; // 留出小边距
+        // Setup canvas using the actual container size
+        const canvasWrapperEl = canvas.parentElement.parentElement; // canvasWrapper is the actual container
+        const maxWidth = canvasWrapperEl.clientWidth - 20; // leave a small margin
         const maxHeight = canvasWrapperEl.clientHeight - 20;
-        
-        // 计算缩放比例，让图像尽可能填满可用空间
+
+        // Calculate scale so the image fits the available space
         const scaleW = maxWidth / image.width;
         const scaleH = maxHeight / image.height;
-        scale = Math.min(scaleW, scaleH); // 移除2倍限制,让图像自适应填满空间
-        
+        scale = Math.min(scaleW, scaleH);
+
         canvas.width = image.width * scale;
         canvas.height = image.height * scale;
-        
-        // 默认裁剪框覆盖整个图像
+
+        // Default crop box covers the whole image
         cropData = {
             x: 0,
             y: 0,
             width: canvas.width,
             height: canvas.height
         };
-        
+
         render();
         setupEventListeners();
     };
@@ -564,7 +564,7 @@ function initCropEditor(canvas, cropBox, imageUrl, originalWidth, originalHeight
     }
     
     function setupEventListeners() {
-        // 初始化时设置"自由"按钮为激活状态
+        // Set the "Free" ratio button active on init
         const freeBtn = document.querySelector('.crop-ratio-btn[data-ratio="free"]');
         if (freeBtn) {
             freeBtn.style.background = '#0078d4';
@@ -637,8 +637,9 @@ function initCropEditor(canvas, cropBox, imageUrl, originalWidth, originalHeight
             });
         });
         
-        // Input change handlers - 使用 change 事件而不是 input 事件
-        // 这样可以让用户完整输入数字后再应用,避免输入过程中被约束打断
+        // Input change handlers - use the 'change' event instead of 'input'
+        // This lets users finish typing before the value is applied, avoiding
+        // interruptions caused by constraints while typing.
         ['crop-x', 'crop-y'].forEach(id => {
             const input = document.getElementById(id);
             input.addEventListener('change', () => {
@@ -653,7 +654,7 @@ function initCropEditor(canvas, cropBox, imageUrl, originalWidth, originalHeight
             });
         });
         
-        // 宽度输入框 - 如果有纵横比约束,自动调整高度
+        // Width input - if an aspect ratio is set, automatically adjust height
         document.getElementById('crop-width').addEventListener('change', (e) => {
             const width = parseInt(e.target.value) || 100;
             cropData.width = width * scale;
@@ -667,7 +668,7 @@ function initCropEditor(canvas, cropBox, imageUrl, originalWidth, originalHeight
             render();
         });
         
-        // 高度输入框 - 如果有纵横比约束,自动调整宽度
+        // Height input - if an aspect ratio is set, automatically adjust width
         document.getElementById('crop-height').addEventListener('change', (e) => {
             const height = parseInt(e.target.value) || 100;
             cropData.height = height * scale;
@@ -690,7 +691,7 @@ function initCropEditor(canvas, cropBox, imageUrl, originalWidth, originalHeight
                 height: canvas.height
             };
             aspectRatio = null;
-            // 重置比例按钮样式
+            // Reset ratio buttons style
             document.querySelectorAll('.crop-ratio-btn').forEach(b => {
                 b.style.background = '#2d2d2d';
                 b.style.borderColor = '#3d3d3d';
@@ -890,7 +891,7 @@ async function generateAndUploadPreview(node, originalImage, cropData) {
         ctx.drawImage(originalImage, 0, 0);
         
         // Draw semi-transparent overlay outside crop area
-        ctx.fillStyle = 'rgba(64, 64, 64, 0.7)'; // 半透明灰色遮罩
+        ctx.fillStyle = 'rgba(64, 64, 64, 0.7)'; // semi-transparent gray overlay
         
         // Top area
         if (cropData.y > 0) {

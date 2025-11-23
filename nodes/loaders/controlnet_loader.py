@@ -1,4 +1,3 @@
-# type: ignore
 """
 ControlNet loader node for ComfyUI A1rSpace extension.
 

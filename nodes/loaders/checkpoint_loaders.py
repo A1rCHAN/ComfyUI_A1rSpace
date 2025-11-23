@@ -1,4 +1,3 @@
-# type: ignore
 """
 Checkpoint loader nodes for ComfyUI A1rSpace extension.
 

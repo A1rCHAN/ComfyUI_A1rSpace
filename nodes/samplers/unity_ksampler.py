@@ -1,4 +1,3 @@
-# type: ignore
 """
 Unity KSampler and related sampling nodes for ComfyUI A1rSpace extension.
 

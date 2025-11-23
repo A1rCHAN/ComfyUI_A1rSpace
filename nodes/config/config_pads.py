@@ -1,4 +1,3 @@
-# type: ignore
 """
 Configuration pad nodes for ComfyUI A1rSpace extension.
 

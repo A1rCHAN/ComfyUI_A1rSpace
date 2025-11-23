@@ -1,4 +1,3 @@
-# type: ignore
 """
 Shared utility functions and classes for ComfyUI A1rSpace extension.
 

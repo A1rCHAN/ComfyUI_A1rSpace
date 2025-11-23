@@ -1,4 +1,3 @@
-# type: ignore
 """
 Model loading utilities for ComfyUI A1rSpace extension.
 
