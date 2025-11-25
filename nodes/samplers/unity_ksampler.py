@@ -111,8 +111,8 @@ class UnityKSampler:
             },
             "optional": {
                 # Text to image / image to image mode - force input (no widget)
-                "width": ("INT", {"default": 512, "tooltip": "Width of the latent, if not provided, will be default to 512", "forceInput": True}),
-                "height": ("INT", {"default": 512, "tooltip": "Height of the latent, if not provided, will be default to 512", "forceInput": True}),
+                "width": ("INT", {"default": 1024, "tooltip": "Width of the latent, if not provided, will be default to 1024", "forceInput": True}),
+                "height": ("INT", {"default": 1024, "tooltip": "Height of the latent, if not provided, will be default to 1024", "forceInput": True}),
                 "batch_size": ("INT", {"default": 1, "tooltip": "Batch size, if not provided, will be default to 1", "forceInput": True}),
                 # Image to image mode
                 "pixels": ("IMAGE",),
@@ -175,8 +175,10 @@ class UnityKSampler:
         # Prepare latent based on selected mode
         if mode == "text to image":
             # Text to image mode: Create empty latent from dimensions
-            if width is None or height is None:
-                raise ValueError("Width and height are required for 'text to image' mode")
+            if width is None:
+                width = 1024
+            if height is None:
+                height = 1024
             width = to_int("width", width)
             height = to_int("height", height)
             

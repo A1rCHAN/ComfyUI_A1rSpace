@@ -29,5 +29,6 @@ import "./js/transform_vaedecode.js";
 // testing nodes
 import "./js/draggable_list.js";
 import "./js/image_saver.js";
+import "./js/latent_observer.js";
 
 console.log("[A1rSpace] Extensions Loaded.");
