@@ -57,23 +57,29 @@ if not hasattr(latent_preview, "_original_prepare_callback"):
                 pbar.update_absolute(step + 1, total_steps, preview_tuple)
 
             # 额外发送给 LatentObserver 节点
-            if preview_tuple:
-                try:
-                    s = server.PromptServer.instance
-                    # 遍历当前运行的任务
-                    # currently_running 是 {task_id: (number, prompt_id, prompt, extra_data, outputs_to_execute)}
-                    for task in s.prompt_queue.currently_running.values():
-                        prompt_id = task[1]
-                        prompt = task[2]
-                        extra_data = task[3]
-                        client_id = extra_data.get("client_id")
+            try:
+                s = server.PromptServer.instance
+                # 遍历当前运行的任务
+                # currently_running 是 {task_id: (number, prompt_id, prompt, extra_data, outputs_to_execute)}
+                for task in s.prompt_queue.currently_running.values():
+                    prompt_id = task[1]
+                    prompt = task[2]
+                    extra_data = task[3]
+                    client_id = extra_data.get("client_id")
 
-                        if not client_id:
-                            continue
+                    if not client_id:
+                        continue
 
-                        # 查找所有 LatentObserver 节点
-                        for node_id, node_data in prompt.items():
-                            if node_data.get("class_type") == "A1r Latent Observer":
+                    # 查找所有 LatentObserver 节点
+                    for node_id, node_data in prompt.items():
+                        if node_data.get("class_type") == "A1r Latent Observer":
+                            # 发送进度条
+                            s.send_sync("progress", 
+                                {"value": step + 1, "max": total_steps, "node": node_id, "prompt_id": prompt_id}, 
+                                client_id)
+
+                            # 发送预览图
+                            if preview_tuple:
                                 metadata = {
                                     "node_id": node_id,
                                     "prompt_id": prompt_id,
@@ -85,8 +91,8 @@ if not hasattr(latent_preview, "_original_prepare_callback"):
                                     (preview_tuple, metadata),
                                     client_id
                                 )
-                except Exception as e:
-                    print(f"LatentObserver Error: {e}")
+            except Exception as e:
+                print(f"LatentObserver Error: {e}")
 
         return callback
 

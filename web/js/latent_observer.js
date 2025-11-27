@@ -1,66 +1,59 @@
 import { app } from "/scripts/app.js";
+import { api } from "/scripts/api.js";
 
 app.registerExtension({
-	name: "A1rSpace.LatentObserver",
+	name: "A1r.LatentObserver",
+    setup() {
+        // 监听进度事件
+        api.addEventListener("progress", (e) => {
+            const { node, value, max } = e.detail;
+            if (!node) return;
+            
+            const graphNode = app.graph.getNodeById(node);
+            if (!graphNode || graphNode.type !== "A1r Latent Observer") return;
+            
+            // 更新进度
+            graphNode.observerProgress = value / max;
+            // 触发重绘
+            app.graph.setDirtyCanvas(true, false);
+        });
+
+        // 监听执行结束，重置进度
+        api.addEventListener("executed", (e) => {
+            const { node } = e.detail;
+            if (!node) return;
+            const graphNode = app.graph.getNodeById(node);
+            if (graphNode && graphNode.type === "A1r Latent Observer") {
+                graphNode.observerProgress = 0;
+                app.graph.setDirtyCanvas(true, false);
+            }
+        });
+    },
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
 		if (nodeData.name === "A1r Latent Observer") {
             const onNodeCreated = nodeType.prototype.onNodeCreated;
 			nodeType.prototype.onNodeCreated = function () {
 				const r = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined;
                 this.setSize([512, 512]);
-
-                // 1. Suppress default background drawing (which draws the stretched image)
-                // We override the instance method to ensure we take precedence over any prototype methods
-                this.onDrawBackground = function(ctx) {
-                    // Do nothing. This prevents the "ghost" image from being drawn by default handlers.
-                    // The node shape and color are still drawn by the canvas system.
-                    return true;
-                };
-
 				return r;
 			};
 
-            // 2. Draw the image in foreground with correct aspect ratio
+            // 仅添加进度条绘制逻辑，不干扰图片绘制
             const onDrawForeground = nodeType.prototype.onDrawForeground;
-            nodeType.prototype.onDrawForeground = function (ctx) {
+            nodeType.prototype.onDrawForeground = function(ctx) {
                 const r = onDrawForeground ? onDrawForeground.apply(this, arguments) : undefined;
                 
-                if (this.imgs && this.imgs.length) {
-                    const img = this.imgs[0];
-                    if (img && img.complete && img.width) {
-                        const ratio = img.width / img.height;
-                        const nodeRatio = this.size[0] / this.size[1];
-                        
-                        let w, h, x, y;
-                        if (ratio > nodeRatio) {
-                            w = this.size[0];
-                            h = w / ratio;
-                            x = 0;
-                            y = (this.size[1] - h) / 2;
-                        } else {
-                            h = this.size[1];
-                            w = h * ratio;
-                            x = (this.size[0] - w) / 2;
-                            y = 0;
-                        }
-                        
-                        try {
-                            ctx.save();
-                            ctx.drawImage(img, x, y, w, h);
-                            ctx.restore();
-                        } catch (e) {
-                            // Ignore drawing errors
-                        }
-                    }
+                // 如果有进度，绘制绿色进度条
+                if (this.observerProgress > 0 && this.observerProgress < 1) {
+                    ctx.save();
+                    ctx.fillStyle = "#00FF00";
+                    // 绘制在顶部，高度为 10 像素，类似 KSampler
+                    ctx.fillRect(0, 0, this.size[0] * this.observerProgress, 10);
+                    ctx.restore();
                 }
+                
                 return r;
             };
-
-            // Handle the image update event from the server
-            const onExecuted = nodeType.prototype.onExecuted;
-            nodeType.prototype.onExecuted = function(message) {
-                onExecuted?.apply(this, arguments);
-            }
 		}
 	},
 });
